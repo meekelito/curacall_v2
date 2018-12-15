@@ -206,29 +206,5 @@
   $(".menu-messages .hidden-ul").css("display", "block");
 
   $('.select').select2();
-  
-  // $( "#form-message" ).submit(function( e ) {
-  //   $.ajax({  
-  //     type: "POST",
-  //     url: "{{ url('create-room') }}",
-  //     data: $('#form-message').serialize(),
-  //     success: function (data) {
-  //       // var res = $.parseJSON(data);
-  //       alert(data);
-        
-  //     },
-  //     error: function (data) {
-  //       swal({
-  //         title: "Oops...",
-  //         text: "No connection could be made because the target machine actively refused it. Please refresh the browser and try again.!",
-  //         confirmButtonColor: "#EF5350",
-  //         type: "error"
-  //       });
-  //     },
-  //   }); 
-  //   e.preventDefault();
-  // });
-
 </script>
-<script  src="{{ asset('js/app.js') }}" type="text/javascript" defer></script> 
 @endsection 
