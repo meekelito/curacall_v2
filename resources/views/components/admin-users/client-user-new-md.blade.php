@@ -176,15 +176,15 @@
 
 
 
-$('.multiselect').multiselect({
-  onChange: function() {
-      $.uniform.update();
-  }
-});
+// $('.multiselect').multiselect({
+//   onChange: function() {
+//       $.uniform.update();
+//   }
+// });
 
-$('.multiselect-sm').multiselect({
-    buttonClass: 'btn btn-default btn-sm'
-});
-$(".styled, .multiselect-container input").uniform({ radioClass: 'choice'});
+// $('.multiselect-sm').multiselect({
+//     buttonClass: 'btn btn-default btn-sm'
+// });
+// $(".styled, .multiselect-container input").uniform({ radioClass: 'choice'});
 
 </script>
