@@ -48,7 +48,7 @@ class UserAccountSettingsController extends Controller
 
     if( $request->hasFile('image') ){
       $filename=strtotime('now').'photo.jpg';
-      $directory = "uploads/users";
+      $directory = "users";
       
       Storage::putFileAs($directory, $request->file('image'), $filename);
 
