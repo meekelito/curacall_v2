@@ -258,7 +258,7 @@
             </div>
             <!-- /sub navigation -->
             <!-- Messages -->
-            <div class="sidebar-category">
+            <!-- <div class="sidebar-category">
               <div class="category-title">
                 <span>Recent Messages</span>
                 <ul class="icons-list">
@@ -279,7 +279,7 @@
                   </li>
                 </ul>
               </div>
-            </div>
+            </div> -->
             <!-- /messages -->
           </div>
       </div>
