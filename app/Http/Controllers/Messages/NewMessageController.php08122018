@@ -1,0 +1,63 @@
+<?php
+namespace App\Http\Controllers\Messages;
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use App\User;
+use App\Message;
+use App\Room;
+use App\Participant;
+use Auth;
+use DB;
+
+class NewMessageController extends Controller
+{
+
+  public function index()
+  {
+  	$users = User::all()->except(Auth::user()->id);
+    return view('new-message',['users'=>$users] );
+  }
+
+  public function createMessage(Request $request)
+  {
+    $user = Auth::user();
+
+  	$recipient = $request->input("recipient");
+    $message = $request->input("message");
+    
+    DB::beginTransaction(); 
+    try{
+      $room_id = Room::create([ 'user_id' => Auth::user()->id ])->id;
+
+      $participants = array(array('room_id' => $room_id, 'user_id' => Auth::user()->id, 'is_read' => 1));
+
+      for( $i = 0; $i <= count($recipient)-1; $i++ ){
+        $participants[] = array('room_id' => $room_id, 'user_id' => $recipient[$i], 'is_read' => 0);
+      }
+
+      Participant::insert($participants);
+      $message = $user->messages()->create([
+        'room_id' => $room_id, 
+        'message' => $request->input('message')
+      ]);
+
+      Room::find( $room_id )->update(['last_message' => $message->id]);
+
+      DB::commit();
+      return json_encode(array(
+        "status"=>1,
+        "response"=>"success",
+        "message"=>"Successfully sent"
+      ));
+    } catch (Exeption $e){
+      DB::rollback();
+      return json_encode(array(
+        "status"=>0,
+        "response"=>"failed", 
+        "message"=>"Error in connection."
+      ));
+    }
+     
+  }
+
+}

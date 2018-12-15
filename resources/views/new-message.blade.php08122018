@@ -1,0 +1,129 @@
+@extends('layouts.app')
+@section('css')
+  <style type="text/css">
+    .panel-toolbar-inbox {
+      background-color: #fff;
+    }
+
+    .select2-results__option[aria-selected=true] {
+      display: none;
+    }
+  </style>
+@endsection 
+@section('content')
+<!-- Page header -->
+<div class="page-header page-header-default">
+  <div class="page-header-content">
+    <div class="page-title">
+      <h4><i class="icon-arrow-left52 position-left"></i> <span class="text-semibold">Message</span> - New</h4>
+    </div>
+    <div class="heading-elements">
+      <form class="heading-form" action="#">
+        <div class="form-group">
+        </div>
+      </form>
+    </div>
+  </div>
+  <div class="breadcrumb-line">
+    <ul class="breadcrumb">
+      <li><a href="#l"><i class="icon-home2 position-left"></i> Home</a></li>
+      <li><a href="#">Message</a></li>
+      <li class="active">New</li>
+    </ul>
+  </div>
+</div>
+<!-- /page header -->
+
+<div class="col-lg-12">
+  <div class="panel panel-flat">
+    <div class="panel-body">
+      <form class="form-horizontal" id="form-message" >
+         {{ csrf_field() }}
+        <div class="form-group">
+          <label class="col-sm-1 control-label">To :</label>
+          <div class="col-sm-11">
+            <select name="recipient[]" multiple="multiple" class="select form-control" required>
+            <!-- <select name="recipient" class="form-control" required> -->
+              @foreach($users as $row)
+                <option value="{{ $row->id }}">{{ $row->fname.' '.$row->lname }}</option>
+              @endforeach
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="col-sm-12" style="margin-bottom: 20px;">
+            <textarea name="message" id="message" class="form-control" rows="3"  placeholder="Type your message here..." required></textarea>
+          </div>
+        </div>
+
+        <div class="row" style="padding: 10px;">
+          <div class="col-sm-6">
+          <ul class="icons-list icons-list-extended mt-10">
+            <li>
+              <a href="#" data-popup="tooltip" title="Send photo" data-container="body">
+                <i class="icon-file-picture"></i>
+              </a>
+            </li>
+            <li>
+              <a href="#" data-popup="tooltip" title="Send video" data-container="body">
+                <i class="icon-file-video"></i>
+              </a>
+            </li>
+            <li>
+              <a href="#" data-popup="tooltip" title="Send file" data-container="body">
+                <i class="icon-file-plus"></i>
+              </a>
+            </li>
+            <li>
+              <a href="#" data-popup="tooltip" title="Mark as urgent" data-container="body">
+                <i class="icon-bubble-notification"></i>
+              </a>
+            </li>
+          </ul>
+          </div>
+          <div class="col-sm-6 text-right">
+            <button type="submit" class="btn bg-teal-400 btn-labeled btn-labeled-right btn-new-message"><b><i class="icon-circle-right2"></i></b> Send</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+@endsection  
+ 
+@section('script')
+
+<script type="text/javascript">
+  $(".menu-curacall li").removeClass("active");
+  $(".menu-messages").addClass('active');
+  $(".menu-messages-new").addClass('active');
+  $(".menu-messages .hidden-ul").css("display", "block");
+
+  $('.select').select2();
+  
+  $( "#form-message" ).submit(function( e ) {
+    $.ajax({  
+      type: "POST",
+      url: "{{ url('new-message') }}",
+      data: $('#form-message').serialize(),
+      success: function (data) {
+        // var res = $.parseJSON(data);
+        alert(data);
+        
+      },
+      error: function (data) {
+        swal({
+          title: "Oops...",
+          text: "No connection could be made because the target machine actively refused it. Please refresh the browser and try again.!",
+          confirmButtonColor: "#EF5350",
+          type: "error"
+        });
+      },
+    }); 
+    e.preventDefault();
+  });
+
+</script>
+@endsection 
