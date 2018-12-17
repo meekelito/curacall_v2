@@ -67,7 +67,7 @@ Route::group(['middleware' => array('auth')], function () {
 	Route::get('admin-console/users','Admin\AdminUsersController@index');
 	//datatables
 	Route::get('admin/admin-users','Admin\AdminUsersController@fetchAdminUsers');  
-	Route::get('admin/client-users','Admin\AdminUsersController@fetchClientUsers');  
+	Route::post('admin/client-users','Admin\AdminUsersController@fetchClientUsers');  
 	//modal add
 	Route::post('admin-user-new-md','Admin\AdminUsersController@getModalAdminUserNew');
 	Route::post('client-user-new-md','Admin\AdminUsersController@getModalClientUserNew');
