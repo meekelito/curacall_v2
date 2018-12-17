@@ -104,7 +104,6 @@
   $(document).ready(function () {
 	 	$(".menu-curacall li").removeClass("active");
 	  $(".menu-admin-console-users").addClass('active');
-
 	  dt_admin= $('.tbl-admin-users').DataTable({
       responsive: true, 
       processing: true,
@@ -125,53 +124,6 @@
         {data: 'action', orderable: false, searchable: false}
       ]
     });
-
-    dt_client= $('.tbl-client-users').DataTable({
-      responsive: true, 
-      processing: true,
-      serverSide: true,
-      "aaSorting": [], 
-      "language": {
-        "search": " Search : "
-      }, 
-      ajax: "{{ url('admin/client-users') }}",
-      columns: [
-        {data: 'img', orderable: false, searchable: false},
-        {data: 'curacall_id', name: 'users.id'},
-        {data: 'role_title', name : 'c.role_title'}, 
-        {data: 'fname', name : 'users.fname'}, 
-        {data: 'lname', name : 'users.lname'},
-        {data: 'email',name : 'users.email'},
-        {data: 'account_name',name : 'b.account_name'},
-        {data: 'status',name: 'users.status'},
-        {data: 'action', orderable: false, searchable: false}
-      ]
-    });
-
-	});
-
-	$(".btn-add-admin-user").click(function(){
-		$.ajax({ 
-      type: "POST",
-      url: "{{ url('admin-user-new-md') }}",
-      data: { 
-        _token : '{{ csrf_token() }}'
-      }, 
-      success: function (data) {  
-        $(".content-data").html( data );
-        $("#modal-add").modal('show');
-      },
-      error: function (data){
-      	swal({
-          title: "Oops..!",
-          text: "No connection could be made because the target machine actively refused it. Please refresh the browser and try again.",
-          confirmButtonColor: "#EF5350",
-          type: "error"
-      	});
-      }
-    });
-	}); 
-
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -201,8 +153,49 @@
         {data: 'action', orderable: false, searchable: false}
       ]
     });
+	});
+	$(".btn-add-admin-user").click(function(){
+		$.ajax({ 
+      type: "POST",
+      url: "{{ url('admin-user-new-md') }}",
+      data: { 
+        _token : '{{ csrf_token() }}'
+      }, 
+      success: function (data) {  
+        $(".content-data").html( data );
+        $("#modal-add").modal('show');
+      },
+      error: function (data){
+      	swal({
+          title: "Oops..!",
+          text: "No connection could be made because the target machine actively refused it. Please refresh the browser and try again.",
+          confirmButtonColor: "#EF5350",
+          type: "error"
+      	});
+      }
+    });
+	}); 
+  $(".btn-add-client-user").click(function(){
+    $.ajax({ 
+      type: "POST",
+      url: "{{ url('client-user-new-md') }}",
+      data: { 
+        _token : '{{ csrf_token() }}'
+      }, 
+      success: function (data) {  
+        $(".content-data").html( data );
+        $("#modal-add").modal('show');
+      },
+      error: function (data){
+        swal({
+          title: "Oops..!",
+          text: "No connection could be made because the target machine actively refused it. Please refresh the browser and try again.",
+          confirmButtonColor: "#EF5350",
+          type: "error"
+        });
+      }
+    });
   });
-
 	function get_admin_user_md(id){
 		$.ajax({ 
       type: "POST", 
@@ -225,7 +218,6 @@
       }
     });
 	}
-
   function get_client_user_md(id){
     $.ajax({ 
       type: "POST", 
@@ -248,7 +240,6 @@
       }
     });
   }
-
   function get_status_md(id){
     $.ajax({ 
       type: "POST", 
@@ -271,7 +262,6 @@
       }
     });
   }
-
   function reset_password(id){
     swal({
         title: "Are you sure?",
@@ -322,7 +312,5 @@
       }
     });
   }
-
-
 </script>
 @endsection 
