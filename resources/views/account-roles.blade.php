@@ -55,8 +55,8 @@
 
 @section('script')
 <script type="text/javascript">
-  $(".bootstrap-select").selectpicker();
-	var dt;
+
+    var dt;
   $(document).ready(function () {
 	 	$(".menu-curacall li").removeClass("active");
 	  $(".menu-account-roles").addClass('active');
