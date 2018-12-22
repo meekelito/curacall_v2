@@ -61,7 +61,7 @@
                 </div>
 
                 <div class="navbar-right">
-                    <p class="navbar-text"><span class="text-semibold">1-5</span> of <span class="text-semibold">5</span></p>
+                    <p class="navbar-text"><span class="text-semibold">0</span> of <span class="text-semibold">0</span></p>
                     <div class="btn-group navbar-left navbar-btn">
                         <button type="button" class="btn btn-default btn-icon disabled"><i class="icon-arrow-left12"></i></button>
                         <button type="button" class="btn btn-default btn-icon disabled"><i class="icon-arrow-right13"></i></button>
