@@ -31,10 +31,12 @@ class UserAccountSettingsController extends Controller
         'email' => 'required|email|unique:users,email,'.Auth::user()->id,
         'mobile_no' => 'nullable|string',
         'phone_no' => 'nullable|string',
+        'image' => 'nullable|max:1024|mimes:jpg,jpeg,png', 
     ],[
       'fname.required'=>'First name is required.',
       'fname.regex' => 'The first name may only contain letters and spaces.',
       'lname.regex' => 'The last name may only contain letters and spaces.',
+      'image.mimes' => 'The image must be a file of type: jpeg or png.',
     ]);
 
     if ($validator->fails()) {
@@ -51,6 +53,7 @@ class UserAccountSettingsController extends Controller
       $directory = "users";
       
       Storage::putFileAs($directory, $request->file('image'), $filename);
+      // Storage::disk('public_uploads')->put($filename, $request->file('image'));
 
       if( $request->file('image')->isValid() ){
         $res = User::find( Auth::user()->id )->update($request->all()+['prof_img' => $filename ]+['updated_by' => Auth::user()->id ]);
@@ -84,11 +87,6 @@ class UserAccountSettingsController extends Controller
 
   public function updateUserCredentials(Request $request)  
   {  
-    $cpassword = $request->input('current_password');
-    $npassword = $request->input('new_password');
-    $cnpassword = $request->input('confirm_new_password');
-
-
     $validator = Validator::make($request->all(), [
       'current_password' => 'bail|required|min:8',
       'password'  => 'bail|required|min:8|confirmed|different:current_password|regex:/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/',
@@ -105,10 +103,12 @@ class UserAccountSettingsController extends Controller
     }
 
     if (Hash::check($request->input('current_password'), Auth::user()->password )) {
+
       $res = User::find(Auth::user()->id);
-      $res->password = Hash::make($npassword);
+      $res->password = Hash::make($request->input('password'));
       $res->updated_by = Auth::user()->id;
       $res->save();
+
     }else{
       return json_encode(array(
         "status"=>3,
@@ -121,7 +121,7 @@ class UserAccountSettingsController extends Controller
       return json_encode(array(
         "status"=>1,
         "response"=>"success",
-        "message"=>"Successfully saved. \n You may need to refresh the page to see the changes."
+        "message"=>"Password successfully updated."
       ));
     }else{
       return json_encode(array(
