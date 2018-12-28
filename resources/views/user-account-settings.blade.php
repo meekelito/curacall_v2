@@ -192,10 +192,10 @@
         contentType: false,
         processData:false,
         beforeSend: function(){
-          $(document.body).css({'cursor' : 'wait'});
+          showLoader();
         },
         complete: function(){
-          $(document.body).css({'cursor' : 'default'});
+          hideLoader();
         },
         success: function (data) {
           var res = $.parseJSON(data);
