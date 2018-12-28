@@ -31,7 +31,7 @@
         <ul class="breadcrumb">
             <li><a href="#l"><i class="icon-home2 position-left"></i> Home</a></li>
             <li><a href="#">Cases</a></li>
-            <li class="active">Deleted cases</li>
+            <li class="active">Closed cases</li>
         </ul>
     </div>
 </div>
