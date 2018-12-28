@@ -191,6 +191,12 @@
         data: new FormData(this),
         contentType: false,
         processData:false,
+        beforeSend: function(){
+          $(document.body).css({'cursor' : 'wait'});
+        },
+        complete: function(){
+          $(document.body).css({'cursor' : 'default'});
+        },
         success: function (data) {
           var res = $.parseJSON(data);
           if( res.status == 1 ){
