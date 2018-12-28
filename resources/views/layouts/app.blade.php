@@ -22,7 +22,7 @@
 	<!-- Core JS files -->
   <!-- <script src="{{ asset('js/core.js') }}"></script> --> 
   <!-- <script  src="{{ asset('js/app.js') }}" type="text/javascript" defer></script>  -->
-	<script type="text/javascript" src="{{ asset('assets/js/plugins/loaders/pace.min.js') }}" ></script>
+	<!-- <script type="text/javascript" src="{{ asset('assets/js/plugins/loaders/pace.min.js') }}" ></script> -->
 	<script type="text/javascript" src="{{ asset('assets/js/core/libraries/jquery.min.js') }}" ></script>
 	<script type="text/javascript" src="{{ asset('assets/js/core/libraries/bootstrap.min.js') }}" ></script>
 	<script type="text/javascript" src="{{ asset('assets/js/plugins/loaders/blockui.min.js') }}" ></script>
@@ -257,30 +257,6 @@
                 </div>
             </div>
             <!-- /sub navigation -->
-            <!-- Messages -->
-            <!-- <div class="sidebar-category">
-              <div class="category-title">
-                <span>Recent Messages</span>
-                <ul class="icons-list">
-                  <li><a href="#" data-action="collapse"></a></li>
-                </ul>
-              </div>
-
-              <div class="category-content no-padding">
-                <ul class="media-list media-list-linked">
-                  <li class="media">
-                    <a href="#" class="media-link">
-                      <div class="media-left"><img src="{{ asset('storage/uploads/users/default.png') }}" class="img-circle img-md" alt=""></div>
-                      <div class="media-body">
-                        <span class="media-heading text-semibold">Will Samuel</span>
-                        <span class="text-muted">And he looked over at the alarm clock, ticking..</span>
-                      </div>
-                    </a>
-                  </li>
-                </ul>
-              </div>
-            </div> -->
-            <!-- /messages -->
           </div>
       </div>
       <!-- /secondary sidebar -->
@@ -304,12 +280,52 @@
 </body>
 <script src="{{ asset('js/moment.min.js') }}"></script>
   <script type="text/javascript">
+    $(function() {
+      $(document).on('pjaxopstate', function() {
+        location.reload();
+      }); 
+
+      $(document).pjax('a', '#content');
+      
+      $(document).on('pjax:timeout', function(event) {
+        event.preventDefault()
+      });
+      
+      $(document).on('pjax:send', function(event) {
+        showLoader();
+      });
+
+      $(document).on('pjax:complete', function(event) {
+        hideLoader();
+      });
+
+    });
+
+    function showLoader(){
+      $("#content").block({
+        message: '<i style="font-size: 50px;" class="icon-spinner spinner"></i>',
+        overlayCSS: {
+            backgroundColor: '#fff',
+            opacity: 0.8,
+            cursor: 'wait'
+        },
+        css: {
+            border: 0,
+            padding: 0,
+            backgroundColor: 'none'
+        }
+      });
+    }
+
+    function hideLoader(){
+      $("#content").unblock();
+    }
+    
     window.Laravel = {!! json_encode([
       'csrfToken' => csrf_token(),
       'user' => Auth::user(),
       'pusherKey' => config('broadcasting.connections.pusher.key'),
     ]) !!};
-
   </script>
 </html>
 

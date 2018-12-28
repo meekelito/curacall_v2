@@ -62,7 +62,7 @@
             <div class="panel panel-body login-form"> 
               <div class="text-center">
                 <img src="{{ asset('assets/images/curacall_logo.jpg') }}" width="100">
-                <h5 class="content-group-lg">Login to your account <small class="display-block">Enter your Username / Email test</small></h5>
+                <h5 class="content-group-lg">Login to your account <small class="display-block">Enter your Username / Email</small></h5>
               </div>
 
               <div class="form-group has-feedback has-feedback-left">
