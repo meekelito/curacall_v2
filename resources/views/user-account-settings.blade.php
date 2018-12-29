@@ -192,10 +192,10 @@
         contentType: false,
         processData:false,
         beforeSend: function(){
-          showLoader();
+          $('body').addClass('wait-pointer');
         },
         complete: function(){
-          hideLoader();
+          $('body').removeClass('wait-pointer');
         },
         success: function (data) {
           var res = $.parseJSON(data);

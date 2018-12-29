@@ -70,6 +70,8 @@
     .navbar{
       border-top: none;
     }
+
+    body.wait-pointer * {cursor: wait !important;}
     
   </style>
 </head>
