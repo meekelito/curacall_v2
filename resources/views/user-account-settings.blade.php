@@ -244,6 +244,12 @@
         type: "POST", 
         url: "{{ url('user-account-settings/update-user-credentials') }}",
         data: $('#form-user-credentials').serialize(),
+        beforeSend: function(){
+          $('body').addClass('wait-pointer');
+        },
+        complete: function(){
+          $('body').removeClass('wait-pointer');
+        },
         success: function (data) {
           var res = $.parseJSON(data);
           if( res.status == 1 ){
