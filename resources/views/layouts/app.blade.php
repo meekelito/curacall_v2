@@ -306,7 +306,7 @@
 
     function showLoader(){
       $("#content").block({
-        message: '<i style="font-size: 30px;" class="icon-spinner spinner"></i>',
+        message: '<i style="font-size: 30px;" class="icon-spinner2 spinner"></i>',
         overlayCSS: {
             backgroundColor: '#fff',
             opacity: 0.8,
