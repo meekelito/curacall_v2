@@ -80,6 +80,12 @@
       type: "POST",
       url: "{{ url('admin/update-admin-user') }}",
       data: $('#form-admin-user-update').serialize(),
+      beforeSend: function(){
+        $('body').addClass('wait-pointer');
+      },
+      complete: function(){
+        $('body').removeClass('wait-pointer');
+      },
       success: function (data) {
         var res = $.parseJSON(data);
        	if( res.status == 1 ){

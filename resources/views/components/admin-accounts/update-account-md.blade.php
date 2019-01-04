@@ -98,6 +98,12 @@
 	      	type: "POST", 
 	      	url: "{{ url('admin/update-account') }}",
 	      	data: $(this).serialize(),
+	      	beforeSend: function(){
+	          $('body').addClass('wait-pointer');
+	        },
+	        complete: function(){
+	          $('body').removeClass('wait-pointer');
+	        },
 	      	success: function (data) {
 		        var res = $.parseJSON(data);
 		       	if( res.status == 1 ){

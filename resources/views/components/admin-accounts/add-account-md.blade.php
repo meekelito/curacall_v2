@@ -96,6 +96,12 @@
       type: "POST",
       url: "{{ url('admin/add-account') }}",
       data: $('#form-account-info').serialize(),
+      beforeSend: function(){
+        $('body').addClass('wait-pointer');
+      },
+      complete: function(){
+        $('body').removeClass('wait-pointer');
+      },
       success: function (data) {
         var res = $.parseJSON(data);
        	if( res.status == 1 ){

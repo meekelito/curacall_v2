@@ -125,6 +125,12 @@
       type: "POST",
       url: "{{ url('account/update-role') }}",
       data: $('#form-role').serialize(),
+      beforeSend: function(){
+        $('body').addClass('wait-pointer');
+      },
+      complete: function(){
+        $('body').removeClass('wait-pointer');
+      },
       success: function (data) {
         var res = $.parseJSON(data);
         if( res.status == 1 ){
