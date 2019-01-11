@@ -26,7 +26,7 @@
 	<script type="text/javascript" src="{{ asset('assets/js/core/libraries/jquery.min.js') }}" ></script>
 	<script type="text/javascript" src="{{ asset('assets/js/core/libraries/bootstrap.min.js') }}" ></script>
 	<script type="text/javascript" src="{{ asset('assets/js/plugins/loaders/blockui.min.js') }}" ></script>
-  <script type="text/javascript" src="{{ asset('assets/bower_components/jquery-pjax/jquery.pjax.js') }}"></script>
+  <!-- <script type="text/javascript" src="{{ asset('assets/bower_components/jquery-pjax/jquery.pjax.js') }}"></script> -->
 	<!-- /core JS files --> 
 
 	<!-- Theme JS files -->   
@@ -283,26 +283,26 @@
 </body>
 <script src="{{ asset('js/moment.min.js') }}"></script>
   <script type="text/javascript">
-    $(function() {
-      $(document).on('pjaxopstate', function() {
-        location.reload();
-      }); 
+    // $(function() {
+    //   $(document).on('pjaxopstate', function() {
+    //     location.reload();
+    //   }); 
 
-      $(document).pjax('a', '#content');
+    //   $(document).pjax('a', '#content');
       
-      $(document).on('pjax:timeout', function(event) {
-        event.preventDefault()
-      });
+    //   $(document).on('pjax:timeout', function(event) {
+    //     event.preventDefault()
+    //   });
       
-      $(document).on('pjax:send', function(event) {
-        showLoader();
-      });
+    //   $(document).on('pjax:send', function(event) {
+    //     showLoader();
+    //   });
 
-      $(document).on('pjax:complete', function(event) {
-        hideLoader();
-      });
+    //   $(document).on('pjax:complete', function(event) {
+    //     hideLoader();
+    //   });
 
-    });
+    // });
 
     function showLoader(){
       $("#content").block({
