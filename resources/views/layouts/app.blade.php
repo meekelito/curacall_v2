@@ -288,7 +288,7 @@
         location.reload();
       }); 
 
-      $(document).pjax('a', '#content');
+      // $(document).pjax('a', '#content');
       
       $(document).on('pjax:timeout', function(event) {
         event.preventDefault()
