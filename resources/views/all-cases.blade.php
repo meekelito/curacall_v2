@@ -81,7 +81,7 @@
                           <input type="checkbox" class="styled">
                       </td>
                       <td class="table-inbox-image">   
-                        <img src="{{ asset('storage/uploads/users/'.$row->prof_img.'?v='.strtotime('now')) }}" class="img-circle img-sm" alt="">
+                        <img src="{{ asset('storage/uploads/users/default.png') }}" class="img-circle img-sm" alt="">
                       </td> 
                       <td class="table-inbox-name">
                           <a class="pjax-link" data-pjax="#content"> 
