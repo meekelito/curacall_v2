@@ -88,7 +88,8 @@
 		$.ajax({ 
       	type: "POST",
       	url: "{{ url('admin/add-admin-user') }}",
-      	data: $('#form-admin-user-new').serialize(),
+      	// data: $('#form-admin-user-new').serialize(),
+      	data: $(this).serialize(),
       	beforeSend: function(){
           $('body').addClass('wait-pointer');
         },
