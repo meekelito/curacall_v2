@@ -8,7 +8,7 @@
 	<h5 class="modal-title">New CuraCall User</h5>
 </div>
 <form class="form-horizontal" id="form-admin-user-new">
-
+	{{ csrf_field() }}
 	<div class="modal-body">
 		<div class="form-group form-group-xs">
 			<label class="control-label col-lg-3 text-right">
@@ -84,10 +84,10 @@
 
 <script type="text/javascript">
 
-	$( "form" ).submit(function( e ) {
+	$( "#form-admin-user-new" ).submit(function( e ) {
 		$.ajax({ 
       	type: "POST",
-      	url: "{{ url('admin/add-admin-user') }}", 
+      	url: "{{ url('admin/add-admin-user') }}",
       	data: $('#form-admin-user-new').serialize(),
       	beforeSend: function(){
           $('body').addClass('wait-pointer');

@@ -84,12 +84,12 @@
                         <img src="{{ asset('storage/uploads/users/'.$row->prof_img.'?v='.strtotime('now')) }}" class="img-circle img-sm" alt="">
                       </td> 
                       <td class="table-inbox-name">
-                          <a class="pjax-link" data-pjax="#content" href="{{ url('/messages/room',$row->room_id) }}"> 
-                              <div class="letter-icon-title text-default">{{ ucwords($row->fname.' '.$row->lname) }}</div>
+                          <a class="pjax-link" data-pjax="#content"> 
+                              <div class="letter-icon-title text-default">Senders Name</div>
                           </a>
                       </td>
                       <td class="table-inbox-message">
-                          <span class="table-inbox-subject">{{ $row->message }}</span>
+                          <span class="table-inbox-subject">{{ $row->case_message }}</span>
                       </td>
                       <td class="table-inbox-attachment">
                           <!-- <i class="icon-attachment text-muted"></i> -->
