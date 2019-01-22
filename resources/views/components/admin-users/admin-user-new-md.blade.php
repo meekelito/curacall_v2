@@ -87,15 +87,8 @@
 	$( "form" ).submit(function( e ) {
 		$.ajax({ 
       	type: "POST",
-      	url: "{{ url('admin/add-admin-user') }}",
-      	// data: $('#form-admin-user-new').serialize(),
-      	data: $(this).serialize(),
-      	beforeSend: function(){
-          $('body').addClass('wait-pointer');
-        },
-        complete: function(){
-          $('body').removeClass('wait-pointer');
-        },
+      	url: "{{ url('admin/add-admin-user') }}", 
+      	data: $('#form-admin-user-new').serialize(),
       	success: function (data) {
         var res = $.parseJSON(data);
        	if( res.status == 1 ){
