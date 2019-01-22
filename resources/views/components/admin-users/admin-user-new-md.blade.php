@@ -84,7 +84,7 @@
 
 <script type="text/javascript">
 
-	$( "#form-admin-user-new" ).submit(function( e ) {
+	$( "form" ).submit(function( e ) {
 		$.ajax({ 
       	type: "POST",
       	url: "{{ url('admin/add-admin-user') }}",
@@ -120,7 +120,7 @@
           });
         }else{
        		swal({
-            title: "Oopsy..!",
+            title: "Oops..!",
             text: res.message,
             confirmButtonColor: "#EF5350",
             type: "error"
