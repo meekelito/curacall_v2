@@ -120,7 +120,7 @@
           });
         }else{
        		swal({
-            title: "Oops..!",
+            title: "Oopsy..!",
             text: res.message,
             confirmButtonColor: "#EF5350",
             type: "error"
