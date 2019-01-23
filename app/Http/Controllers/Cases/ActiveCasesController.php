@@ -14,7 +14,7 @@ class ActiveCasesController extends Controller
 {
   public function index()
   {
-  	$cases = array();  
+  	$cases = Cases::where('status','active')->get();
     return view( 'active-cases',[ 'cases' => $cases ] );
   }
 }

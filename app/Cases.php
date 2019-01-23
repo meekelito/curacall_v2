@@ -8,6 +8,6 @@ class Cases extends Model
 
 {
 	protected $table = 'cases';
-  protected $fillable = ['case_id','case_message'];
+  protected $fillable = ['case_id','case_message','status'];
 
 } 
