@@ -73,44 +73,34 @@
         
         <div class="table-responsive">
             <table class="table table-inbox">
-                <tbody data-link="row" class="rowlink">
-                	@forelse($cases as $row)
-                    <tr>
-                        <td class="table-inbox-checkbox rowlink-skip">
-                            <input type="checkbox" class="styled">
-                        </td>
-                        <td class="table-inbox-image">
-                            <span class="btn bg-brown-400 btn-rounded btn-icon btn-xs">
-                                <span class="letter-icon">{{ ucwords(substr($row->fname, 0, 1)) }}</span>
-                            </span>
-                        </td>
-                        <td class="table-inbox-name">
-                            <a class="pjax-link" data-pjax="#content" href="{{ url('/reply?room='.$row->room_id) }}"> 
-                                <div class="letter-icon-title text-default">{{ ucwords($row->fname.' '.$row->lname) }}</div>
-                            </a>
-                        </td>
-                        <td class="table-inbox-message">
-                           <!--  <span class="table-inbox-subject">Lorem ipsum dolor sit amet, &nbsp;-&nbsp;</span> -->
-                            <!-- <span class="table-inbox-preview"></span> -->
-                            <span class="table-inbox-subject">{{ $row->message }}</span>
-                        </td>
-                        <td class="table-inbox-attachment">
-                            <!-- <i class="icon-attachment text-muted"></i> -->
-                        </td>
-                        <td class="table-inbox-time">
-                        @if(!empty($row->created_at))
-                            @if( date('Y-m-d') == date('Y-m-d', strtotime($row->created_at)))
-                                {{  date_format($row->created_at,"h:i a") }}
-                            @else
-                                {{  date_format($row->created_at,"M d") }}
-                            @endif
-                        @endif
-                        </td>
-                    </tr>
-                    @empty
-                    <tr class="unread"><td>No deleted case(s) found.</td></tr>
-                    @endforelse
-                </tbody>
+              <tbody data-link="row" class="rowlink">
+                @forelse($cases as $row)
+                  <tr>
+                      <td class="table-inbox-checkbox rowlink-skip">
+                          <input type="checkbox" class="styled">
+                      </td>
+                      <td class="table-inbox-name">
+                          <a class="pjax-link" data-pjax="#content"> 
+                              <div class="letter-icon-title text-default">Senders Name</div>
+                          </a>
+                      </td>
+                      <td class="table-inbox-message">
+                          <span class="table-inbox-subject">{{ $row->case_message }}</span>
+                      </td>
+                      <td class="table-inbox-time">
+                      @if(!empty($row->created_at))
+                          @if( date('Y-m-d') == date('Y-m-d', strtotime($row->created_at)))
+                              {{  date_format($row->created_at,"h:i a") }}
+                          @else
+                              {{  date_format($row->created_at,"M d") }}
+                          @endif
+                      @endif
+                      </td>
+                  </tr>
+                  @empty
+                  <tr class="unread"><td>No deleted case(s) found.</td></tr>
+                  @endforelse
+              </tbody>
             </table>
         </div>
     </div>

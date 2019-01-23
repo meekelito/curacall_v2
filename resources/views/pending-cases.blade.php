@@ -99,7 +99,7 @@
                       </td>
                   </tr>
                   @empty
-                  <tr class="unread"><td>No Pending Case(s) found.</td></tr>
+                  <tr class="unread"><td>No pending case(s) found.</td></tr>
                   @endforelse
               </tbody>
             </table>

@@ -99,7 +99,7 @@
                       </td>
                   </tr>
                   @empty
-                  <tr class="unread"><td>No Case(s) found.</td></tr>
+                  <tr class="unread"><td>No all case(s) found.</td></tr>
 
                   @endforelse
               </tbody>

@@ -6,6 +6,7 @@ use App\Room;
 use App\Participants;
 use App\Messages;
 use App\Users;
+use App\Cases;
 use DB;
 use Cache;
 use Auth;
@@ -14,7 +15,7 @@ class DeletedCasesController extends Controller
 {
   public function index()
   {
-  	$cases = array();  
+  	$cases = Cases::where('status','deleted')->get();
     return view( 'deleted-cases',[ 'cases' => $cases ] );
   }
 }

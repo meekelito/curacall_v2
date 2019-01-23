@@ -98,7 +98,7 @@
                       </td>
                   </tr>
                   @empty
-                  <tr class="unread"><td>No Active Case(s) found.</td></tr>
+                  <tr class="unread"><td>No active case(s) found.</td></tr>
                   @endforelse
               </tbody>
           </table>
