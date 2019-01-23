@@ -75,7 +75,7 @@
             <table class="table table-inbox">
               <tbody data-link="row" class="rowlink">
                 @forelse($cases as $row)
-                  <tr @if($row->is_read == 0) class="unread" @endif>
+                  <tr class="unread" >
                       <td class="table-inbox-checkbox rowlink-skip">
                           <input type="checkbox" class="styled">
                       </td>
@@ -98,8 +98,7 @@
                       </td>
                   </tr>
                   @empty
-                  <tr class="unread"><td>No Case(s) found.</td></tr>
-
+                  <tr class="unread"><td>No Active Case(s) found.</td></tr>
                   @endforelse
               </tbody>
           </table>

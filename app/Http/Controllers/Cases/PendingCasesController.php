@@ -6,6 +6,7 @@ use App\Room;
 use App\Participants;
 use App\Messages;
 use App\Users;
+use App\Cases;
 use DB;
 use Cache;
 use Auth;
@@ -14,7 +15,7 @@ class PendingCasesController extends Controller
 {
   public function index()
   {
-  	$cases = array();  
-    return view( 'pending-cases',[ 'cases' => $cases ] );
+  	$cases = Cases::where('status','pending')->get();
+    return view( 'active-cases',[ 'cases' => $cases ] );
   }
 }

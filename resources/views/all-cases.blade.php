@@ -76,7 +76,7 @@
           <table class="table table-inbox">
               <tbody data-link="row" class="rowlink">
                 @forelse($cases as $row)
-                  <tr @if($row->is_read == 0) class="unread" @endif>
+                  <tr @if($row->status == 'active') class="unread" @endif>
                       <td class="table-inbox-checkbox rowlink-skip">
                           <input type="checkbox" class="styled">
                       </td>
