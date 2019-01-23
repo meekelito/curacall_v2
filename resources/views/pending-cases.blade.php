@@ -72,8 +72,8 @@
        
         
         <div class="table-responsive">
+
             <table class="table table-inbox">
-                <table class="table table-inbox">
               <tbody data-link="row" class="rowlink">
                 @forelse($cases as $row)
                   <tr>
@@ -102,7 +102,7 @@
                   <tr class="unread"><td>No Pending Case(s) found.</td></tr>
                   @endforelse
               </tbody>
-          </table>
+            </table>
         </div>
     </div>
     <!-- /single line -->

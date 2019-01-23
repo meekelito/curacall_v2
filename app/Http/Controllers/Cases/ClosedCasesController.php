@@ -6,6 +6,7 @@ use App\Room;
 use App\Participants;
 use App\Messages;
 use App\Users;
+use App\Cases;
 use DB;
 use Cache;
 use Auth;
@@ -14,7 +15,7 @@ class ClosedCasesController extends Controller
 {
   public function index()
   {
-  	$cases = array();  
+  	$cases = Cases::where('status','closed')->get();
     return view( 'closed-cases',[ 'cases' => $cases ] );
   }
 }
