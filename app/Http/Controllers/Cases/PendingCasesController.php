@@ -16,6 +16,6 @@ class PendingCasesController extends Controller
   public function index()
   {
   	$cases = Cases::where('status','pending')->get();
-    return view( 'active-cases',[ 'cases' => $cases ] );
+    return view( 'pending-cases',[ 'cases' => $cases ] );
   }
 }
