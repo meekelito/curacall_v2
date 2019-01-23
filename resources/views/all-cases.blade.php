@@ -80,9 +80,6 @@
                       <td class="table-inbox-checkbox rowlink-skip">
                           <input type="checkbox" class="styled">
                       </td>
-                      <td class="table-inbox-image">   
-                        <img src="{{ asset('storage/uploads/users/default.png') }}" class="img-circle img-sm" alt="">
-                      </td> 
                       <td class="table-inbox-name">
                           <a class="pjax-link" data-pjax="#content"> 
                               <div class="letter-icon-title text-default">Senders Name</div>
@@ -90,9 +87,6 @@
                       </td>
                       <td class="table-inbox-message">
                           <span class="table-inbox-subject">{{ $row->case_message }}</span>
-                      </td>
-                      <td class="table-inbox-attachment">
-                          <!-- <i class="icon-attachment text-muted"></i> -->
                       </td>
                       <td class="table-inbox-time">
                       @if(!empty($row->created_at))
