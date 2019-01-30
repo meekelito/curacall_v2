@@ -15,7 +15,7 @@ class AllCasesController extends Controller
 {
   public function index()
   {
-  	$cases = Cases::orderBy('id')->get();
+  	$cases = Cases::orderBy('id','desc')->get();
     return view( 'all-cases',[ 'cases' => $cases ] );
   }
 }
