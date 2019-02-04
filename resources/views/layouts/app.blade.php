@@ -194,7 +194,8 @@
                 <li class="navigation-header"><span>Main</span> <i class="icon-menu" title="Main pages"></i></li>
                 <li  class="menu-dashboard"><a href="{{ url('/dashboard') }}"><i class="icon-home4"></i> <span>Dashboard</span></a></li>
                 @if( Auth::user() ) 
-                  <li class="menu-cases"><a href="{{ url('/all-cases') }}"><i class="icon-bubbles4"></i> <span>Cases</span></a></li>
+                  <li class="menu-cases"><a href="{{ url('/all-cases') }}"><i class="icon-briefcase"></i> <span>Cases</span></a></li>
+                  <li class="menu-messages"><a href="{{ url('/all-messages') }}"><i class="icon-bubbles4"></i> <span>Messages</span></a></li>
                   <li class="menu-contacts"><a href="{{ url('/contacts') }}"><i class="icon-address-book2"></i> <span>Contacts</span></a></li>
                   <!-- <li class="menu-directory"><a href="{{ url('/directory') }}"><i class="icon-book3"></i> <span>Directory</span></a></li> -->
                   <li class="menu-user-account-settings"><a href="{{ url('/user-account-settings') }}"><i class="icon-gear"></i> <span>Account Settings</span></a></li>
