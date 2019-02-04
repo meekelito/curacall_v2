@@ -254,7 +254,7 @@
                         <li class="submenu-cases-active-cases"><a href="{{ url('/active-cases') }}"><i class="icon-file-plus"></i> Active cases <!-- <span class="badge badge-danger">3</span> --></a></li> 
                         <li class="submenu-cases-pending-cases"><a href="{{ url('/pending-cases') }}"><i class="icon-hour-glass"></i> Pending cases <!-- <span class="badge badge-warning" style="background-color: #E4D00A; border-color:#E4D00A;">2</span> --></a></li>
                         <li class="submenu-cases-closed-cases"><a href="{{ url('/closed-cases') }}"><i class="icon-file-locked"></i> Closed cases</a></li>
-                        <li class="submenu-cases-deleted-cases"><a href="{{ url('/deleted-cases') }}"><i class="icon-bin"></i> Deleted cases</a></li>
+                        <!-- <li class="submenu-cases-deleted-cases"><a href="{{ url('/deleted-cases') }}"><i class="icon-bin"></i> Deleted cases</a></li> -->
                     </ul>
                 </div>
             </div>
