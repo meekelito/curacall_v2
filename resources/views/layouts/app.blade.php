@@ -198,7 +198,7 @@
                   <li class="menu-messages"><a href="{{ url('/new-message') }}"><i class="icon-bubbles4"></i> <span>Messages</span></a></li>
                   <li class="menu-contacts"><a href="{{ url('/contacts') }}"><i class="icon-address-book2"></i> <span>Contacts</span></a></li>
                   <!-- <li class="menu-directory"><a href="{{ url('/directory') }}"><i class="icon-book3"></i> <span>Directory</span></a></li> -->
-                  <li class="menu-user-account-settings"><a href="{{ url('/user-account-settings') }}"><i class="icon-gear"></i> <span>Account Settings</span></a></li>
+                  <li class="menu-user-account-settings"><a href="{{ url('/user-account-settings') }}"><i class="icon-gear"></i> <span>Settings</span></a></li>
                   <li class="menu-archive-messages"><a href="{{ url('/archived-messages') }}"><i class="icon-bin"></i> <span>Archive Closed Cases</span></a></li>
                   @if( Auth::user()->role_id == 1 )
                     <li class="navigation-header"><span>Admin Console</span> <i class="icon-menu" title="Admin Console"></i></li>
