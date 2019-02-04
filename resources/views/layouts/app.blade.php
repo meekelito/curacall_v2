@@ -226,7 +226,7 @@
       <div class="sidebar sidebar-secondary sidebar-default">
           <div class="sidebar-content">
             <!-- Actions -->
-            <div class="sidebar-category">
+            <!-- <div class="sidebar-category">
               <div class="category-title">
                 <span>Action</span>
                 <ul class="icons-list">
@@ -237,7 +237,7 @@
               <div class="category-content"> 
                 <a href="{{ url('/new-message') }}" class="btn bg-primary btn-rounded btn-block btn-xs">New message</a>
               </div>
-            </div>
+            </div> -->
             <!-- /actions -->
 
             <!-- Sub navigation -->
