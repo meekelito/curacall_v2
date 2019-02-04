@@ -5,13 +5,13 @@
     <div class="page-header page-header-default">
         <div class="page-header-content">
              <div class="page-title">
-            <h4><i class="icon-arrow-left52 position-left"></i> <span class="text-semibold">Archived</span> - Messages</h4>
+            <h4><i class="icon-arrow-left52 position-left"></i> <span class="text-semibold">Archived</span> - Cases</h4>
         </div>
         </div>
         <div class="breadcrumb-line">
             <ul class="breadcrumb">
                 <li><a href="#"><i class="icon-home2 position-left"></i> Home</a></li>
-                <li class="active">Archived Messages</li>
+                <li class="active">Archived Cases</li>
             </ul>
         </div>
     </div>
