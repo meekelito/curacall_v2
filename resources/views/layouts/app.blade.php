@@ -45,12 +45,12 @@
 	<style type="text/css">
 	 	.navbar-inverse {
 	    /*background-color: #0094BA;*/
-      background-color: red;
-	    border-color: #0094BA;
+      background-color: #FF9933;
+	    /*border-color: #0094BA;*/
 	  }
 	  .sidebar-main{
 	    /*background-color: #035B70;*/
-      background-color: #002b58 !important;
+      background-color: #333366 !important;
 	  }
     .page-container{
       min-height: 910px !important;
