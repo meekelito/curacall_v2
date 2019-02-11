@@ -48,7 +48,8 @@
 	    border-color: #0094BA;
 	  }
 	  .sidebar-main{
-	    background-color: #035B70;
+	    /*background-color: #035B70;*/
+      background-color: #002b58 !important;
 	  }
     .page-container{
       min-height: 910px !important;
