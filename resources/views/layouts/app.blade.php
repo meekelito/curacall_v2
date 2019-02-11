@@ -44,7 +44,8 @@
 	<!-- /theme JS files -->
 	<style type="text/css">
 	 	.navbar-inverse {
-	    background-color: #0094BA;
+	    /*background-color: #0094BA;*/
+      background-color: red;
 	    border-color: #0094BA;
 	  }
 	  .sidebar-main{
