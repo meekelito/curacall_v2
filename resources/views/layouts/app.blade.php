@@ -44,13 +44,11 @@
 	<!-- /theme JS files -->
 	<style type="text/css">
 	 	.navbar-inverse {
-	    /*background-color: #0094BA;*/
-      background-color: #FF9933;
-	    /*border-color: #0094BA;*/
+	    background-color: #0094BA;
+	    border-color: #0094BA;
 	  }
 	  .sidebar-main{
-	    /*background-color: #035B70;*/
-      background-color: #333366 !important;
+	    background-color: #035B70;
 	  }
     .page-container{
       min-height: 910px !important;
