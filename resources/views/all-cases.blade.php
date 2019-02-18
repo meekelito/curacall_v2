@@ -55,10 +55,10 @@
             <div class="navbar-collapse collapse" id="inbox-toolbar-toggle-single">
 
 
-                <div class="btn-group navbar-btn">
+                <!-- <div class="btn-group navbar-btn">
                     <a href="{{ url('/new-message') }}" type="button" class="btn btn-default"><i class="icon-pencil7"></i> <span class="hidden-xs position-right">New</span></a>
                     <button type="button" class="btn btn-default"><i class="icon-bin"></i> <span class="hidden-xs position-right">Delete</span></button>
-                </div>
+                </div> -->
 
                 <div class="navbar-right">
                     <p class="navbar-text"><span class="text-semibold">0</span> of <span class="text-semibold">0</span></p>
