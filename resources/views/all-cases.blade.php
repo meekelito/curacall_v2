@@ -30,7 +30,7 @@
 
   <div class="breadcrumb-line">
     <ul class="breadcrumb">
-      <li><a href="#l"><i class="icon-home2 position-left"></i> Home</a></li>
+      <li><a href="#l"><i class="icon-home2 position-left"></i> Homes</a></li>
       <li><a href="#">Cases</a></li>
       <li class="active">All cases</li>
     </ul>
