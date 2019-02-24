@@ -33,7 +33,7 @@
 </div>
 <!-- /page header -->
 
-<div class="col-lg-12">
+<div class="content">
   <div class="panel panel-flat">
     <div class="panel-body">
       <form class="form-horizontal" id="form-message"  method="POST" action="{{ url('create-room') }}">

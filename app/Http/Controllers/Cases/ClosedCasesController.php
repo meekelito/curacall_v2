@@ -15,7 +15,10 @@ class ClosedCasesController extends Controller
 {
   public function index()
   {
-  	$cases = Cases::where('status','closed')->get();
-    return view( 'closed-cases',[ 'cases' => $cases ] );
+    $cases = Cases::where('status',3)->orderBy('id','desc')->get();
+  	$closed_count = Cases::select(DB::raw('count(*) as total'))
+											  	->where('status',3)
+											  	->get();						  	
+    return view( 'closed-cases',[ 'cases' => $cases,'closed_count' => $closed_count[0] ] );
   }
 }

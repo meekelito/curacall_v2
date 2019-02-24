@@ -17,6 +17,7 @@
 </div>
 <!-- /page header -->
 <div class="content">
+  <div class="row">
   <div class="col-lg-8">
     <div class="panel panel-flat">
       <div class="panel-body" id="message-container"> 
@@ -69,6 +70,7 @@
       </ul>
     </div>
     <!-- /collapsible list -->
+  </div>
   </div>
 </div>
 @endsection

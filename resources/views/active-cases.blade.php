@@ -8,103 +8,89 @@
 @section('content')
 <!-- Page header -->
 <div class="page-header page-header-default">
-    <div class="page-header-content">
-        <div class="page-title">
-            <h4><i class="icon-arrow-left52 position-left"></i> <span class="text-semibold">Cases</span> - List</h4>
-        </div>
-
-        <div class="heading-elements">
-            <form class="heading-form" action="#">
-                <div class="form-group">
-                    <div class="has-feedback">
-                        <input type="search" class="form-control" placeholder="Search cases">
-                        <div class="form-control-feedback">
-                            <i class="icon-search4 text-size-small text-muted"></i>
-                        </div>
-                    </div>
-                </div>
-            </form>
-        </div>
+  <div class="page-header-content">
+    <div class="page-title">
+      <h4><i class="icon-arrow-left52 position-left"></i> <span class="text-semibold">Cases</span> - List</h4>
     </div>
 
-    <div class="breadcrumb-line">
-        <ul class="breadcrumb">
-            <li><a href="#l"><i class="icon-home2 position-left"></i> Home</a></li>
-            <li><a href="#">Cases</a></li>
-            <li class="active">Active cases</li>
-        </ul>
+    <div class="heading-elements">
+      <form class="heading-form" action="#">
+        <div class="form-group">
+          <div class="has-feedback">
+            <input type="search" class="form-control" placeholder="Search cases">
+            <div class="form-control-feedback">
+              <i class="icon-search4 text-size-small text-muted"></i>
+            </div>
+          </div>
+        </div>
+      </form>
     </div>
+  </div>
+
+  <div class="breadcrumb-line">
+    <ul class="breadcrumb">
+      <li><a href="#l"><i class="icon-home2 position-left"></i> Home</a></li>
+      <li><a href="#">Cases</a></li>
+      <li class="active">Active cases</li>
+    </ul>
+  </div>
 </div>
 <!-- /page header -->
-
-<div class="col-lg-12">
-    <!-- Single line -->
-    <div class="panel panel-white">
-
-        <div class="panel-toolbar panel-toolbar-inbox">
-            <div class="navbar navbar-default">
-                <ul class="nav navbar-nav visible-xs-block no-border">
-                    <li>
-                        <a class="text-center collapsed" data-toggle="collapse" data-target="#inbox-toolbar-toggle-single">
-                            <i class="icon-circle-down2"></i>
-                        </a>
-                    </li>
-                </ul>
-
-                <div class="navbar-collapse collapse" id="inbox-toolbar-toggle-single">
-
-
-                    <!-- <div class="btn-group navbar-btn">
-                         <a href="{{ url('/new-message') }}" type="button" class="btn btn-default"><i class="icon-pencil7"></i> <span class="hidden-xs position-right">New</span></a>
-                        <button type="button" class="btn btn-default"><i class="icon-bin"></i> <span class="hidden-xs position-right">Delete</span></button>
-                    </div> -->
-
-                    <div class="navbar-right">
-                        <p class="navbar-text"><span class="text-semibold">0</span> of <span class="text-semibold">0</span></p>
-                        <div class="btn-group navbar-left navbar-btn">
-                            <button type="button" class="btn btn-default btn-icon disabled"><i class="icon-arrow-left12"></i></button>
-                            <button type="button" class="btn btn-default btn-icon disabled"><i class="icon-arrow-right13"></i></button>
-                        </div>
-                    </div>
+<div class="content">
+  <div class="panel panel-flat">
+    <div class="table-responsive">
+      <table class="table text-nowrap">
+        <thead>
+          <tr>
+            <th style="width: 50px">Sitting Time</th>
+            <th style="width: 150px;">User</th>
+            <th>Description</th>
+            <th class="text-center" style="width: 20px;"><i class="icon-arrow-down12"></i></th>
+          </tr>
+        </thead>
+        <tbody>      
+          <tr class="active border-double">
+            <td colspan="3">Active cases</td>
+            <td class="text-right">
+              <span class="badge bg-blue">{{ $active_count->total }}</span>
+            </td>
+          </tr>
+          @forelse($cases as $row)    
+            <tr>
+              <td class="text-center">
+                <h6 class="no-margin">20 <small class="display-block text-size-small no-margin">hours</small></h6>
+              </td>
+              <td>
+                <div class="media-body">
+                  <a href="{{ url('/case',$row->id) }}" class="display-inline-block text-default text-semibold letter-icon-title">{{ $row->sender_fullname }}</a>
+                  <div class="text-muted text-size-small"><span class="status-mark border-blue position-left"></span> Active</div>
                 </div>
-            </div>
-        </div>
-       
-        
-        <div class="table-responsive">
-            <table class="table table-inbox">
-              <tbody data-link="row" class="rowlink">
-                @forelse($cases as $row)
-                  <tr class="unread" >
-                      <td class="table-inbox-checkbox rowlink-skip">
-                          <input type="checkbox" class="styled">
-                      </td>
-                      <td class="table-inbox-name">
-                          <a class="pjax-link" data-pjax="#content"> 
-                              <div class="letter-icon-title text-default">Senders Name</div>
-                          </a>
-                      </td>
-                      <td class="table-inbox-message">
-                          <span class="table-inbox-subject">{{ $row->case_message }}</span>
-                      </td>
-                      <td class="table-inbox-time">
-                      @if(!empty($row->created_at))
-                          @if( date('Y-m-d') == date('Y-m-d', strtotime($row->created_at)))
-                              {{  date_format($row->created_at,"h:i a") }}
-                          @else
-                              {{  date_format($row->created_at,"M d") }}
-                          @endif
-                      @endif
-                      </td>
-                  </tr>
-                  @empty
-                  <tr class="unread"><td>No active case(s) found.</td></tr>
-                  @endforelse
-              </tbody>
-          </table>
-        </div>
+              </td>
+              <td>
+                <a href="{{ url('/case',$row->id) }}" class="text-default display-inline-block">
+                  <span class="text-semibold">[#0001] Call type</span>
+                  <span class="display-block text-muted">Full message of the case...</span>
+                </a>
+              </td>
+              <td class="text-center">
+                <span class="text-muted">
+                  @if(!empty($row->created_at))
+                    @if( date('Y-m-d') == date('Y-m-d', strtotime($row->created_at)))
+                        {{  date_format($row->created_at,"h:i a") }}
+                    @else
+                        {{  date_format($row->created_at,"M d") }}
+                    @endif
+                  @endif
+                </span>
+              </td>
+            </tr>
+          @empty
+          <tr class="unread"><td>No active case(s) found.</td></tr>
+          @endforelse
+        </tbody>
+      </table>
     </div>
-    <!-- /single line -->
+  </div>
 </div>
 @endsection  
 

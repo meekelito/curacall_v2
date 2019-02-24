@@ -38,6 +38,8 @@ Route::group(['middleware' => array('auth')], function () {
 	Route::get('closed-cases','Cases\ClosedCasesController@index');
 	Route::get('deleted-cases','Cases\DeletedCasesController@index');
 
+    Route::get('case/{id}','Cases\NewCaseController@index');
+
 	
 	Route::get('contacts','Contacts\ContactsController@index');
 	Route::get('contacts/fetch-contacts','Contacts\ContactsController@fetchContacts');
