@@ -24,8 +24,13 @@ class NewCaseController extends Controller
     return view('components.cases.forward-case-md',[ 'users'=>$users ]); 
   }
 
-   public function getModalCloseCase() 
+  public function getModalCloseCase() 
   {							 
     return view('components.cases.close-case-md'); 
+  }
+
+  public function getModalAddNote() 
+  {							 
+    return view('components.cases.add-note-md'); 
   }
 }

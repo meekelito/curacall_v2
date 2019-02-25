@@ -87,6 +87,11 @@
       <div class="panel panel-flat">
         <div class="panel-heading">
           <h5 class="panel-title">Notes</h5>
+          <div class="heading-elements">
+            <div class="btn-group navbar-btn">
+              <button type="button" class="btn btn-primary btn-icon btn-rounded btn-sm btn-add-note" title="Add note(s)"><i class="icon-plus3"></i></button>
+            </div>
+          </div>
         </div>
         <table class="table">
           <tr><td colspan="2">No note(s) found.</td></tr>
@@ -137,6 +142,28 @@
     $.ajax({ 
       type: "POST", 
       url: "{{ url('close-case-md') }}", 
+      data: { 
+        _token : '{{ csrf_token() }}'
+      },
+      success: function (data) {  
+        $(".content-data-case").html( data );
+        $("#modal-case").modal('show');
+      },
+      error: function (data){
+        swal({
+          title: "Oops..!",
+          text: "No connection could be made because the target machine actively refused it. Please refresh the browser and try again.",
+          confirmButtonColor: "#EF5350",
+          type: "error"
+        });
+      }
+    });
+  });
+
+  $(".btn-add-note").click(function(){
+    $.ajax({ 
+      type: "POST",  
+      url: "{{ url('add-note-md') }}", 
       data: { 
         _token : '{{ csrf_token() }}'
       },
