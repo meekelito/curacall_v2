@@ -42,6 +42,12 @@
       <div class="panel panel-flat">
         <div class="panel-heading">
           <h5 class="panel-title">Case Information</h5>
+          <div class="heading-elements">
+            <div class="btn-group navbar-btn">
+              <a href="#" class="btn btn-default"><i class="icon-forward"></i> <span class="hidden-xs position-right">Forward</span></a>
+              <a href="#" class="btn btn-default"><i class="icon-checkmark4"></i> <span class="hidden-xs position-right">Close</span></a>
+            </div>
+          </div>
         </div>
         
         <table class="table"> 
@@ -81,6 +87,9 @@
         <div class="panel-heading">
           <h5 class="panel-title">Notes</h5>
         </div>
+        <table class="table">
+          <tr><td colspan="2">No note(s) found.</td></tr>
+        </table>
         
       </div>
     </div>
