@@ -123,6 +123,12 @@
       data: { 
         _token : '{{ csrf_token() }}'
       },
+      beforeSend: function(){
+          $('body').addClass('wait-pointer');
+        },
+        complete: function(){
+          $('body').removeClass('wait-pointer');
+        },
       success: function (data) {  
         $(".content-data-case").html( data );
         $("#modal-case").modal('show');
@@ -145,6 +151,12 @@
       data: { 
         _token : '{{ csrf_token() }}'
       },
+      beforeSend: function(){
+          $('body').addClass('wait-pointer');
+        },
+        complete: function(){
+          $('body').removeClass('wait-pointer');
+        },
       success: function (data) {  
         $(".content-data-case").html( data );
         $("#modal-case").modal('show');
@@ -167,6 +179,12 @@
       data: { 
         _token : '{{ csrf_token() }}'
       },
+      beforeSend: function(){
+          $('body').addClass('wait-pointer');
+        },
+        complete: function(){
+          $('body').removeClass('wait-pointer');
+        },
       success: function (data) {  
         $(".content-data-case").html( data );
         $("#modal-case").modal('show');
