@@ -44,12 +44,12 @@
           <h5 class="panel-title">Case Information</h5>
           <div class="heading-elements">
             <div class="btn-group navbar-btn">
-              <a href="#" class="btn btn-default"><i class="icon-forward"></i> <span class="hidden-xs position-right">Forward</span></a>
-              <a href="#" class="btn btn-default"><i class="icon-checkmark4"></i> <span class="hidden-xs position-right">Close</span></a>
+              <a class="btn btn-default btn-forward"><i class="icon-forward"></i> <span class="hidden-xs position-right">Forward</span></a>
+              <a class="btn btn-default btn-close"><i class="icon-checkmark4"></i> <span class="hidden-xs position-right">Close</span></a>
             </div>
           </div>
         </div>
-        
+        <div style="height: 600px !important; overflow-y: scroll;">
         <table class="table"> 
           <tr class="bg-blue"><td colspan="2">Caller Information</td></tr>
           <tr><td width="200">First Name:</td><td>Tara</td></tr>
@@ -79,6 +79,7 @@
           <tr><td>Created By:</td><td>Kristina Valerio</td></tr>
           <tr><td>Case Sent Date/Time:</td><td>11/30/2018 02:37 PM</td></tr>
         </table>
+        </div>
 
       </div>
     </div>
@@ -95,14 +96,64 @@
     </div>
   </div>
 </div>
+
+<div id="modal-case" class="modal fade" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog">
+    <div class="modal-content content-data-case">
+
+    </div>
+  </div>
+</div>
 @endsection  
 
 @section('script')
 <script type="text/javascript">
   $(".menu-curacall li").removeClass("active");
-  $(".menu-cases").addClass('active');
-  // $(".submenu-curacall li").removeClass("active");
-  // $(".submenu-cases-all-cases").addClass('active');
+  $(".menu-cases").addClass('active'); 
+
+  $(".btn-forward").click(function(){
+    $.ajax({ 
+      type: "POST", 
+      url: "{{ url('forward-case-md') }}", 
+      data: { 
+        _token : '{{ csrf_token() }}'
+      },
+      success: function (data) {  
+        $(".content-data-case").html( data );
+        $("#modal-case").modal('show');
+      },
+      error: function (data){
+        swal({
+          title: "Oops..!",
+          text: "No connection could be made because the target machine actively refused it. Please refresh the browser and try again.",
+          confirmButtonColor: "#EF5350",
+          type: "error"
+        });
+      }
+    });
+  });
+
+  $(".btn-close").click(function(){
+    $.ajax({ 
+      type: "POST", 
+      url: "{{ url('close-case-md') }}", 
+      data: { 
+        _token : '{{ csrf_token() }}'
+      },
+      success: function (data) {  
+        $(".content-data-case").html( data );
+        $("#modal-case").modal('show');
+      },
+      error: function (data){
+        swal({
+          title: "Oops..!",
+          text: "No connection could be made because the target machine actively refused it. Please refresh the browser and try again.",
+          confirmButtonColor: "#EF5350",
+          type: "error"
+        });
+      }
+    });
+  });
 </script>
 
 @endsection 

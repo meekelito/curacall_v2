@@ -39,6 +39,8 @@ Route::group(['middleware' => array('auth')], function () {
 	Route::get('deleted-cases','Cases\DeletedCasesController@index');
 
     Route::get('case/{id}','Cases\NewCaseController@index');
+    Route::post('forward-case-md','Cases\NewCaseController@getModalForwardCase');
+    Route::post('close-case-md','Cases\NewCaseController@getModalCloseCase');
 
 	
 	Route::get('contacts','Contacts\ContactsController@index');
