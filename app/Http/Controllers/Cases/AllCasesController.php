@@ -11,7 +11,7 @@ class AllCasesController extends Controller
 {
   public function index() 
   {
-  	$cases = Cases::orderBy('status')->orderBy('id','desc')->get();
+  	$cases = Cases::orderBy('status')->orderBy('id')->get();
   	$active_count = Cases::select(DB::raw('count(*) as total'))
 											  	->where('status',1)
 											  	->get();
