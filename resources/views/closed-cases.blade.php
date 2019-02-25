@@ -62,13 +62,13 @@
               </td>
               <td>
                 <div class="media-body">
-                  <a href="{{ url('/case',$row->id) }}" class="display-inline-block text-default letter-icon-title">Katleen Jensen</a>
+                  <a href="{{ url('/case',$row->id) }}" class="display-inline-block text-default letter-icon-title">{{ $row->sender_fullname }}</a>
                   <div class="text-muted text-size-small"><span class="status-mark border-success position-left"></span> Closed</div>
                 </div>
               </td>
               <td>
                 <a href="{{ url('/case',$row->id) }}" class="text-default display-inline-block">
-                  <span>[#0003] Call type</span>
+                  <span>[#{{ $row->case_id }}] Call type</span>
                   <span class="display-block text-muted">Full message of the case...</span>
                 </a>
               </td>

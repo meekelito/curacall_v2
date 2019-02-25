@@ -1,6 +1,6 @@
 <div class="modal-header bg-primary">
 	<button type="button" class="close" data-dismiss="modal">&times;</button>
-	<h4 class="modal-title">Add note [#0001]</h4>
+	<h4 class="modal-title">Add note</h4>
 </div>
 <form class="form-horizontal" id="form-status-update">
 	{{ csrf_field() }}

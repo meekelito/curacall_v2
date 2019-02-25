@@ -68,7 +68,7 @@
               </td>
               <td>
                 <a href="{{ url('/case',$row->id) }}" class="text-default display-inline-block">
-                  <span class="text-semibold">[#0001] Call type</span>
+                  <span class="text-semibold">[#{{ $row->case_id }}] Call type</span>
                   <span class="display-block text-muted">Full message of the case...</span>
                 </a>
               </td>
