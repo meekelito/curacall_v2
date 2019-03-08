@@ -11,10 +11,19 @@ class ActiveCasesController extends Controller
 {
   public function index()
   {
-    $cases = Cases::where('status',1)->orderBy('id','desc')->get();
-  	$active_count = Cases::select(DB::raw('count(*) as total'))
-											  	->where('status',1)
-											  	->get();						  	
+    $cases = Cases::Join('case_participants AS b','cases.case_id','=','b.case_id')
+  						->where('b.user_id',Auth::user()->id)
+  						->where('cases.status',1)
+  						->orderBy('cases.id','DESC')
+  						->select('cases.id','cases.case_id','cases.sender_fullname','cases.status','cases.created_at')
+  						->get();
+
+		$active_count = Cases::Join('case_participants AS b','cases.case_id','=','b.case_id')
+									->where('b.user_id',Auth::user()->id)
+									->where('cases.status',1)
+									->select(DB::raw('count(cases.id) as total'))
+				  				->get();		
+				  							  	
     return view( 'active-cases',[ 'cases' => $cases,'active_count' => $active_count[0] ] );
   }
 }

@@ -11,11 +11,18 @@ class PendingCasesController extends Controller
 {
   public function index()
   {
+		$cases = Cases::Join('case_participants AS b','cases.case_id','=','b.case_id')
+  						->where('b.user_id',Auth::user()->id)
+  						->where('cases.status',2)
+  						->orderBy('cases.id','DESC')
+  						->select('cases.id','cases.case_id','cases.sender_fullname','cases.status','cases.created_at')
+  						->get();
 
-    $cases = Cases::where('status',2)->orderBy('id','desc')->get();
-  	$pending_count = Cases::select(DB::raw('count(*) as total'))
-											  	->where('status',2)
-											  	->get();						  	
+		$pending_count = Cases::Join('case_participants AS b','cases.case_id','=','b.case_id')
+									->where('b.user_id',Auth::user()->id)
+									->where('cases.status',2)
+									->select(DB::raw('count(cases.id) as total'))
+				  				->get();				  	
     return view( 'pending-cases',[ 'cases' => $cases,'pending_count' => $pending_count[0] ] );
   }
 }

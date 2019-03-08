@@ -62,12 +62,12 @@
               </td>
               <td>
                 <div class="media-body">
-                  <a href="{{ url('/case',$row->id) }}" class="display-inline-block text-default">{{ $row->sender_fullname }}</a>
+                  <a href="{{ url('/cases/case_id',$row->id) }}" class="display-inline-block text-default">{{ $row->sender_fullname }}</a>
                   <div class="text-muted text-size-small"><span class="status-mark border-warning position-left"></span> Pending</div>
                 </div>
               </td>
               <td>
-                <a href="{{ url('/case',$row->id) }}" class="text-default display-inline-block">
+                <a href="{{ url('/cases/case_id',$row->id) }}" class="text-default display-inline-block">
                   <span>[#{{ $row->case_id }}] Call type</span>
                   <span class="display-block text-muted">Full message of the case...</span>
                 </a>
@@ -85,7 +85,7 @@
               </td>
             </tr>
           @empty
-          <tr class="unread"><td>No pending case(s) found.</td></tr>
+          <tr class="unread"><td colspan="4">No pending case(s) found.</td></tr>
           @endforelse
         </tbody>
       </table>

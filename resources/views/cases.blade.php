@@ -43,38 +43,43 @@
         <div class="panel-heading">
           <h5 class="panel-title">Case Information</h5>
           <div class="heading-elements">
-            <div class="btn-group navbar-btn">
-              <a class="btn btn-default btn-forward"><i class="icon-forward"></i> <span class="hidden-xs position-right">Forward</span></a>
-              <a class="btn btn-default btn-close"><i class="icon-checkmark4"></i> <span class="hidden-xs position-right">Close</span></a>
+            <div id="case_open" @if( $case_status != 3 ) class="show" @else class="hidden" @endif>
+              <div class="btn-group navbar-btn btn-actions">
+                <a class="btn btn-default btn-forward"><i class="icon-forward"></i> <span class="hidden-xs position-right">Forward</span></a>
+                <a class="btn btn-default btn-close"><i class="icon-checkmark4"></i> <span class="hidden-xs position-right">Close</span></a>
+              </div>
+            </div>
+            <div id="case_closed" @if( $case_status == 3 ) class="show" @else class="hidden" @endif>
+              <a class="btn btn-default btn-reopen"><i class="icon-checkmark4"></i> <span class="hidden-xs position-right">Re-Open</span></a>
             </div>
           </div>
         </div>
         <div style="height: 600px !important; overflow-y: scroll;">
         <table class="table"> 
-          <tr class="bg-blue"><td colspan="2">Caller Information</td></tr>
+          <tr class="active"><td colspan="2">Caller Information</td></tr>
           <tr><td width="200">First Name:</td><td>Tara</td></tr>
           <tr><td>Last Name:</td><td>Davis</td></tr>
           <tr><td>Caller Type:</td><td>Caregiver</td></tr>
-          <tr class="bg-blue"><td colspan="2">Type of Caregiver Home Health Aide (HHA)</td></tr>
+          <tr class="active"><td colspan="2">Type of Caregiver Home Health Aide (HHA)</td></tr>
           <tr><td>Caller Telephone Number:</td><td>212-098-7654</td></tr>
           <tr><td>Is Hospital Related:</td><td>No</td></tr>
           <tr><td>Is Clock-in Code Available:</td><td>Does Not Know</td></tr>
-          <tr class="bg-blue"><td colspan="2">Call Information</td></tr>
+          <tr class="active"><td colspan="2">Call Information</td></tr>
           <tr><td>Call Type:</td><td>Office; Payroll</td></tr>
           <tr><td>Payroll concern:</td><td>Was not paid Correct Amount</td></tr>
           <tr><td>Action:</td><td>Take a Message and Send Email</td></tr>
-          <tr class="bg-blue"><td colspan="2">Caregiver Information</td></tr>
+          <tr class="active"><td colspan="2">Caregiver Information</td></tr>
           <tr><td>Type of Caregiver:</td><td>Home Health Aide (HHA)</td></tr>
           <tr><td>First Name:</td><td>Tara</td></tr>
           <tr><td>Last Name:</td><td>Davis</td></tr>
           <tr><td>Telephone Number:</td><td>212-098-7654</td></tr>
           <tr><td>Provide start time of shift:</td><td>Not Applicable</td></tr>
-          <tr class="bg-blue"><td colspan="2">Other Information</td></tr>
+          <tr class="active"><td colspan="2">Other Information</td></tr>
           <tr><td>Full Message:</td><td>HHA called and wants to speak with Payroll in regards to incorrect amount on her paycheck Please give her a call back as soon as possible as she is currently in the bank.</td></tr>
           <tr><td>Call Language:</td><td>Russian</td></tr>
           <tr><td>Contact Translation Company:</td><td>Yes</td></tr>
           <tr><td>Number of Calls:</td><td>1st Time</td></tr>
-          <tr class="bg-blue"><td colspan="2">Case Create</td></tr>
+          <tr class="active"><td colspan="2">Case Create</td></tr>
           <tr><td>Date/Time:</td><td>11/30/2018 02:27 PM</td></tr>
           <tr><td>Created By:</td><td>Kristina Valerio</td></tr>
           <tr><td>Case Sent Date/Time:</td><td>11/30/2018 02:37 PM</td></tr>
@@ -93,10 +98,13 @@
             </div>
           </div>
         </div>
-        <table class="table">
-          <tr><td colspan="2">No note(s) found.</td></tr>
+
+        <table class="table table-borderless" id="tbl-notes" width="100%" style="position:relative; top:-25px;">
+          
+          <tbody>
+          </tbody>
         </table>
-        
+
       </div>
     </div>
   </div>
@@ -109,12 +117,38 @@
     </div>
   </div>
 </div>
+
+<div id="modal-note" class="modal fade" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog">
+    <div class="modal-content content-data-note">
+
+    </div>
+  </div>
+</div>
 @endsection  
 
 @section('script')
 <script type="text/javascript">
-  $(".menu-curacall li").removeClass("active");
-  $(".menu-cases").addClass('active'); 
+  var dt;
+  $(document).ready(function () {
+    $(".menu-curacall li").removeClass("active");
+    $(".menu-cases").addClass('active'); 
+
+    dt = $('#tbl-notes').DataTable({
+      responsive: true,
+      processing: true,
+      serverSide: true,
+      searching: false, 
+      paging: false,
+      bInfo: false,
+      ordering: false,
+      ajax: "{{ url('case/notes/'.$case_id) }}",
+      columns: [
+        {data: 'note', orderable: false, searchable: false}
+      ] 
+    });
+
+  }); 
 
   $(".btn-forward").click(function(){
     $.ajax({ 
@@ -149,7 +183,8 @@
       type: "POST", 
       url: "{{ url('close-case-md') }}", 
       data: { 
-        _token : '{{ csrf_token() }}'
+        _token : '{{ csrf_token() }}',
+        case_id : '{{ $case_id }}'
       },
       beforeSend: function(){
           $('body').addClass('wait-pointer');
@@ -177,7 +212,8 @@
       type: "POST",  
       url: "{{ url('add-note-md') }}", 
       data: { 
-        _token : '{{ csrf_token() }}'
+        _token : '{{ csrf_token() }}',
+        case_id : '{{ $case_id }}'
       },
       beforeSend: function(){
           $('body').addClass('wait-pointer');
@@ -199,6 +235,35 @@
       }
     });
   });
+  function view_note(id){
+    $.ajax({ 
+      type: "POST", 
+      url: "{{ url('view-note-md') }}", 
+      data: { 
+        _token : '{{ csrf_token() }}',
+        id: id
+      },
+      beforeSend: function(){
+          $('body').addClass('wait-pointer');
+        },
+        complete: function(){
+          $('body').removeClass('wait-pointer');
+        },
+      success: function (data) {  
+        $(".content-data-case").html( data );
+        $("#modal-case").modal('show');
+      },
+      error: function (data){
+        swal({
+          title: "Oops..!",
+          text: "No connection could be made because the target machine actively refused it. Please refresh the browser and try again.",
+          confirmButtonColor: "#EF5350",
+          type: "error"
+        });
+      }
+    });
+  }
+
 </script>
 
 @endsection 

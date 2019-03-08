@@ -38,12 +38,16 @@ Route::group(['middleware' => array('auth')], function () {
 	Route::get('closed-cases','Cases\ClosedCasesController@index');
 	Route::get('deleted-cases','Cases\DeletedCasesController@index');
 
-    Route::get('case/{id}','Cases\NewCaseController@index');
+    Route::get('cases/case_id/{id}','Cases\NewCaseController@index');
+    Route::get('case/notes/{id}','Cases\NewCaseController@fetchNotes');
+    Route::post('case/new-note', 'Cases\NewCaseController@newNote');
+
+
     Route::post('forward-case-md','Cases\NewCaseController@getModalForwardCase');
     Route::post('close-case-md','Cases\NewCaseController@getModalCloseCase');
     Route::post('add-note-md','Cases\NewCaseController@getModalAddNote');
+    Route::post('view-note-md','Cases\NewCaseController@getModalViewNote');
 
-	
 	Route::get('contacts','Contacts\ContactsController@index');
 	Route::get('contacts/fetch-contacts','Contacts\ContactsController@fetchContacts');
 

@@ -3,6 +3,7 @@ namespace App\Http\Controllers\Cases;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Cases;
+use App\Case_participants;
 use DB;
 use Cache;
 use Auth;
@@ -11,16 +12,31 @@ class AllCasesController extends Controller
 {
   public function index() 
   {
-  	$cases = Cases::orderBy('status')->orderBy('id')->get();
-  	$active_count = Cases::select(DB::raw('count(*) as total'))
-											  	->where('status',1)
-											  	->get();
-		$pending_count = Cases::select(DB::raw('count(*) as total'))
-											  	->where('status',2)
-											  	->get();
-		$closed_count = Cases::select(DB::raw('count(*) as total'))
-											  	->where('status',3)
-											  	->get();									  	
+  	$cases = Cases::Join('case_participants AS b','cases.case_id','=','b.case_id')
+  						->where('b.user_id',Auth::user()->id)
+  						->orderBy('cases.status')
+  						->orderBy('cases.id','DESC')
+  						->select('cases.id','cases.case_id','cases.sender_fullname','cases.status','cases.created_at')
+  						->get();
+
+
+  	$active_count = Cases::Join('case_participants AS b','cases.case_id','=','b.case_id')
+  									->where('b.user_id',Auth::user()->id)
+  									->where('cases.status',1)
+  									->select(DB::raw('count(cases.id) as total'))
+					  				->get();
+
+		$pending_count = Cases::Join('case_participants AS b','cases.case_id','=','b.case_id')
+  										->where('b.user_id',Auth::user()->id)
+											->where('status',2)
+											->select(DB::raw('count(*) as total'))
+											->get();
+		$closed_count = Cases::Join('case_participants AS b','cases.case_id','=','b.case_id')
+											->where('b.user_id',Auth::user()->id)
+											->where('status',3)
+											->select(DB::raw('count(*) as total'))
+											->get();	
+
     return view( 'all-cases',[ 'cases' => $cases,'active_count' => $active_count[0],'pending_count' => $pending_count[0],'closed_count' => $closed_count[0] ] );
   }
 }

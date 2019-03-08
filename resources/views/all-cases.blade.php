@@ -73,12 +73,12 @@
                   </td>
                   <td>
                     <div class="media-body">
-                      <a href="{{ url('/case',$row->id) }}" class="display-inline-block text-default text-semibold letter-icon-title">{{ $row->sender_fullname }}</a>
+                      <a href="{{ url('/cases/case_id',$row->id) }}" class="display-inline-block text-default text-semibold letter-icon-title">{{ $row->sender_fullname }}</a>
                       <div class="text-muted text-size-small"><span class="status-mark border-blue position-left"></span> Active</div>
                     </div>
                   </td>
                   <td>
-                    <a href="{{ url('/case',$row->id) }}" class="text-default display-inline-block">
+                    <a href="{{ url('/cases/case_id',$row->id) }}" class="text-default display-inline-block">
                       <span class="text-semibold">[#{{ $row->case_id }}] Call type</span>
                       <span class="display-block text-muted">Full message of the case...</span>
                     </a>
@@ -118,12 +118,12 @@
                   </td>
                   <td>
                     <div class="media-body">
-                      <a href="{{ url('/case',$row->id) }}" class="display-inline-block text-default">{{ $row->sender_fullname }}</a>
+                      <a href="{{ url('/cases/case_id',$row->id) }}" class="display-inline-block text-default">{{ $row->sender_fullname }}</a>
                       <div class="text-muted text-size-small"><span class="status-mark border-warning position-left"></span> Pending</div>
                     </div>
                   </td>
                   <td>
-                    <a href="{{ url('/case',$row->id) }}" class="text-default display-inline-block">
+                    <a href="{{ url('/cases/case_id',$row->id) }}" class="text-default display-inline-block">
                       <span>[#{{ $row->case_id }}]  Call type</span>
                       <span class="display-block text-muted">Full message of the case...</span>
                     </a>
@@ -163,12 +163,12 @@
                   </td>
                   <td>
                     <div class="media-body">
-                      <a href="{{ url('/case',$row->id) }}" class="display-inline-block text-default letter-icon-title">{{ $row->sender_fullname }}</a>
+                      <a href="{{ url('/cases/case_id',$row->id) }}" class="display-inline-block text-default letter-icon-title">{{ $row->sender_fullname }}</a>
                       <div class="text-muted text-size-small"><span class="status-mark border-success position-left"></span> Closed</div>
                     </div>
                   </td>
                   <td>
-                    <a href="{{ url('/case',$row->id) }}" class="text-default display-inline-block">
+                    <a href="{{ url('/cases/case_id',$row->id) }}" class="text-default display-inline-block">
                       <span>[#{{ $row->case_id }}] Call type</span>
                       <span class="display-block text-muted">Full message of the case...</span>
                     </a>
@@ -194,7 +194,7 @@
           
 
           @empty
-          <tr class="unread"><td>No case(s) found.</td></tr>
+          <tr class="unread"><td colspan="4">No case(s) found.</td></tr>
           @endforelse
 
           
