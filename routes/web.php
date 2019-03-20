@@ -42,9 +42,20 @@ Route::group(['middleware' => array('auth')], function () {
     Route::get('case/notes/{id}','Cases\NewCaseController@fetchNotes');
     Route::post('case/new-note', 'Cases\NewCaseController@newNote');
 
+    Route::post('decline-case-md','Cases\NewCaseController@getModalDeclineCase');
+    Route::post('decline-case','Cases\NewCaseController@declineCase');
+
+    Route::post('accept-case','Cases\NewCaseController@acceptCase');
 
     Route::post('forward-case-md','Cases\NewCaseController@getModalForwardCase');
+    Route::post('forward-case', 'Cases\NewCaseController@forwardCase');
+
     Route::post('close-case-md','Cases\NewCaseController@getModalCloseCase');
+    Route::post('close-case', 'Cases\NewCaseController@closeCase');
+
+    Route::post('reopen-case-md','Cases\NewCaseController@getModalReOpenCase');
+    Route::post('reopen-case','Cases\NewCaseController@reopenCase');
+
     Route::post('add-note-md','Cases\NewCaseController@getModalAddNote');
     Route::post('view-note-md','Cases\NewCaseController@getModalViewNote');
 

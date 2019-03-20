@@ -10,7 +10,7 @@
       <div class="form-group">
         <label class="control-label col-lg-3 text-right">Remarks/Note :</label>
         <div class="col-lg-9">
-          <textarea class="form-control" name="note" rows="3" required></textarea>
+          <textarea class="form-control" name="note" rows="3" required autofocus></textarea>
         </div>
       </div>
     </fieldset>

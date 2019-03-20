@@ -11,7 +11,7 @@
       <div class="form-group">
         <label class="control-label col-lg-3 text-right">Remarks/Note :</label>
         <div class="col-lg-9">
-          <textarea class="form-control" name="note" rows="3" required></textarea>
+          <textarea class="form-control" name="note" rows="3" required autofocus></textarea>
         </div>
       </div>
     </fieldset>
@@ -26,7 +26,7 @@
   $( "#form-add-close-note" ).submit(function( e ) {
     $.ajax({  
       type: "POST",
-      url: "{{ url('case/new-note') }}",
+      url: "{{ url('close-case') }}",
       data: $('#form-add-close-note').serialize(),
       beforeSend: function(){
         $('body').addClass('wait-pointer');
@@ -49,7 +49,7 @@
 
           $("#case_open").removeClass("show");
           $("#case_open").addClass('hidden'); 
-          dt.search('').draw(); 
+          // dt.search('').draw(); 
           $("#modal-case").modal('hide');
         }else{
           swal({

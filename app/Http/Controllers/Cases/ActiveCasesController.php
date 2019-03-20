@@ -11,14 +11,14 @@ class ActiveCasesController extends Controller
 {
   public function index()
   {
-    $cases = Cases::Join('case_participants AS b','cases.case_id','=','b.case_id')
+    $cases = Cases::Join('case_participants AS b','cases.id','=','b.case_id')
   						->where('b.user_id',Auth::user()->id)
   						->where('cases.status',1)
   						->orderBy('cases.id','DESC')
   						->select('cases.id','cases.case_id','cases.sender_fullname','cases.status','cases.created_at')
   						->get();
 
-		$active_count = Cases::Join('case_participants AS b','cases.case_id','=','b.case_id')
+		$active_count = Cases::Join('case_participants AS b','cases.id','=','b.case_id')
 									->where('b.user_id',Auth::user()->id)
 									->where('cases.status',1)
 									->select(DB::raw('count(cases.id) as total'))

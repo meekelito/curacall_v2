@@ -20,7 +20,9 @@ class Account extends Model
         'account_info',
         'email',
         'created_by',
-        'updated_by'
+        'created_at',
+        'updated_by',
+        'updated_at'
     ];
 
 }

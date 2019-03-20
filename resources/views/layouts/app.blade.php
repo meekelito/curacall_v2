@@ -26,7 +26,9 @@
 	<script type="text/javascript" src="{{ asset('assets/js/core/libraries/jquery.min.js') }}" ></script>
 	<script type="text/javascript" src="{{ asset('assets/js/core/libraries/bootstrap.min.js') }}" ></script>
 	<script type="text/javascript" src="{{ asset('assets/js/plugins/loaders/blockui.min.js') }}" ></script>
+  <script type="text/javascript" src="{{ asset('assets/js/plugins/ui/drilldown.js') }}"></script>
   <script type="text/javascript" src="{{ asset('assets/bower_components/jquery-pjax/jquery.pjax.js') }}"></script>
+
 	<!-- /core JS files --> 
 
 	<!-- Theme JS files -->   
@@ -38,7 +40,12 @@
   <script type="text/javascript" src="{{ asset('assets/js/plugins/notifications/sweet_alert.min.js') }}"></script>
   <script type="text/javascript" src="{{ asset('assets/js/plugins/forms/selects/select2.min.js') }}"></script>
 
+  <script type="text/javascript" src="{{ asset('assets/js/plugins/ui/moment/moment.min.js') }}"></script>
+  <script type="text/javascript" src="{{ asset('assets/js/plugins/pickers/daterangepicker.js') }}"></script>
+
+
   <script type="text/javascript" src="{{ asset('assets/js/plugins/forms/styling/switch.min.js') }}" ></script> 
+  <script type="text/javascript" src="{{ asset('assets/js/plugins/visualization/echarts/echarts.js') }}"></script>
 	<script type="text/javascript" src="{{ asset('assets/js/core/app.js') }}"></script> 
 
 	<!-- /theme JS files -->
@@ -125,6 +132,7 @@
 
 						<ul class="dropdown-menu dropdown-menu-right">
 							<li><a href="{{ url('user-account-settings') }}"><i class="icon-cog5"></i> Account settings</a></li>
+              <li><a><i class="icon-question3"></i> Quick Help</a></li>
               <li>
                 <a class="dropdown-item" href="{{ route('logout') }}"
                    onclick="event.preventDefault();
