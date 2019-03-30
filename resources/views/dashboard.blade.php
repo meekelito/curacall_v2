@@ -1,6 +1,6 @@
 @extends('layouts.app')
 <style type="text/css">
-    .active-case-report{
+    /*.active-case-report{
         border: 5px solid #03a9f4;
         padding: 10px;
     }
@@ -11,7 +11,7 @@
     .closed-case-report{
         border: 5px solid #4caf50;
         padding: 10px;
-    }
+    }*/
 </style>
 @section('content')
   <div class="page-header page-header-default">
@@ -75,15 +75,15 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-sm-3 active-case-report">
+                                <div class="col-sm-3 active-case-report" style="border: 5px solid #03a9f4; padding: 10px">
                                     <span class="text-semibold" style="margin: 10px; font-size: 15px;">Active</span><br>
                                     <span class="text-semibold" style="margin: 10px; font-size: 30px;">2</span>
                                 </div>
-                                <div class="col-sm-3 pending-case-report">
+                                <div class="col-sm-3 pending-case-report" style="border: 5px solid #f44336; padding: 10px">
                                     <span class="text-semibold" style="margin: 10px; font-size: 15px;">Pending</span><br>
                                     <span class="text-semibold" style="margin: 10px; font-size: 30px;">5</span>
                                 </div>
-                                <div class="col-sm-3 closed-case-report">
+                                <div class="col-sm-3 closed-case-report" style="border: 5px solid #4caf50; padding: 10px">
                                     <span class="text-semibold" style="margin: 10px; font-size: 15px;">Closed</span><br>
                                     <span class="text-semibold" style="margin: 10px; font-size: 30px;">30</span>
                                 </div>
