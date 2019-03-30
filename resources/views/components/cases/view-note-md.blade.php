@@ -12,17 +12,17 @@
       <a>
         {{$note[0]->fname.' '.$note[0]->lname}}
         <span class="media-annotation pull-right">
-          @if(!empty($note[0]->created_at))
-            @if( date('Y-m-d') == date('Y-m-d', strtotime($note[0]->created_at)))
-                {{  date_format($note[0]->created_at,"h:i a") }}
-            @else
-                {{  date_format($note[0]->created_at,"M d") }}
-            @endif
-          @endif
+          {{date_format($note[0]->created_at,"M d,Y  h:i a")}}
         </span>
       </a>
 
-      <span class="display-block text-muted">{{$note[0]->note}}</span>
+      <span class="display-block text-muted">
+        @if($note[0]->note==null)
+          {{$note[0]->action_note}}
+        @else
+          {{$note[0]->note}}
+        @endif
+      </span>
     </div>
 
 </div>

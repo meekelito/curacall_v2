@@ -25,61 +25,41 @@ class NewCaseController extends Controller
       return redirect('all-cases');
     }
 
-    $case_info = Cases::where('id',$case_id)->get();
-
-    if( $case_info[0]->status == 1 ){
-      $res =  Case_history::updateOrCreate( ["is_visible"=>1,"status"=>1,"case_id" => $case_id,"action_note" => "Case Read", 'created_by' => Auth::user()->id ] ); 
-    }
-
-    return view( 'cases', [ 'case_id' => $case_id ] );
-  }
-
-  public function fetchCase(Request $request) 
-  { 
-
-    $case_id = $request->input('case_id');  
-    $participation = Case_participant::where('case_id',$case_id)
-                    ->where('user_id',Auth::user()->id)
-                    ->get();
-
-    if( $participation->isEmpty() ){
-      return redirect('all-cases');
-    }
-
-    $case_info = Cases::where('id',$case_id)->get();
+  	$case_info = Cases::where('id',$case_id)->get();
 
     $participants = Case_participant::leftJoin('users AS b','case_participants.user_id','=','b.id')
     ->where('case_participants.case_id',$case_id)
     ->orderBy('case_participants.ownership')
     ->get();
 
-    return view( 'components.cases.content-case', [ 'case_id' => $case_id,'case_info' => $case_info,'participation'=>$participation,'participants'=>$participants ] );
-  }
+  	if( $case_info[0]->status == 1 ){
+      $res =  Case_history::updateOrCreate( ["status"=>1,"case_id" => $case_id,"action_note" => "Case Read", 'created_by' => Auth::user()->id ] ); 
+    }
 
+    return view( 'cases', [ 'case_id' => $case_id,'case_info' => $case_info,'participation'=>$participation,'participants'=>$participants ] );
+  }
 
   public function fetchNotes($case_id) 
   {    
     $note = Case_history::leftJoin('users AS b','case_history.created_by','=','b.id')
     				->where('case_history.case_id',$case_id)
-            ->where('case_history.is_visible',1)
+            ->where('case_history.status',null)
     				->orderBy('case_history.id','DESC')
-    				->select('case_history.id','case_history.action_note','case_history.note','case_history.created_at','b.prof_img','b.lname','b.fname');
-
-
+    				->select('case_history.id','case_history.note','case_history.created_at','b.prof_img','b.lname','b.fname');
 
     return Datatables::of($note)
     ->addColumn('note',function($note){
-      $petsa = date_format($note->created_at,"M d,Y  h:i a");
+      $petsa = "";
       $content = "";
-
+      if( date('Y-m-d') == date('Y-m-d', strtotime($note->created_at))){
+        $petsa = date_format($note->created_at,"h:i a");
+      }else{
+        $petsa = date_format($note->created_at,"M d") ;
+      }
       if( strlen($note->note) >= 50){
         $content = substr($note->note, 0, 50).'...';
       }else{
         $content = $note->note;
-      }
-
-      if($note->note==null){
-        $content = $note->action_note;
       }
 
       return '<div class="media-left">
@@ -144,7 +124,7 @@ class NewCaseController extends Controller
       ->update(['ownership' => 3]);
     }
 
-    $res = Case_history::create( ["is_visible"=>1,"status"=>2,"case_id" => $request->case_id,"action_note" => "Case Accepted", 'created_by' => Auth::user()->id ] ); 
+    $res = Case_history::create( ["status"=>2,"case_id" => $request->case_id,"action_note" => "Case Accepted", 'created_by' => Auth::user()->id ] ); 
 
     if($res){
       return json_encode(array(
@@ -209,7 +189,7 @@ class NewCaseController extends Controller
     //   ->update(['ownership' => 3]);  
     // }
     
-    $res = Case_history::create( ["is_visible"=>1,"status"=>4,"case_id" => $request->case_id,"action_note" => "Case Declined", 'created_by' => Auth::user()->id ] ); 
+    $res = Case_history::create( ["status"=>4,"case_id" => $request->case_id,"action_note" => "Case Declined", 'created_by' => Auth::user()->id ] ); 
 
     
 
@@ -261,7 +241,7 @@ class NewCaseController extends Controller
   {            
     $note = Case_history::leftJoin('users AS b','case_history.created_by','=','b.id')
             ->where('case_history.id',$request->input('id'))
-            ->select('case_history.id','case_history.action_note','case_history.note','case_history.created_at','b.prof_img','b.lname','b.fname')
+            ->select('case_history.id','case_history.note','case_history.created_at','b.prof_img','b.lname','b.fname')
             ->get();
 
     return view('components.cases.view-note-md',['note' => $note]); 
@@ -294,7 +274,7 @@ class NewCaseController extends Controller
       $res->save();
     }
 
-  	$res = Case_history::create( $request->all()+[ "is_visible"=>1,'created_by' => Auth::user()->id ] ); 
+  	$res = Case_history::create( $request->all()+[ 'created_by' => Auth::user()->id ] ); 
 
   	if($res){
   		return json_encode(array(

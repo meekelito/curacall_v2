@@ -8,6 +8,27 @@
 		<h6 class="text-semibold">Account information</h6>
 		<div class="form-group form-group-xs">
 			<label class="control-label col-lg-4 text-right">
+				<span class="text-danger">*</span> Group :
+			</label>
+			<div class="col-lg-8">
+				<select class="form-control" name="group_id" required>
+					<option></option>
+					@foreach($group as $row)
+					<option value="{{ $row->id }}">{{ $row->group_name }}</option>
+					@endforeach
+				</select>
+			</div>
+		</div>
+		<div class="form-group form-group-xs">
+			<label class="control-label col-lg-4 text-right">
+				<span class="text-danger">*</span> Account ID :
+			</label>
+			<div class="col-lg-8">
+				<input type="text" class="form-control" name="account_id" required>
+			</div>
+		</div>
+		<div class="form-group form-group-xs">
+			<label class="control-label col-lg-4 text-right">
 				<span class="text-danger">*</span> Account Name :
 			</label>
 			<div class="col-lg-8">

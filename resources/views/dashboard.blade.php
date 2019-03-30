@@ -17,23 +17,49 @@
 
   <div class="content">
   	<div class="panel panel-flat">
-        
         <div class="panel-body">
-            <div class="container-fluid">
-                <div class="form-group form-group-xs col-sm-4">
-                    <select class="form-control">
-                        <option>Select Account</option>
-                        @foreach($account as $row)
-                        <option>{{ $row->account_name }}</option>
-                        @endforeach
-                    </select>
+            <div class="tabbable nav-tabs-vertical nav-tabs-left">
+                <ul class="nav nav-tabs nav-tabs-highlight" style="width: 200px;">
+                    <li class="active"><a href="#left-tab1" data-toggle="tab"><i class="icon-office position-left"></i> Accounts </a></li>
+                    <li><a href="#left-tab2" data-toggle="tab"><i class="icon-headset position-left"></i> On call</a></li>
+                </ul>
+
+                <div class="tab-content">
+                    <div class="tab-pane active has-padding" id="left-tab1">
+                        <div class="container-fluid">
+                            <div class="form-group form-group-xs col-sm-4">
+                                <select class="form-control">
+                                    <option>Select Account</option>
+                                    @foreach($account as $row)
+                                    <option>{{ $row->account_name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="form-group form-group-xs col-sm-4">
+                                <input type="text" class="form-control daterange-basic" value="01/01/2019 - {{ date ( 'mm/dd/Y' ) }}">
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                          <div class="chart has-fixed-height has-minimum-width" id="rose_diagram_visible"></div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane has-padding" id="left-tab2">
+                        <div class="container-fluid">
+                            <div class="form-group form-group-xs col-sm-4">
+                                <select class="form-control">
+                                    <option>Select On call</option>
+                                    @foreach($users as $row) 
+                                    <option>{{ $row->fname.' '.$row->lname  }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="form-group form-group-xs col-sm-4">
+                                <input type="text" class="form-control daterange-basic" value="01/01/2019 - {{ date ( 'mm/dd/Y' ) }}">
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="form-group form-group-xs col-sm-4">
-                    <input type="text" class="form-control daterange-basic" value="01/01/2019 - 03/12/2019">
-                </div>
-            </div>
-            <div class="chart-container">
-              <div class="chart has-fixed-height has-minimum-width" id="rose_diagram_visible"></div>
             </div>
         </div>
 	</div>
@@ -110,12 +136,12 @@ $(function () {
                 },
 
                 // Add legend
-                legend: {
-                    x: 'left',
-                    y: 'top',
-                    orient: 'vertical',
-                    data: ['A & J Home Care','Ameribest Home Care','Americare New York','Better Home Care','HCS Home Health Care Services of New York','Broadway Healthcare Staffing','Summit Home Healthcare']
-                },
+                // legend: {
+                //     x: 'left',
+                //     y: 'top',
+                //     orient: 'vertical',
+                //     data: ['A & J Home Care','Ameribest Home Care','Americare New York','Better Home Care','HCS Home Health Care Services of New York','Broadway Healthcare Staffing','Summit Home Healthcare']
+                // },
 
                 // Add series
                 series: [
@@ -135,13 +161,13 @@ $(function () {
                         // sort: 'ascending',
 
                         data: [
-                            {value: 90, name: 'A & J Home Care'},
-                            {value: 80, name: 'Ameribest Home Care'},
-                            {value: 70, name: 'Americare New York'},
-                            {value: 120, name: 'Better Home Care'},
-                            {value: 66, name: 'HCS Home Health Care Services of New York'},
-                            {value: 40, name: 'Broadway Healthcare Staffing'},
-                            {value: 111, name: 'Summit Home Healthcare'}
+                            {value: 90, name: 'A & J Home Care ( 15.60% )'},
+                            {value: 80, name: 'Ameribest Home Care ( 13.86% )'},
+                            {value: 70, name: 'Americare New York ( 12.134% )'},
+                            {value: 120, name: 'Better Home Care ( 20.80% )'},
+                            {value: 66, name: 'HCS Home Health Care Services of New York ( 11.44% )'},
+                            {value: 40, name: 'Broadway Healthcare Staffing ( 6.93% )'},
+                            {value: 111, name: 'Summit Home Healthcare ( 19.24% )'}
                         ]
                     }
                 ]

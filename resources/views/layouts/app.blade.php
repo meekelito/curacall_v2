@@ -101,8 +101,8 @@
 
 		<div class="navbar-collapse collapse" id="navbar-mobile"> 
 			<ul class="nav navbar-nav">
-				<li><a class="sidebar-control sidebar-main-toggle hidden-xs"><i class="icon-paragraph-justify3"></i></a></li>
-				<li><a class="sidebar-control sidebar-secondary-hide hidden-xs hide-this-ass"><i class="icon-transmission"></i></a></li>
+
+        <li><a class="sidebar-control sidebar-main-toggle hidden-xs"><i class="icon-transmission"></i></a></li>
 			</ul>
 
 			<p class="navbar-text">
@@ -259,10 +259,10 @@
 
                 <div class="category-content no-padding">
                     <ul class="navigation navigation-alt navigation-accordion submenu-curacall">
-                        <li class="submenu-cases-all-cases"><a href="{{ url('/all-cases') }}"><i class="icon-files-empty"></i> All cases <!-- <span class="badge badge-default">5</span> --></a></li> 
-                        <li class="submenu-cases-active-cases"><a href="{{ url('/active-cases') }}"><i class="icon-file-plus"></i> Active cases <!-- <span class="badge badge-danger">3</span> --></a></li> 
-                        <li class="submenu-cases-pending-cases"><a href="{{ url('/pending-cases') }}"><i class="icon-hour-glass"></i> Pending cases <!-- <span class="badge badge-warning" style="background-color: #E4D00A; border-color:#E4D00A;">2</span> --></a></li>
-                        <li class="submenu-cases-closed-cases"><a href="{{ url('/closed-cases') }}"><i class="icon-file-locked"></i> Closed cases</a></li>
+                        <li class="submenu-cases-all-cases"><a href="{{ url('/all-cases') }}"><i class="icon-files-empty"></i> All cases <span class="badge badge-default" id="case-count-all"></span></a></li> 
+                        <li class="submenu-cases-active-cases"><a href="{{ url('/active-cases') }}"><i class="icon-file-plus"></i> Active cases <span class="badge badge-danger" style="background-color: #03a9f4; border-color: #03a9f4;" id="case-count-active"></span></a></li> 
+                        <li class="submenu-cases-pending-cases"><a href="{{ url('/pending-cases') }}"><i class="icon-hour-glass"></i> Pending cases <span class="badge badge-warning" style="background-color: #f44336; border-color: #f44336;" id="case-count-pending"></span></a></li>
+                        <li class="submenu-cases-closed-cases"><a href="{{ url('/closed-cases') }}"><i class="icon-file-locked"></i> Closed cases <span class="badge badge-warning" style="background-color: #4caf50; border-color: #4caf50;" id="case-count-closed"></span></a></li>
                         <!-- <li class="submenu-cases-deleted-cases"><a href="{{ url('/deleted-cases') }}"><i class="icon-bin"></i> Deleted cases</a></li> -->
                     </ul>
                 </div>
@@ -311,6 +311,28 @@
       });
 
     });
+    count_case();
+    function count_case() {
+      $.ajax({
+        type: "POST",
+        url: "{{ url('count-case') }}",
+        data: { 
+          _token : '{{ csrf_token() }}'
+        },
+        success: function (data) {
+          var res = $.parseJSON(data);
+          if( res.status == 1 ){
+            document.getElementById("case-count-all").innerHTML = res.all_count;
+            document.getElementById("case-count-active").innerHTML = res.active_count;
+            document.getElementById("case-count-pending").innerHTML = res.pending_count;
+            document.getElementById("case-count-closed").innerHTML = res.closed_count; 
+          }
+        },
+        error: function (data){
+          alert("No connection could be made because the target machine actively refused it. Please refresh the browser and try again.");
+        }
+      });
+    }
 
     function showLoader(){
       $("#content").block({

@@ -27,7 +27,8 @@ class AdminRolesController extends Controller
       $id = Crypt::encrypt($role->id);
       return '<a class="btn btn-success btn-xs" onclick="admin_role_md('."'$id'".')"><i class="icon-pencil4"></i></a>
       '; 
-    })->rawColumns(['action'])
+    })
+    ->rawColumns(['action'])
     ->make(true);                                                                                
   } 
 

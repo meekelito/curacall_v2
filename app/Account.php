@@ -9,6 +9,8 @@ class Account extends Model
     protected $table = 'accounts';
 
     protected $fillable = [
+        'account_id',
+        'group_id',
         'account_name',
         'address_main',
         'address_secondary',

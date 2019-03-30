@@ -43,13 +43,8 @@
             confirmButtonColor: "#66BB6A",
             type: "success"
           });  
-
-          $("#case_closed").removeClass("hidden");
-          $("#case_closed").addClass('show'); 
-
-          $("#case_open").removeClass("show");
-          $("#case_open").addClass('hidden'); 
-          // dt.search('').draw(); 
+          count_case();
+          fetchCase();
           $("#modal-case").modal('hide');
         }else{
           swal({

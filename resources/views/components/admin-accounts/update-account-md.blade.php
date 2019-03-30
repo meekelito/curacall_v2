@@ -9,6 +9,27 @@
 		<h6 class="text-semibold">Account information</h6>
 		<div class="form-group form-group-xs">
 			<label class="control-label col-lg-4 text-right">
+				<span class="text-danger">*</span> Group :
+			</label>
+			<div class="col-lg-8">
+				<select class="form-control" name="group_id" required>
+					<option value=""></option>
+					@foreach($group as $row)
+					<option value="{{ $row->id }}" @if($row->id == $data[0]->group_id ) selected @endif>{{ $row->group_name }}</option>
+					@endforeach
+				</select>
+			</div>
+		</div>
+		<div class="form-group form-group-xs">
+			<label class="control-label col-lg-4 text-right">
+				<span class="text-danger">*</span> Account ID :
+			</label>
+			<div class="col-lg-8">
+				<input type="text" class="form-control" name="account_id" value="{{ $data[0]->account_id }}" required>
+			</div>
+		</div>
+		<div class="form-group form-group-xs">
+			<label class="control-label col-lg-4 text-right">
 				<span class="text-danger">*</span> Account Name :
 			</label>
 			<div class="col-lg-8">
@@ -83,12 +104,10 @@
 				<input type="text" class="form-control" data-mask="(999) 999-9999" name="phone_secondary" value="{{ $data[0]->phone_secondary }}" required>
 			</div>
 		</div> 
-
 	</div>
 	<div class="modal-footer">
 		<button type="button" class="btn btn-link" data-dismiss="modal">Close</button>
 		<button type="submit" class="btn btn-primary">Save Changes</button>
-	</div>
 </form>
 
 <script type="text/javascript">

@@ -38,6 +38,10 @@ Route::group(['middleware' => array('auth')], function () {
 	Route::get('closed-cases','Cases\ClosedCasesController@index');
 	Route::get('deleted-cases','Cases\DeletedCasesController@index');
 
+    Route::post('count-case','Cases\NewCaseController@countCase');
+
+    Route::post('fetch-case','Cases\NewCaseController@fetchCase');
+
     Route::get('cases/case_id/{id}','Cases\NewCaseController@index');
     Route::get('case/notes/{id}','Cases\NewCaseController@fetchNotes');
     Route::post('case/new-note', 'Cases\NewCaseController@newNote');
@@ -46,6 +50,7 @@ Route::group(['middleware' => array('auth')], function () {
     Route::post('decline-case','Cases\NewCaseController@declineCase');
 
     Route::post('accept-case','Cases\NewCaseController@acceptCase');
+    Route::post('check-case','Cases\NewCaseController@checkCase');
 
     Route::post('forward-case-md','Cases\NewCaseController@getModalForwardCase');
     Route::post('forward-case', 'Cases\NewCaseController@forwardCase');
@@ -109,14 +114,19 @@ Route::group(['middleware' => array('auth')], function () {
         //index
         Route::get('admin-console/accounts','Admin\AdminAccountsController@index');
         //datatables
+        Route::get('admin/admin-account-group','Admin\AdminAccountsController@fetchAccountGroup');  
         Route::get('admin/admin-accounts','Admin\AdminAccountsController@fetchAccounts');  
         //modal add
+        Route::post('add-group-account-md','Admin\AdminAccountsController@getModalAddGroupAccount');
         Route::post('add-account-md','Admin\AdminAccountsController@getModalAddAccount');
         //modal update
+        Route::post('update-group-account-md','Admin\AdminAccountsController@getModalUpdateGroupAccount');
         Route::post('update-account-md','Admin\AdminAccountsController@getModalUpdateAccount');
         //add account
+        Route::post('admin/add-group-account','Admin\AdminAccountsController@addGroupAccount');
         Route::post('admin/add-account','Admin\AdminAccountsController@addAccount');
         //update account
+        Route::post('admin/update-group-account','Admin\AdminAccountsController@updateGroupAccount');
         Route::post('admin/update-account','Admin\AdminAccountsController@updateAccount');
         //admin console - accounts END.
     });
