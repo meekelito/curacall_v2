@@ -1,5 +1,18 @@
 @extends('layouts.app')
-
+<style type="text/css">
+    .active-case-report{
+        border: 5px solid #03a9f4;
+        padding: 10px;
+    }
+    .pending-case-report{
+        border: 5px solid #f44336;
+        padding: 10px;
+    }
+    .closed-case-report{
+        border: 5px solid #4caf50;
+        padding: 10px;
+    }
+</style>
 @section('content')
   <div class="page-header page-header-default">
     <div class="page-header-content">
@@ -20,23 +33,25 @@
         <div class="panel-body">
             <div class="tabbable nav-tabs-vertical nav-tabs-left">
                 <ul class="nav nav-tabs nav-tabs-highlight" style="width: 200px;">
-                    <li class="active"><a href="#left-tab1" data-toggle="tab"><i class="icon-office position-left"></i> Accounts </a></li>
-                    <li><a href="#left-tab2" data-toggle="tab"><i class="icon-headset position-left"></i> On call</a></li>
+                    <li><a href="#left-tab1" data-toggle="tab"><i class="icon-office position-left"></i> Accounts </a></li>
+                    <li class="active"><a href="#left-tab2" data-toggle="tab"><i class="icon-headset position-left"></i> On call</a></li>
                 </ul>
 
                 <div class="tab-content">
-                    <div class="tab-pane active has-padding" id="left-tab1">
+                    <div class="tab-pane has-padding" id="left-tab1">
                         <div class="container-fluid">
-                            <div class="form-group form-group-xs col-sm-4">
-                                <select class="form-control">
-                                    <option>Select Account</option>
-                                    @foreach($account as $row)
-                                    <option>{{ $row->account_name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="form-group form-group-xs col-sm-4">
-                                <input type="text" class="form-control daterange-basic" value="01/01/2019 - {{ date ( 'mm/dd/Y' ) }}">
+                            <div class="row">
+                                <div class="form-group form-group-xs col-sm-4">
+                                    <select class="form-control">
+                                        <option>Select Account</option>
+                                        @foreach($account as $row)
+                                        <option>{{ $row->account_name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="form-group form-group-xs col-sm-4">
+                                    <input type="text" class="form-control daterange-basic" value="01/01/2019 - {{ date ( 'mm/dd/Y' ) }}">
+                                </div>
                             </div>
                         </div>
                         <div class="chart-container">
@@ -44,18 +59,34 @@
                         </div>
                     </div>
 
-                    <div class="tab-pane has-padding" id="left-tab2">
+                    <div class="tab-pane active has-padding" id="left-tab2">
                         <div class="container-fluid">
-                            <div class="form-group form-group-xs col-sm-4">
-                                <select class="form-control">
-                                    <option>Select On call</option>
-                                    @foreach($users as $row) 
-                                    <option>{{ $row->fname.' '.$row->lname  }}</option>
-                                    @endforeach
-                                </select>
+                            <div class="row">
+                                <div class="form-group form-group-xs col-sm-4">
+                                    <select class="form-control">
+                                        <option>Select On call</option>
+                                        @foreach($users as $row) 
+                                        <option>{{ $row->fname.' '.$row->lname  }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="form-group form-group-xs col-sm-4">
+                                    <input type="text" class="form-control daterange-basic" value="{{ date ( 'mm/01/Y' ) }} - {{ date ( 'mm/dd/Y' ) }}">
+                                </div>
                             </div>
-                            <div class="form-group form-group-xs col-sm-4">
-                                <input type="text" class="form-control daterange-basic" value="01/01/2019 - {{ date ( 'mm/dd/Y' ) }}">
+                            <div class="row">
+                                <div class="col-sm-3 active-case-report">
+                                    <span class="text-semibold" style="margin: 10px; font-size: 15px;">Active</span><br>
+                                    <span class="text-semibold" style="margin: 10px; font-size: 30px;">2</span>
+                                </div>
+                                <div class="col-sm-3 pending-case-report">
+                                    <span class="text-semibold" style="margin: 10px; font-size: 15px;">Pending</span><br>
+                                    <span class="text-semibold" style="margin: 10px; font-size: 30px;">5</span>
+                                </div>
+                                <div class="col-sm-3 closed-case-report">
+                                    <span class="text-semibold" style="margin: 10px; font-size: 15px;">Closed</span><br>
+                                    <span class="text-semibold" style="margin: 10px; font-size: 30px;">30</span>
+                                </div>
                             </div>
                         </div>
                     </div>
