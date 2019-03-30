@@ -33,12 +33,12 @@
         <div class="panel-body">
             <div class="tabbable nav-tabs-vertical nav-tabs-left">
                 <ul class="nav nav-tabs nav-tabs-highlight" style="width: 200px;">
-                    <li><a href="#left-tab1" data-toggle="tab"><i class="icon-office position-left"></i> Accounts </a></li>
-                    <li class="active"><a href="#left-tab2" data-toggle="tab"><i class="icon-headset position-left"></i> On call</a></li>
+                    <li class="active"><a href="#left-tab1" data-toggle="tab"><i class="icon-office position-left"></i> Accounts </a></li>
+                    <li><a href="#left-tab2" data-toggle="tab"><i class="icon-headset position-left"></i> On call</a></li>
                 </ul>
 
                 <div class="tab-content">
-                    <div class="tab-pane has-padding" id="left-tab1">
+                    <div class="tab-pane active has-padding" id="left-tab1">
                         <div class="container-fluid">
                             <div class="row">
                                 <div class="form-group form-group-xs col-sm-4">
@@ -59,7 +59,7 @@
                         </div>
                     </div>
 
-                    <div class="tab-pane active has-padding" id="left-tab2">
+                    <div class="tab-pane has-padding" id="left-tab2">
                         <div class="container-fluid">
                             <div class="row">
                                 <div class="form-group form-group-xs col-sm-4">
