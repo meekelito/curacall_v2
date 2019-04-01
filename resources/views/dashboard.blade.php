@@ -1,17 +1,6 @@
 @extends('layouts.app')
 <style type="text/css">
-    /*.active-case-report{
-        border: 5px solid #03a9f4;
-        padding: 10px;
-    }
-    .pending-case-report{
-        border: 5px solid #f44336;
-        padding: 10px;
-    }
-    .closed-case-report{
-        border: 5px solid #4caf50;
-        padding: 10px;
-    }*/
+
 </style>
 @section('content')
   <div class="page-header page-header-default">
