@@ -6,7 +6,6 @@ use App\User;
 use App\Cases;
 use App\Case_participant;
 use App\Case_history;
-use App\Note;
 use DataTables;
 use DB;
 use Cache;
@@ -164,7 +163,7 @@ class NewCaseController extends Controller
   //decline case
   public function getModalDeclineCase(Request $request) 
   {  
-    $case_id = $request->input('case_id');      
+    $case_id = $request->case_id;      
     return view('components.cases.decline-case-md',[ 'case_id'=>$case_id ]); 
   }
 
@@ -231,7 +230,7 @@ class NewCaseController extends Controller
 
   public function getModalForwardCase(Request $request) 
   {				
-    $case_id = $request->input('case_id');	
+    $case_id = $request->case_id;	
   	$users = User::where('id','!=',Auth::user()->id)
                 ->where('status','active')
                 ->orderBy('fname') 
@@ -241,19 +240,19 @@ class NewCaseController extends Controller
   
   public function getModalCloseCase(Request $request) 
   {							 
-    $case_id = $request->input('case_id');
+    $case_id = $request->case_id;
     return view('components.cases.close-case-md',['case_id' => $case_id]); 
   }
   
   public function getModalReOpenCase(Request $request) 
   {              
-    $case_id = $request->input('case_id');
+    $case_id = $request->case_id;
     return view('components.cases.reopen-case-md',['case_id' => $case_id]); 
   }
 
   public function getModalAddNote(Request $request) 
   {							 
-  	$case_id = $request->input('case_id');
+  	$case_id = $request->case_id;
     return view('components.cases.add-note-md',['case_id' => $case_id]); 
   }
 

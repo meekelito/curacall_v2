@@ -67,6 +67,10 @@ Route::group(['middleware' => array('auth')], function () {
 	Route::get('contacts','Contacts\ContactsController@index');
 	Route::get('contacts/fetch-contacts','Contacts\ContactsController@fetchContacts');
 
+    //Reports
+    Route::post('report-account','Reports\ReportsController@getReportAccount');
+    Route::post('report-oncall','Reports\ReportsController@getReportOncall');
+
 	//Accounts Settings
 	Route::get('user-account-settings','UserAccountSettings\UserAccountSettingsController@index');
 	Route::post('user-account-settings/update-user-info','UserAccountSettings\UserAccountSettingsController@updateUser');

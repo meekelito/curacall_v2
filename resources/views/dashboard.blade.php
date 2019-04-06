@@ -1,6 +1,13 @@
 @extends('layouts.app')
 <style type="text/css">
-
+  .curacall-nav{
+    /*list-style: none;*/
+    
+  }
+/*  .curacall-nav a{
+    color: #000;
+    padding: 20px;
+  }*/
 </style>
 @section('content')
   <div class="page-header page-header-default">
@@ -20,64 +27,26 @@
   <div class="content">
   	<div class="panel panel-flat">
         <div class="panel-body">
+            <!-- <div class="col-sm-3">
+                <ul class="nav">
+                    <li class="active"><a href=""><i class="icon-office position-left"></i> Accounts </a></li>
+                    <li><a href=""><i class="icon-headset position-left"></i> On call</a></li>
+                </ul>
+            </div>
+            <div class="col-sm-9">
+                weeex
+            </div> -->
+
+
             <div class="tabbable nav-tabs-vertical nav-tabs-left">
                 <ul class="nav nav-tabs nav-tabs-highlight" style="width: 200px;">
-                    <li class="active"><a href="#left-tab1" data-toggle="tab"><i class="icon-office position-left"></i> Accounts </a></li>
-                    <li><a href="#left-tab2" data-toggle="tab"><i class="icon-headset position-left"></i> On call</a></li>
+                    <li class="active"><a data-toggle="tab" onclick="reportAccount(0)"><i class="icon-office position-left"></i> Accounts </a></li>
+                    <li><a data-toggle="tab" onclick="reportOncall('all','{{ date ( "m/01/Y" ) }} - {{ date ( "m/d/Y" ) }}')"><i class="icon-headset position-left"></i> On call</a></li>
                 </ul>
 
                 <div class="tab-content">
-                    <div class="tab-pane active has-padding" id="left-tab1">
-                        <div class="container-fluid">
-                            <div class="row">
-                                <div class="form-group form-group-xs col-sm-4">
-                                    <select class="form-control">
-                                        <option>Select Account</option>
-                                        @foreach($account as $row)
-                                        <option>{{ $row->account_name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div class="form-group form-group-xs col-sm-4">
-                                    <input type="text" class="form-control daterange-basic" value="01/01/2019 - {{ date ( 'mm/dd/Y' ) }}">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="chart-container">
-                          <div class="chart has-fixed-height has-minimum-width" id="rose_diagram_visible"></div>
-                        </div>
-                    </div>
+                    <div class="tab-pane active has-padding content-case">
 
-                    <div class="tab-pane has-padding" id="left-tab2">
-                        <div class="container-fluid">
-                            <div class="row">
-                                <div class="form-group form-group-xs col-sm-4">
-                                    <select class="form-control">
-                                        <option>Select On call</option>
-                                        @foreach($users as $row) 
-                                        <option>{{ $row->fname.' '.$row->lname  }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div class="form-group form-group-xs col-sm-4">
-                                    <input type="text" class="form-control daterange-basic" value="{{ date ( 'mm/01/Y' ) }} - {{ date ( 'mm/dd/Y' ) }}">
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-sm-3 active-case-report" style="border: 5px solid #03a9f4; padding: 10px">
-                                    <span class="text-semibold" style="margin: 10px; font-size: 15px;">Active</span><br>
-                                    <span class="text-semibold" style="margin: 10px; font-size: 30px;">2</span>
-                                </div>
-                                <div class="col-sm-3 pending-case-report" style="border: 5px solid #f44336; padding: 10px">
-                                    <span class="text-semibold" style="margin: 10px; font-size: 15px;">Pending</span><br>
-                                    <span class="text-semibold" style="margin: 10px; font-size: 30px;">5</span>
-                                </div>
-                                <div class="col-sm-3 closed-case-report" style="border: 5px solid #4caf50; padding: 10px">
-                                    <span class="text-semibold" style="margin: 10px; font-size: 15px;">Closed</span><br>
-                                    <span class="text-semibold" style="margin: 10px; font-size: 30px;">30</span>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -95,23 +64,64 @@
         applyClass: 'bg-slate-600',
         cancelClass: 'btn-default'
     });
+    reportAccount();
   }); 
 
-$(function () {
+  function reportOncall(id,drange){
+    // alert(id+" "+drange);
+    $.ajax({  
+      type: "POST", 
+      url: "{{ url('report-oncall') }}", 
+      data: {  
+        _token : '{{ csrf_token() }}',
+        account_id : id,
+        range : drange
+      },
+      success: function (data) {  
+        $(".content-case").html( data );
+      },
+      error: function (data){
+        swal({
+          title: "Oops..!",
+          text: "No connection could be made because the target machine actively refused it. Please refresh the browser and try again.",
+          confirmButtonColor: "#EF5350",
+          type: "error"
+        });
+      }
+    });
+  }
 
+  function reportAccount(){
+    $.ajax({ 
+      type: "POST", 
+      url: "{{ url('report-account') }}", 
+      data: {  
+        _token : '{{ csrf_token() }}'
+      },
+      success: function (data) {  
+        $(".content-case").html( data );
+      },
+      error: function (data){
+        swal({
+          title: "Oops..!",
+          text: "No connection could be made because the target machine actively refused it. Please refresh the browser and try again.",
+          confirmButtonColor: "#EF5350",
+          type: "error"
+        });
+      }
+    });
+  }
+function all_accounts(){ 
+  
     // Set paths
     // ------------------------------
-
     require.config({
         paths: {
             echarts: "{{ asset('assets/js/plugins/visualization/echarts') }}"
         } 
     });
-
-
     // Configuration
     // ------------------------------
-
     require(
         [
             'echarts',
@@ -119,50 +129,24 @@ $(function () {
             'echarts/chart/pie',
             'echarts/chart/funnel'
         ],
-
-
         // Charts setup
         function (ec, limitless) {
-
-
             // Initialize charts
             // ------------------------------
-
             var rose_diagram_visible = ec.init(document.getElementById('rose_diagram_visible'), limitless);
 
-
-
-            // Charts setup
-            // ------------------------------                    
-
-            
-            //
-            // Nightingale roses with visible labels options
-            //
-
             rose_diagram_visible_options = {
-
                 // Add title
                 title: {
                     text: 'All Cases',
                     subtext: 'From January 01, 2019 to Present',
                     x: 'center'
                 },
-
                 // Add tooltip
                 tooltip: {
                     trigger: 'item',
                     formatter: "{a} <br/>{b}: {c} ({d}%)"
                 },
-
-                // Add legend
-                // legend: {
-                //     x: 'left',
-                //     y: 'top',
-                //     orient: 'vertical',
-                //     data: ['A & J Home Care','Ameribest Home Care','Americare New York','Better Home Care','HCS Home Health Care Services of New York','Broadway Healthcare Staffing','Summit Home Healthcare']
-                // },
-
                 // Add series
                 series: [
                     {
@@ -172,50 +156,33 @@ $(function () {
                         center: ['50%', '57%'],
                         roseType: 'area',
 
-                        // Funnel
-                        // width: '40%',
-                        // height: '78%',
-                        // x: '30%',
-                        // y: '17.5%',
-                        // max: 150,
-                        // sort: 'ascending',
-
                         data: [
-                            {value: 90, name: 'A & J Home Care ( 15.60% )'},
-                            {value: 80, name: 'Ameribest Home Care ( 13.86% )'},
-                            {value: 70, name: 'Americare New York ( 12.134% )'},
-                            {value: 120, name: 'Better Home Care ( 20.80% )'},
-                            {value: 66, name: 'HCS Home Health Care Services of New York ( 11.44% )'},
-                            {value: 40, name: 'Broadway Healthcare Staffing ( 6.93% )'},
-                            {value: 111, name: 'Summit Home Healthcare ( 19.24% )'}
+                          {value: 535, name: 'Italy'},
+                          {value: 310, name: 'Germany'},
+                          {value: 234, name: 'Poland'},
+                          {value: 135, name: 'Denmark'},
+                          {value: 948, name: 'Hungary'},
+                          {value: 251, name: 'Portugal'},
+                          {value: 147, name: 'France'},
+                          {value: 202, name: 'Netherlands'}
                         ]
                     }
                 ]
             };
 
-
-            
-
-            // Apply options
-            // ------------------------------
-
-
             rose_diagram_visible.setOption(rose_diagram_visible_options);
-
-
-
 
             // Resize charts
             // ------------------------------
 
-            window.onresize = function () {
-                setTimeout(function (){
-                  rose_diagram_visible.resize();
-                }, 200);
-            }
+            // window.onresize = function () {
+            //     setTimeout(function (){
+            //       rose_diagram_visible.resize();
+            //     }, 200);
+            // }
         }
     );
-});
+};
 
 </script>
 @endsection  

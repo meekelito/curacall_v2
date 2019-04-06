@@ -34,8 +34,68 @@
   </div>
 </div>
 <!-- /page header -->
-<div class="content" id="content-case">
-  
+<div class="content">
+  <div class="row">
+    <div class="col-lg-8" id="content-case">
+    </div>
+    <div class="col-lg-4">
+      <div class="panel panel-flat">
+        <div class="panel-toolbar panel-toolbar-inbox">
+          <div class="navbar navbar-default">
+            <div class="navbar-collapse collapse">
+              <div class="pull-left-lg">
+                <p class="navbar-text text-size-large text-semibold">
+                  Notes
+                </p>
+              </div>
+              <div class="pull-right-lg">
+                <div class="btn-group navbar-btn">
+                  <button type="button" class="btn btn-primary btn-icon btn-rounded btn-sm btn-add-note" title="Add note(s)"><i class="icon-plus3"></i></button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <table class="table table-borderless" id="tbl-notes"  width="100%">
+          <thead >
+            <tr>
+              <th style="padding: 0 !important; "></th>
+            </tr>
+          </thead> 
+          <tbody>
+          </tbody>
+        </table>  
+      </div>
+    </div>
+
+
+    <div class="col-lg-4">
+      <div class="panel panel-flat">
+        <div class="panel-toolbar panel-toolbar-inbox">
+          <div class="navbar navbar-default">
+            <div class="navbar-collapse collapse">
+              <div class="pull-left-lg">
+                <p class="navbar-text text-size-large text-semibold">
+                  Participants
+                </p>
+              </div>
+
+            </div>
+          </div>
+        </div>
+        <table class="table table-borderless" id="tbl-participants"  width="100%">
+          <thead >
+            <tr>
+              <th style="padding: 0 !important;"></th>
+            </tr>
+          </thead> 
+          <tbody>
+            <tr><td class="text-center">No data available in table</td></tr>
+          </tbody>
+        </table>  
+      </div>
+    </div>
+  </div>
 </div>
 
 <div id="modal-case" class="modal fade" data-backdrop="static" data-keyboard="false">
@@ -62,6 +122,19 @@
     $(".menu-curacall li").removeClass("active");
     $(".menu-cases").addClass('active'); 
     fetchCase();
+    dt = $('#tbl-notes').DataTable({
+      responsive: true,
+      processing: true,
+      serverSide: true,
+      searching: false, 
+      paging: false,
+      bInfo: false,
+      ordering: false,
+      ajax: "{{ url('case/notes/'.$case_id) }}",
+        columns: [
+          {data: 'note', orderable: false, searchable: false}
+        ] 
+    });
   }); 
 
   function fetchCase(){
@@ -114,6 +187,35 @@
       }
     });
   }
+
+  $(".btn-add-note").click(function(){
+    $.ajax({ 
+      type: "POST",  
+      url: "{{ url('add-note-md') }}", 
+      data: { 
+        _token : '{{ csrf_token() }}',
+        case_id : '{{ $case_id }}'
+      },
+      beforeSend: function(){
+          $('body').addClass('wait-pointer');
+        },
+        complete: function(){
+          $('body').removeClass('wait-pointer');
+        },
+      success: function (data) {  
+        $(".content-data-case").html( data );
+        $("#modal-case").modal('show');
+      },
+      error: function (data){
+        swal({
+          title: "Oops..!",
+          text: "No connection could be made because the target machine actively refused it. Please refresh the browser and try again.",
+          confirmButtonColor: "#EF5350",
+          type: "error"
+        });
+      }
+    });
+  });
 
 </script>
 
