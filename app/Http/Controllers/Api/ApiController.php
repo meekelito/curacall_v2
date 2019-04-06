@@ -51,7 +51,7 @@ class ApiController extends Controller
   {
     $participants = Case_participant::leftJoin('users AS b','case_participants.user_id','=','b.id')
     ->where('case_participants.case_id',$case_id)
-    ->select('b.user_id','b.fname','b.lname','.b.status')
+    ->select('b.id','b.fname','b.lname','.b.status')
     ->orderBy('case_participants.ownership')
     ->get();
 
