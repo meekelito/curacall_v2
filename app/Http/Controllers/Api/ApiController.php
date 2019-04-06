@@ -3,6 +3,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Cases;
+use App\Case_participant;
 use DB;
 use Cache;
 use Auth;
@@ -54,7 +55,7 @@ class ApiController extends Controller
     ->get();
 
     
-    if($cases->isEmpty()){
+    if($participants->isEmpty()){
       return response()->json([
         'message' => 'No data found.']);
     }
