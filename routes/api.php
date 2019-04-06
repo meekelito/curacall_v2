@@ -19,6 +19,8 @@ use Illuminate\Http\Request;
 
 Route::get('/cases/{status?}/{user_id}', 'Api\ApiController@getCases' ); 
 
+Route::get('/case-participants/{case_id}', 'Api\ApiController@getParticipants' ); 
+
 Route::fallback(function(){
     return response()->json([
         'message' => 'Page Not Found. If error persists, contact info@website.com'], 404);

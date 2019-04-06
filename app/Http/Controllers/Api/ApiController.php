@@ -46,4 +46,20 @@ class ApiController extends Controller
     return response()->json($cases);
   }
 
+  public function getParticipants($case_id)
+  {
+    $participants = Case_participant::leftJoin('users AS b','case_participants.user_id','=','b.id')
+    ->where('case_participants.case_id',$case_id)
+    ->orderBy('case_participants.ownership')
+    ->get();
+
+    
+    if($cases->isEmpty()){
+      return response()->json([
+        'message' => 'No data found.']);
+    }
+    
+    return response()->json($participants);
+  }
+
 }
