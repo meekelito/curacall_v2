@@ -145,7 +145,8 @@ function all_accounts(){
                 // Add tooltip
                 tooltip: {
                     trigger: 'item',
-                    formatter: "{a} <br/>{b}: {c} ({d}%)"
+                    formatter: "{a} <br/>{b}: {c}"
+                    // formatter: "{a} <br/>{b}: {c} ({d}%)"
                 },
                 // Add series
                 series: [
@@ -157,14 +158,14 @@ function all_accounts(){
                         roseType: 'area',
 
                         data: [
-                          {value: 535, name: 'Italy'},
-                          {value: 310, name: 'Germany'},
-                          {value: 234, name: 'Poland'},
-                          {value: 135, name: 'Denmark'},
-                          {value: 948, name: 'Hungary'},
-                          {value: 251, name: 'Portugal'},
-                          {value: 147, name: 'France'},
-                          {value: 202, name: 'Netherlands'}
+                          {value: 535, name: 'A&J Home Care (19.37%)'}, 
+                          {value: 310, name: 'Ameribest Home Care (11.22%)'},
+                          {value: 234, name: 'Americare CSS (8.47%)'},
+                          {value: 135, name: 'Americare Inc. (4.89%)'},
+                          {value: 948, name: 'Better Home Health Care (34.32%)'},
+                          {value: 251, name: 'Broadway Homecare - Brooklyn (9.09%)'},
+                          {value: 147, name: 'Community Home Care (5.32%)'},
+                          {value: 202, name: 'Complete Homecare Harrisburg, PA (7.31%)'}
                         ]
                     }
                 ]

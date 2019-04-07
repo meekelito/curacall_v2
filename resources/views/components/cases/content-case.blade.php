@@ -137,6 +137,7 @@
                     });  
                     count_case();
                     fetchCase();
+                    dt.search('').draw();
                   }else if( res.status == 2 ){
                     swal({
                       title: "Notice!",
@@ -146,6 +147,7 @@
                     }); 
                     count_case();
                     fetchCase();
+                    dt.search('').draw();
                   }else{
                     swal({
                       title: "Oops..!",

@@ -45,6 +45,7 @@
           });  
           count_case();
           fetchCase();
+          dt.search('').draw();
           $("#modal-case").modal('hide');
         }else{
           swal({
