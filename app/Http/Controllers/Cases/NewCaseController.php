@@ -126,7 +126,7 @@ class NewCaseController extends Controller
       $name = $state[0]->fname.' '.$state[0]->lname;
       return json_encode(array(
         "status"=>2,
-        "response"=>"success",
+        "response"=>"warning",
         "message"=>"This case is already taken by ".$name
       ));
     }
