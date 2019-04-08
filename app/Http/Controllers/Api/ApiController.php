@@ -88,11 +88,11 @@ class ApiController extends Controller
     ]);
 
     if ($validator->fails()) {
-      return json_encode(array(
+      return response()->json([
         "status"=>2,
         "response"=>"error",
         "message"=>$validator->errors()
-      ));
+      ]);
     }
 
     $res = Cases::find($request->case_id);
