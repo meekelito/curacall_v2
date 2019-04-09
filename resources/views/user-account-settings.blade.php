@@ -274,7 +274,7 @@
           }else if( res.status == 3 ){
             swal({
               title: "Oops...",
-              text: error_message,
+              text: res.message,
               confirmButtonColor: "#EF5350",
               type: "error"
             });
