@@ -71,6 +71,10 @@ Route::group(['middleware' => array('auth')], function () {
     Route::post('report-account','Reports\ReportsController@getReportAccount');
     Route::post('report-oncall','Reports\ReportsController@getReportOncall');
 
+    Route::post('report-active-case-list','Reports\ReportsController@getReportActiveCase'); 
+    Route::post('report-pending-case-list','Reports\ReportsController@getReportPendingCase'); 
+    Route::post('report-closed-case-list','Reports\ReportsController@getReportClosedCase');
+
 	//Accounts Settings
 	Route::get('user-account-settings','UserAccountSettings\UserAccountSettingsController@index');
 	Route::post('user-account-settings/update-user-info','UserAccountSettings\UserAccountSettingsController@updateUser');

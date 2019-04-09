@@ -34,7 +34,7 @@
 <script type="text/javascript">
   $('.select').select2();
 
-    $( "#form-forward-case" ).submit(function( e ) {
+  $( "#form-forward-case" ).submit(function( e ) {
     $.ajax({  
       type: "POST",
       url: "{{ url('forward-case') }}",
@@ -55,7 +55,7 @@
             type: "success"
           });  
  
-          $("#modal-case").modal('hide'); 
+          // $("#modal-case").modal('hide'); 
         }else{
           swal({
             title: "Oops..!",

@@ -51,12 +51,25 @@ class ApiController extends Controller
     return response()->json($cases);
   }
 
-  public function getCaseSpecific($case_id,$user_id)
+  public function getCaseSpecific(Request $request)
   {
+    $validator = Validator::make($request->all(), [
+        'case_id' => 'required',
+        'user_id' => 'required'
+    ]);
+
+    if ($validator->fails()) {
+      return response()->json([
+        "status"=>2,
+        "response"=>"error",
+        "message"=>$validator->errors()
+      ]);
+    }
+
     $cases = Cases::Join('case_participants AS b','cases.id','=','b.case_id')
-              ->where('cases.id',$case_id)
-              ->where('b.user_id',$user_id)
-              ->where('cases.status','!=',4)
+              ->where('cases.id',$request->case_id)
+              ->where('b.user_id',$request->user_id)
+              ->where('cases.status','!=',4) 
               ->select('cases.id','cases.case_id','cases.account_id','cases.call_type','cases.subcall_type','cases.case_message','cases.status','cases.created_at','cases.updated_at')
               ->get();
 
@@ -65,8 +78,20 @@ class ApiController extends Controller
 
   public function getParticipants($case_id)
   {
+    $validator = Validator::make($request->all(), [
+        'case_id' => 'required'
+    ]);
+
+    if ($validator->fails()) {
+      return response()->json([
+        "status"=>2,
+        "response"=>"error",
+        "message"=>$validator->errors()
+      ]);
+    }
+
     $participants = Case_participant::leftJoin('users AS b','case_participants.user_id','=','b.id')
-    ->where('case_participants.case_id',$case_id)
+    ->where('case_participants.case_id',$request->case_id)
     ->select('b.id','b.fname','b.lname','.b.status')
     ->orderBy('case_participants.ownership')
     ->get();
@@ -144,5 +169,90 @@ class ApiController extends Controller
       ]);
     }
   }
+
+
+  public function getCaseCount(Request $request)
+  {
+
+    $active_count = Cases::Join('case_participants AS b','cases.id','=','b.case_id')
+                    ->where('b.user_id',$request->user_id)
+                    ->where('cases.status',1)
+                    ->select(DB::raw('count(cases.id) as total'))
+                    ->get();
+
+    $pending_count = Cases::Join('case_participants AS b','cases.id','=','b.case_id')
+                      ->where('b.user_id',$request->user_id)
+                      ->where('status',2)
+                      ->select(DB::raw('count(*) as total'))
+                      ->get();
+    $closed_count = Cases::Join('case_participants AS b','cases.id','=','b.case_id')
+                      ->where('b.user_id',$request->user_id)
+                      ->where('status',3)
+                      ->select(DB::raw('count(*) as total'))
+                      ->get();  
+
+    return json_encode(array(
+        "status"=>1,
+        "all_count"=>$active_count[0]->total+$pending_count[0]->total+$closed_count[0]->total,
+        "active_count"=>$active_count[0]->total,
+        "pending_count"=>$pending_count[0]->total,
+        "closed_count"=>$closed_count[0]->total
+      ));
+
+    return response()->json([
+      "status"=>1,
+      "all_count"=>$active_count[0]->total+$pending_count[0]->total+$closed_count[0]->total,
+      "active_count"=>$active_count[0]->total,
+      "pending_count"=>$pending_count[0]->total,
+      "closed_count"=>$closed_count[0]->total
+    ]);
+  }
+
+  public function closeCase(Request $request)
+  {
+    // return response()->json([
+    //   "status"=>0,
+    //   "response"=>"failed", 
+    //   "message"=>"Error in connection."
+    // ]);
+
+    $validator = Validator::make($request->all(), [
+        'case_id' => 'required',
+        'user_id' => 'required',
+        'note' => 'required',
+    ]);
+
+    if ($validator->fails()) {
+      return response()->json([
+        "status"=>2,
+        "response"=>"error",
+        "message"=>$validator->errors()
+      ]);
+    }
+
+
+    $res = Cases::find($request->case_id);
+    $res->status = 3;
+    $res->save();
+  
+
+    $res2 = Case_history::create( $request->all()+["status" => 3,"action_note" => "Case Closed", 'created_by' => $request->user_id ] ); 
+
+    if($res2){
+      return response()->json([
+        "status"=>1,
+        "response"=>"success",
+        "message"=>"Case successfully Closed."
+      ]);
+    }else{
+      return response()->json([
+        "status"=>0,
+        "response"=>"failed", 
+        "message"=>"Error in connection."
+      ]);
+    }
+  }
+
+
 
 }

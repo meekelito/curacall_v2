@@ -19,11 +19,15 @@ use Illuminate\Http\Request;
 
 Route::get('/cases/{status?}/{user_id}', 'Api\ApiController@getCases' ); 
 
-Route::get('/case-preview/{case_id}/{user_id}', 'Api\ApiController@getCaseSpecific' ); 
+Route::get('/case-preview', 'Api\ApiController@getCaseSpecific' ); 
 
-Route::get('/case-participants/{case_id}', 'Api\ApiController@getParticipants' ); 
+Route::get('/case-participants', 'Api\ApiController@getParticipants' ); 
+
+Route::get('/case-count', 'Api\ApiController@getCaseCount' ); 
 
 Route::post('/case-accept', 'Api\ApiController@acceptCase' );  
+
+Route::post('/case-close', 'Api\ApiController@closeCase' );  
 
 Route::fallback(function(){
     return response()->json([

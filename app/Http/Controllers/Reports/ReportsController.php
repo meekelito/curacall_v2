@@ -62,4 +62,83 @@ class ReportsController extends Controller
     return view( 'components.reports.report-oncall',['users'=>$users,'active_count'=>$active_count[0],'pending_count'=>$pending_count[0],'closed_count'=>$closed_count[0],'account_id'=>$request->account_id,'range'=>$request->range]);
   }
 
+
+  public function getReportActiveCase(Request $request)
+  {
+    $r1 = explode("-", $request->range);
+    $date1=date_create($r1[0]);
+    $from = date_format($date1,"Y-m-d H:i:s");
+    $date2=date_create($r1[1]);
+    $to = date_format($date2,"Y-m-d H:i:s"); 
+
+    if($request->user_id == "all"){
+      $cases = Cases::whereBetween('cases.created_at', array($from, $to))
+              ->where('status',1)
+              ->orderBy('id','DESC')
+              ->get();
+    }else{
+      $cases = Cases::Join('case_participants AS b','cases.id','=','b.case_id')
+              ->where('b.user_id',$request->user_id)
+              ->whereBetween('cases.created_at', array($from, $to))
+              ->where('cases.status',1)
+              ->orderBy('cases.id','DESC')
+              ->select('cases.id','cases.case_id','cases.sender_fullname','cases.status','cases.created_at')
+              ->get();
+    }
+
+    return view('components.reports.report-active-case-list',['cases' => $cases]);
+  }
+
+  public function getReportPendingCase(Request $request)
+  {
+    $r1 = explode("-", $request->range);
+    $date1=date_create($r1[0]);
+    $from = date_format($date1,"Y-m-d H:i:s");
+    $date2=date_create($r1[1]);
+    $to = date_format($date2,"Y-m-d H:i:s"); 
+
+    if($request->user_id == "all"){
+      $cases = Cases::whereBetween('cases.created_at', array($from, $to))
+              ->where('status',2)
+              ->orderBy('id','DESC')
+              ->get();
+    }else{
+      $cases = Cases::Join('case_participants AS b','cases.id','=','b.case_id')
+              ->where('b.user_id',$request->user_id)
+              ->whereBetween('cases.created_at', array($from, $to))
+              ->where('cases.status',2)
+              ->orderBy('cases.id','DESC')
+              ->select('cases.id','cases.case_id','cases.sender_fullname','cases.status','cases.created_at')
+              ->get();
+    }
+
+    return view('components.reports.report-pending-case-list',['cases' => $cases]);
+  }
+
+  public function getReportClosedCase(Request $request)
+  {
+    $r1 = explode("-", $request->range);
+    $date1=date_create($r1[0]);
+    $from = date_format($date1,"Y-m-d H:i:s");
+    $date2=date_create($r1[1]);
+    $to = date_format($date2,"Y-m-d H:i:s"); 
+
+    if($request->user_id == "all"){
+      $cases = Cases::whereBetween('cases.created_at', array($from, $to))
+              ->where('status',3)
+              ->orderBy('id','DESC')
+              ->get();
+    }else{
+      $cases = Cases::Join('case_participants AS b','cases.id','=','b.case_id')
+              ->where('b.user_id',$request->user_id)
+              ->whereBetween('cases.created_at', array($from, $to))
+              ->where('cases.status',3)
+              ->orderBy('cases.id','DESC')
+              ->select('cases.id','cases.case_id','cases.sender_fullname','cases.status','cases.created_at')
+              ->get();
+    }
+
+    return view('components.reports.report-pending-case-list',['cases' => $cases]);
+  }
+
 }

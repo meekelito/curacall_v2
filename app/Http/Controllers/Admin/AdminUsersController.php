@@ -431,7 +431,7 @@ class AdminUsersController extends Controller
     $id = Crypt::decrypt($request->id);
     $pass = $this->randomPassword();
 
-    $res = User::find(Auth::user()->id);
+    $res = User::find($id);
     $res->password = Hash::make($pass);
     $res->updated_by = Auth::user()->id;
     $res->save();

@@ -21,7 +21,7 @@
             <span class="text-semibold" style="margin: 10px; font-size: 15px;">Active</span><br>
             <span class="text-semibold" style="margin: 10px; font-size: 30px;">
               @isset($active_count)
-                {{$active_count->total}}
+                <a class="btn-active-case">{{$active_count->total}}</a>
               @endisset 
             </span>
         </div>
@@ -29,7 +29,7 @@
             <span class="text-semibold" style="margin: 10px; font-size: 15px;">Pending</span><br>
             <span class="text-semibold" style="margin: 10px; font-size: 30px;">
               @isset($pending_count)
-                {{$pending_count->total}}
+                <a class="btn-pending-case">{{$pending_count->total}}</a>
               @endisset 
             </span>
         </div>
@@ -37,10 +37,13 @@
             <span class="text-semibold" style="margin: 10px; font-size: 15px;">Closed</span><br>
             <span class="text-semibold" style="margin: 10px; font-size: 30px;">
               @isset($closed_count)
-                {{$closed_count->total}}
+                <a class="btn-closed-case">{{$closed_count->total}}</a>
               @endisset 
             </span>
         </div>
+    </div>
+    <div class="row content-list-table">
+      
     </div>
 </div>
 <script type="text/javascript">
@@ -50,6 +53,82 @@
         cancelClass: 'btn-default'
     });
   }); 
+
+  $( ".btn-active-case" ).click(function() {
+    // alert($(".oncall-user").val());
+    $.ajax({  
+      type: "POST", 
+      url: "{{ url('report-active-case-list') }}", 
+      data: {   
+        _token : '{{ csrf_token() }}',
+        user_id : $(".oncall-user").val(),
+        range : $(".date-range-val").val()
+      },
+      success: function (data) {  
+        $(".content-list-table").html( data );
+        // alert(data);
+      },
+      error: function (data){
+        swal({
+          title: "Oops..!",
+          text: "No connection could be made because the target machine actively refused it. Please refresh the browser and try again.",
+          confirmButtonColor: "#EF5350",
+          type: "error"
+        });
+      }
+    });
+  });
+
+  $( ".btn-pending-case" ).click(function() {
+    // alert($(".oncall-user").val());
+    $.ajax({  
+      type: "POST", 
+      url: "{{ url('report-pending-case-list') }}", 
+      data: {   
+        _token : '{{ csrf_token() }}',
+        user_id : $(".oncall-user").val(),
+        range : $(".date-range-val").val()
+      },
+      success: function (data) {  
+        $(".content-list-table").html( data );
+        // alert(data);
+      },
+      error: function (data){
+        swal({
+          title: "Oops..!",
+          text: "No connection could be made because the target machine actively refused it. Please refresh the browser and try again.",
+          confirmButtonColor: "#EF5350",
+          type: "error"
+        });
+      }
+    });
+  });
+
+  $( ".btn-closed-case" ).click(function() {
+    // alert($(".oncall-user").val());
+    $.ajax({  
+      type: "POST", 
+      url: "{{ url('report-closed-case-list') }}", 
+      data: {   
+        _token : '{{ csrf_token() }}',
+        user_id : $(".oncall-user").val(),
+        range : $(".date-range-val").val()
+      },
+      success: function (data) {  
+        $(".content-list-table").html( data );
+        // alert(data);
+      },
+      error: function (data){
+        swal({
+          title: "Oops..!",
+          text: "No connection could be made because the target machine actively refused it. Please refresh the browser and try again.",
+          confirmButtonColor: "#EF5350",
+          type: "error"
+        });
+      }
+    });
+  });
+
   $( ".date-range-val" ).change(function() {
     reportOncall($(".oncall-user" ).val(),$( ".date-range-val" ).val());
   });

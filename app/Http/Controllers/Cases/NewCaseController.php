@@ -331,7 +331,7 @@ class NewCaseController extends Controller
       $res->save();
     }
 
-    $res = Case_history::create( $request->all()+["status" => 3,"action_note" => "Case Closed", 'created_by' => Auth::user()->id ] ); 
+    $res = Case_history::create( $request->all()+["status" => 3,"is_visible" => 1,"action_note" => "Case Closed", 'created_by' => Auth::user()->id ] ); 
 
     if($res){
       return json_encode(array(
@@ -346,17 +346,6 @@ class NewCaseController extends Controller
         "message"=>"Error in connection."
       ));
     }
-  }
-
-  public function forwardCase(Request $request)
-  {
-
-      return json_encode(array(
-        "status"=>1,
-        "response"=>"success",
-        "message"=>"Note successfully added.".$request->recipient
-      ));
-
   }
 
   public function reopenCase(Request $request)
@@ -448,6 +437,77 @@ class NewCaseController extends Controller
         "pending_count"=>$pending_count[0]->total,
         "closed_count"=>$closed_count[0]->total
       ));
+  }
+
+  public function forwardCase(Request $request)
+  {
+    // return json_encode(array(
+    //   "status"=>1,
+    //   "response"=>"success",
+    //   "message"=>$request->recipient
+    // ));
+
+    // $validator = Validator::make($request->all(), [
+    //     'case_id' => 'required',
+    //     'note' => 'required',
+    //     'recipient' => 'required'
+    // ]);
+
+    // if ($validator->fails()) {
+    //   return json_encode(array(
+    //     "status"=>2,
+    //     "response"=>"error",
+    //     "message"=>$validator->errors()
+    //   ));
+    // }
+
+    $count = Case_participant::where("case_id",$request->case_id)->get();
+
+    $participants_id = array();
+    $recipient = $request->recipient;
+
+    foreach ($count as $row) {
+      $participants_id[] = $row->user_id;
+    }
+
+    $result = array_diff($recipient,$participants_id);
+
+    return json_encode(array(
+      "status"=>1,
+      "response"=>"error",
+      "message"=> $result
+    ));
+
+
+
+
+
+
+    if( $count->count() > 1 ){
+      $update_res = Case_participant::where('case_id', $request->case_id)
+      ->where('ownership', 2 )
+      ->update(['ownership' => 5]); 
+
+      $update_res = Case_participant::where('case_id', $request->case_id)
+      ->where('user_id', Auth::user()->id )
+      ->update(['ownership' => 3]);
+    }
+
+    $res = Case_history::create( ["is_visible"=>1,"status"=>2,"case_id" => $request->case_id,"action_note" => "Case Accepted", 'created_by' => Auth::user()->id ] ); 
+
+    if($res){
+      return json_encode(array(
+        "status"=>1,
+        "response"=>"success",
+        "message"=>"Case status updated successfully."
+      ));
+    }else{
+      return json_encode(array(
+        "status"=>0,
+        "response"=>"failed", 
+        "message"=>"Error in connection."
+      ));
+    }
   }
 
 }
