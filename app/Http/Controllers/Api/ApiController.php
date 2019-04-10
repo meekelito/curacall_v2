@@ -76,7 +76,7 @@ class ApiController extends Controller
     return response()->json($cases);
   }
 
-  public function getParticipants($case_id)
+  public function getParticipants(Request $request)
   {
     $validator = Validator::make($request->all(), [
         'case_id' => 'required'
