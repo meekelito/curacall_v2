@@ -9,13 +9,14 @@
         </li>
       </ul>
       <div class="navbar-collapse collapse">
-        @if( $case_info[0]->status == 1 && ($participation[0]->ownership == 1 || $participation[0]->ownership == 2) ) 
+        @if( ($case_info[0]->status == 1 && ($participation[0]->ownership == 1 || $participation[0]->ownership == 2)) ||
+         ($case_info[0]->status == 2 &&  $participation[0]->ownership == 2) )  
         <div class="btn-group navbar-btn">
           <a class="btn btn-primary btn-accept"><i class="icon-thumbs-up3"></i> <span class="hidden-xs position-right">Accept</span></a>
-          <a class="btn btn-warning btn-decline"><i class="icon-thumbs-down3"></i> <span class="hidden-xs position-right">Decline</span></a>
+          <!-- <a class="btn btn-warning btn-decline"><i class="icon-thumbs-down3"></i> <span class="hidden-xs position-right">Decline</span></a> -->
         </div>
         @endif
-        @if( $case_info[0]->status == 2 && ($participation[0]->ownership == 1 || $participation[0]->ownership == 3) )
+        @if( $case_info[0]->status == 2 && ($participation[0]->ownership == 1 || $participation[0]->ownership == 3 || $participation[0]->ownership == 6 ) )
         <div class="btn-group navbar-btn">
           <a class="btn btn-default btn-forward"><i class="icon-forward"></i> <span class="hidden-xs position-right">Forward</span></a>
           <a class="btn btn-default btn-close"><i class="icon-checkmark4"></i> <span class="hidden-xs position-right">Close</span></a>

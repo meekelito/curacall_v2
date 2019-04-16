@@ -37,6 +37,7 @@ Route::group(['middleware' => array('auth')], function () {
 	Route::get('pending-cases','Cases\PendingCasesController@index');
 	Route::get('closed-cases','Cases\ClosedCasesController@index');
 	Route::get('deleted-cases','Cases\DeletedCasesController@index');
+    Route::get('silent-cases','Cases\SilentCasesController@index'); 
 
     Route::post('count-case','Cases\NewCaseController@countCase');
 
@@ -44,6 +45,7 @@ Route::group(['middleware' => array('auth')], function () {
 
     Route::get('cases/case_id/{id}','Cases\NewCaseController@index');
     Route::get('case/notes/{id}','Cases\NewCaseController@fetchNotes');
+    Route::get('case/participants/{id}','Cases\NewCaseController@fetchParticipants');
     Route::post('case/new-note', 'Cases\NewCaseController@newNote');
 
     Route::post('decline-case-md','Cases\NewCaseController@getModalDeclineCase');

@@ -55,6 +55,26 @@ class NewCaseController extends Controller
     return view( 'components.cases.content-case', [ 'case_id' => $case_id,'case_info' => $case_info,'participation'=>$participation,'participants'=>$participants ] );
   }
 
+  public function fetchParticipants($case_id) 
+  {    
+    $participants = Case_participant::leftJoin('users AS b','case_participants.user_id','=','b.id')->where('case_participants.case_id',$case_id)->select('b.prof_img','b.fname','b.lname','b.title','b.phone_no','b.email');
+
+    return Datatables::of($participants)
+    ->addColumn('participants',function($participants){
+      return'<div class="media-link cursor-pointer" data-toggle="collapse" data-target="#$participants->id">
+            <div class="media-left"><img  src="'.asset('storage/uploads/users/'.$participants->prof_img).'" class="img-circle img-md" alt=""></div>
+            <div class="media-body">
+              <div class="media-heading text-semibold">
+              '.$participants->fname.' '.$participants->lname.'
+              </div>
+              <span class="text-muted">'.ucwords($participants->title).'</span>
+            </div>
+          </div>';
+    })
+    ->rawColumns(['participants'])
+    ->make(true);                                                               
+  } 
+
 
   public function fetchNotes($case_id) 
   {    
@@ -135,7 +155,8 @@ class NewCaseController extends Controller
     if( $count->count() > 1 ){
       
       $update_res = Case_participant::where('case_id', $request->case_id)
-      ->where('ownership', 2 )
+      // ->where('ownership', 2 )
+      // ->orWhere('ownership', 6 )
       ->update(['ownership' => 5]); 
 
       $update_res = Case_participant::where('case_id', $request->case_id)
@@ -431,20 +452,21 @@ class NewCaseController extends Controller
                       ->get();  
 
     return json_encode(array(
-        "status"=>1,
-        "all_count"=>$active_count[0]->total+$pending_count[0]->total+$closed_count[0]->total,
-        "active_count"=>$active_count[0]->total,
-        "pending_count"=>$pending_count[0]->total,
-        "closed_count"=>$closed_count[0]->total
-      ));
+      "status"=>1,
+      "all_count"=>$active_count[0]->total+$pending_count[0]->total+$closed_count[0]->total,
+      "active_count"=>$active_count[0]->total,
+      "pending_count"=>$pending_count[0]->total,
+      "closed_count"=>$closed_count[0]->total
+    ));
   }
 
   public function forwardCase(Request $request)
   {
+
     // return json_encode(array(
-    //   "status"=>1,
-    //   "response"=>"success",
-    //   "message"=>$request->recipient
+    //   "status"=>2,
+    //   "response"=>"error",
+    //   "message"=>"weee"
     // ));
 
     // $validator = Validator::make($request->all(), [
@@ -461,45 +483,41 @@ class NewCaseController extends Controller
     //   ));
     // }
 
-    $count = Case_participant::where("case_id",$request->case_id)->get();
+    // compare the participants and recipients if existing update the ownership if not insert to participants 
 
-    $participants_id = array();
-    $recipient = $request->recipient;
+    $participants_id = Case_participant::where("case_id",$request->case_id)
+    ->select('user_id')
+    ->get();
 
-    foreach ($count as $row) {
-      $participants_id[] = $row->user_id;
+
+    $participants = array();
+    $update = array();
+    $insert = array();
+
+    foreach ($participants_id as $row) {
+      $participants[] = $row->user_id;
     }
 
-    $result = array_diff($recipient,$participants_id);
-
-    return json_encode(array(
-      "status"=>1,
-      "response"=>"error",
-      "message"=> $result
-    ));
-
-
-
-
-
-
-    if( $count->count() > 1 ){
-      $update_res = Case_participant::where('case_id', $request->case_id)
-      ->where('ownership', 2 )
-      ->update(['ownership' => 5]); 
-
-      $update_res = Case_participant::where('case_id', $request->case_id)
-      ->where('user_id', Auth::user()->id )
-      ->update(['ownership' => 3]);
+    foreach ($request->recipient as $row) {
+      if (in_array($row, $participants)){ 
+        Case_participant::where('case_id', $request->case_id)
+        ->where('user_id', $row )
+        ->update(['ownership' => 2]); 
+      }else{ 
+        Case_participant::create( ["case_id" => $request->case_id,"user_id" => $row, 'ownership' => 2 ] ); 
+      } 
     }
 
-    $res = Case_history::create( ["is_visible"=>1,"status"=>2,"case_id" => $request->case_id,"action_note" => "Case Accepted", 'created_by' => Auth::user()->id ] ); 
-
+    $res=Case_participant::where('case_id', $request->case_id)
+    ->where('user_id', Auth::user()->id  )
+    ->update(['ownership' => 6]); 
+   
+  
     if($res){
       return json_encode(array(
         "status"=>1,
         "response"=>"success",
-        "message"=>"Case status updated successfully."
+        "message"=>"Case successfully forwarded."
       ));
     }else{
       return json_encode(array(
@@ -508,6 +526,30 @@ class NewCaseController extends Controller
         "message"=>"Error in connection."
       ));
     }
+
+    
+
+    // $participants_id = array();
+    // $recipient = $request->recipient;
+
+    // foreach ($count as $row) {
+    //   $participants_id[] = $row->user_id;
+    // }
+
+    // $result = array_diff($recipient,$participants_id);
+
+    // return json_encode(array(
+    //   "status"=>1,
+    //   "response"=>"error",
+    //   "message"=> "update: ".$update."\n insert: ".$insert
+    // ));
+
+    // return json_encode(array(
+    //   "status"=>1,
+    //   "response"=>"error",
+    //   "message"=> count($request->recipient)
+    // ));
+
   }
 
 }

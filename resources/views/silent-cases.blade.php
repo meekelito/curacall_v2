@@ -32,7 +32,7 @@
     <ul class="breadcrumb">
       <li><a href="#l"><i class="icon-home2 position-left"></i> Home</a></li>
       <li><a href="#">Cases</a></li>
-      <li class="active">All cases</li>
+      <li class="active">Silent cases</li>
     </ul>
   </div>
 </div>
@@ -53,8 +53,6 @@
           @php 
           $ctr=1;
           @endphp
-
-
           @forelse($cases as $row)
 
           @switch($row->status)
@@ -210,7 +208,7 @@
   $(".menu-curacall li").removeClass("active");
   $(".menu-cases").addClass('active');
   $(".submenu-curacall li").removeClass("active");
-  $(".submenu-cases-all-cases").addClass('active');
+  $(".submenu-cases-silent-cases").addClass('active');
   fetchCase();
 </script>
 

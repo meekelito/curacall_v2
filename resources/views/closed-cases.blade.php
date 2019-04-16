@@ -100,6 +100,7 @@
   $(".menu-cases").addClass('active');
   $(".submenu-curacall li").removeClass("active");
   $(".submenu-cases-closed-cases").addClass('active');
+  fetchCase();
 </script>
 
 @endsection 

@@ -36,7 +36,7 @@
 <!-- /page header -->
 <div class="content">
   <div class="row">
-    <div class="col-lg-8" id="content-case">
+    <div class="col-lg-8" id="content-case" style="min-height: 400px;">
     </div>
     <div class="col-lg-4">
       <div class="panel panel-flat">
@@ -117,7 +117,7 @@
 
 @section('script')
 <script type="text/javascript">
-  var dt;
+  var dt,dt_participants;
   $(document).ready(function () {
     $(".menu-curacall li").removeClass("active");
     $(".menu-cases").addClass('active'); 
@@ -133,6 +133,20 @@
       ajax: "{{ url('case/notes/'.$case_id) }}",
         columns: [
           {data: 'note', orderable: false, searchable: false}
+        ] 
+    });
+
+    dt_participants = $('#tbl-participants').DataTable({
+      responsive: true,
+      processing: true,
+      serverSide: true,
+      searching: false, 
+      paging: false,
+      bInfo: false,
+      ordering: false,
+      ajax: "{{ url('case/participants/'.$case_id) }}",
+        columns: [
+          {data: 'participants', orderable: false, searchable: false}
         ] 
     });
   }); 
