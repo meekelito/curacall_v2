@@ -54,8 +54,9 @@
             confirmButtonColor: "#66BB6A",
             type: "success"
           });  
- 
-          // $("#modal-case").modal('hide'); 
+          dt_participants.search('').draw();
+          dt.search('').draw();
+          $("#modal-case").modal('hide'); 
         }else{
           swal({
             title: "Oops..!",
