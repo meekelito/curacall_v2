@@ -39,13 +39,14 @@
 <div class="content">
   <div class="panel panel-flat">
     <div class="table-responsive">
-      <table class="table text-nowrap">
+      <table class="table text-nowrap" id="sample-tablex">
         <thead>
           <tr>
             <th style="width: 50px">Sitting Time</th>
             <th style="width: 150px;">User</th>
             <th>Description</th>
             <th class="text-center" style="width: 20px;"><i class="icon-arrow-down12"></i></th>
+            <th style="display: none;"></th>
           </tr>
         </thead>
         <tbody>      
@@ -58,7 +59,7 @@
           @forelse($cases as $row)    
             <tr>
               <td class="text-center">
-                <h6 class="no-margin">20 <small class="display-block text-size-small no-margin">hours</small></h6>
+       
               </td>
               <td>
                 <div class="media-body">
@@ -83,6 +84,9 @@
                   @endif
                 </span>
               </td>
+              <td class="text-center" style="display: none;">
+                {{ $row->created_at }}
+              </td>
             </tr>
           @empty
           <tr class="unread"><td colspan="4">No active case(s) found.</td></tr>
@@ -100,7 +104,39 @@
   $(".menu-cases").addClass('active');
   $(".submenu-curacall li").removeClass("active");
   $(".submenu-cases-active-cases").addClass('active');
-  fetchCase();
+  // fetchCase();
+
+  var table = document.getElementById("sample-tablex");
+
+  var x = setInterval(
+  function () {
+
+    for (var i = 2, row; row = table.rows[i]; i++) {
+        //iterate through rows
+        //rows would be accessed using the "row" variable assigned in the for loop
+        var endDate = row.cells[4];
+        var countDownDate = new Date(endDate.innerHTML).getTime();
+        var countDown = row.cells[0];
+        // Update the count down every 1 second
+
+        // Get todays date and time
+        var now = new Date().getTime();
+
+        // Find the distance between now an the count down date
+        var distance = now - countDownDate;
+
+        // Time calculations for days, hours, minutes and seconds
+        var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        // Display the result in the element
+        countDown.innerHTML = (days + "d " + hours + "h "
+            + minutes + "m " + seconds + "s ");
+
+    }
+  }, 1000);
 </script>
 
 @endsection 

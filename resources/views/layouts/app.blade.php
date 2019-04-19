@@ -259,11 +259,12 @@
 
                 <div class="category-content no-padding">
                     <ul class="navigation navigation-alt navigation-accordion submenu-curacall">
-                        <li class="submenu-cases-all-cases"><a href="{{ url('/all-cases') }}"><i class="icon-files-empty"></i> All cases <span class="badge badge-default" id="case-count-all"></span></a></li> 
-                        <li class="submenu-cases-active-cases"><a href="{{ url('/active-cases') }}"><i class="icon-file-plus"></i> Active cases <span class="badge badge-danger" style="background-color: #03a9f4; border-color: #03a9f4;" id="case-count-active"></span></a></li> 
-                        <li class="submenu-cases-pending-cases"><a href="{{ url('/pending-cases') }}"><i class="icon-hour-glass"></i> Pending cases <span class="badge badge-warning" style="background-color: #f44336; border-color: #f44336;" id="case-count-pending"></span></a></li>
-                        <li class="submenu-cases-closed-cases"><a href="{{ url('/closed-cases') }}"><i class="icon-file-locked"></i> Closed cases <span class="badge badge-warning" style="background-color: #4caf50; border-color: #4caf50;" id="case-count-closed"></span></a></li>
-                        <li class="submenu-cases-silent-cases"><a href="{{ url('/silent-cases') }}"><i class="icon-volume-mute5"></i> Silent cases <span class="badge badge-warning" style="background-color: #90A4AE; border-color: #90A4AE;" id="case-count-silent">2</span></a></li>
+                        <li class="submenu-cases-all-cases"><a href="{{ url('/all-cases') }}"><i class="icon-files-empty"></i> All cases <span class="badge badge-default" id="case-count-all">0</span></a></li> 
+                        <li class="submenu-cases-silent-cases"><a href="{{ url('/silent-cases') }}"><i class="icon-volume-mute5"></i> Silent cases <span class="badge badge-warning" style="background-color: #90A4AE; border-color: #90A4AE;" id="case-count-silent">0</span></a></li>
+                        <li class="submenu-cases-active-cases"><a href="{{ url('/active-cases') }}"><i class="icon-file-plus"></i> Active cases <span class="badge badge-danger" style="background-color: #03a9f4; border-color: #03a9f4;" id="case-count-active">0</span></a></li> 
+                        <li class="submenu-cases-pending-cases"><a href="{{ url('/pending-cases') }}"><i class="icon-hour-glass"></i> Pending cases <span class="badge badge-warning" style="background-color: #f44336; border-color: #f44336;" id="case-count-pending">0</span></a></li>
+                        <li class="submenu-cases-closed-cases"><a href="{{ url('/closed-cases') }}"><i class="icon-file-locked"></i> Closed cases <span class="badge badge-warning" style="background-color: #4caf50; border-color: #4caf50;" id="case-count-closed">0</span></a></li>
+                        <!-- <li class="submenu-cases-silent-cases"><a href="{{ url('/silent-cases') }}"><i class="icon-volume-mute5"></i> Silent cases <span class="badge badge-warning" style="background-color: #90A4AE; border-color: #90A4AE;" id="case-count-silent">0</span></a></li> -->
                         <!-- <li class="submenu-cases-deleted-cases"><a href="{{ url('/deleted-cases') }}"><i class="icon-bin"></i> Deleted cases</a></li> -->
                     </ul>
                 </div>
@@ -327,6 +328,7 @@
             document.getElementById("case-count-active").innerHTML = res.active_count;
             document.getElementById("case-count-pending").innerHTML = res.pending_count;
             document.getElementById("case-count-closed").innerHTML = res.closed_count; 
+            document.getElementById("case-count-silent").innerHTML = res.silent_count; 
           }
         },
         error: function (data){

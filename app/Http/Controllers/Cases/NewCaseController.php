@@ -436,6 +436,7 @@ class NewCaseController extends Controller
 
     $active_count = Cases::Join('case_participants AS b','cases.id','=','b.case_id')
                     ->where('b.user_id',Auth::user()->id)
+                    ->where('b.is_silent',0) 
                     ->where('cases.status',1)
                     ->select(DB::raw('count(cases.id) as total'))
                     ->get();
@@ -445,18 +446,27 @@ class NewCaseController extends Controller
                       ->where('status',2)
                       ->select(DB::raw('count(*) as total'))
                       ->get();
+
     $closed_count = Cases::Join('case_participants AS b','cases.id','=','b.case_id')
                       ->where('b.user_id',Auth::user()->id)
                       ->where('status',3)
                       ->select(DB::raw('count(*) as total'))
                       ->get();  
 
+    $silent_count = Cases::Join('case_participants AS b','cases.id','=','b.case_id')
+                    ->where('b.user_id',Auth::user()->id)
+                    ->where('b.is_silent',1) 
+                    ->where('cases.status',1)
+                    ->select(DB::raw('count(cases.id) as total'))
+                    ->get();
+
     return json_encode(array(
       "status"=>1,
-      "all_count"=>$active_count[0]->total+$pending_count[0]->total+$closed_count[0]->total,
+      "all_count"=>$active_count[0]->total+$pending_count[0]->total+$closed_count[0]->total+$silent_count[0]->total,
       "active_count"=>$active_count[0]->total,
       "pending_count"=>$pending_count[0]->total,
-      "closed_count"=>$closed_count[0]->total
+      "closed_count"=>$closed_count[0]->total,
+      "silent_count"=>$silent_count[0]->total
     ));
   }
 
