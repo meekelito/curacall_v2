@@ -13,7 +13,7 @@ use Cache;
 use Auth;
 use Validator;
 
-class NewCaseController extends Controller
+class NewCaseController2 extends Controller
 {
   public function index($case_id) 
   {	

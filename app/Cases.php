@@ -8,6 +8,11 @@ class Cases extends Model
 
 {
 	protected $table = 'cases';
-  protected $fillable = ['case_id','account_id','call_type','subcall_type','case_message','status'];
+  	protected $fillable = ['case_id','account_id','call_type','subcall_type','case_message','status'];
+
+  	public function participants()
+	{
+	    return $this->hasMany(Case_participant::class,'case_id','case_id');
+	}
 
 } 

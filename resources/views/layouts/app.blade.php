@@ -6,6 +6,7 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="csrf-token" content="{{ csrf_token() }}">
+  <meta name="userId" content="{{ Auth::check() ? Auth::user()->id : '' }}">
 	<title>CuraCall</title>
   <link rel="shortcut icon" href="{{ asset('assets/images/curacall-ico.png') }}" />
 
@@ -23,6 +24,7 @@
   <!-- <script src="{{ asset('js/core.js') }}"></script> --> 
   <!-- <script  src="{{ asset('js/app.js') }}" type="text/javascript" defer></script>  -->
 	<!-- <script type="text/javascript" src="{{ asset('assets/js/plugins/loaders/pace.min.js') }}" ></script> -->
+  <script  src="{{ asset('js/notification.js') }}" type="text/javascript" defer></script> 
 	<script type="text/javascript" src="{{ asset('assets/js/core/libraries/jquery.min.js') }}" ></script>
 	<script type="text/javascript" src="{{ asset('assets/js/core/libraries/bootstrap.min.js') }}" ></script>
 	<script type="text/javascript" src="{{ asset('assets/js/plugins/loaders/blockui.min.js') }}" ></script>
@@ -80,6 +82,15 @@
 
     body.wait-pointer * {cursor: wait !important;}
     
+    .badge-notif{
+      background-color:#F44336 !important;position: relative;top:-10px;right:10px;
+      height: 15px;
+      width: 15px;
+      border-radius: 50%;
+      display: inline-block;
+      position:relative;
+      top:-5px;
+    }
   </style>
 </head>
 
@@ -99,10 +110,23 @@
 			</ul>
 		</div>
 
+  <div id="notificationapp">
+     <audio id="caseNotificationAudio">
+      <source src="{{ asset('assets/notification/sounds/facebook_notif.mp3') }}" type="audio/mpeg">
+      Your browser does not support the audio element.
+    </audio>
+
+    <audio id="chatNotificationAudio">
+      <source src="{{ asset('assets/notification/sounds/facebook_chat_2016.mp3') }}" type="audio/mpeg">
+      Your browser does not support the audio element.
+    </audio>
+
 		<div class="navbar-collapse collapse" id="navbar-mobile"> 
 			<ul class="nav navbar-nav">
 
         <li><a class="sidebar-control sidebar-main-toggle hidden-xs"><i class="icon-transmission"></i></a></li>
+         <chatnotification v-bind:chatnotifications="chatnotifications"></chatnotification>
+         <notification v-bind:notifications="notifications"></notification>
 			</ul>
 
 			<p class="navbar-text">
@@ -148,6 +172,7 @@
 				</ul>
 			</div>
 		</div>
+  </div>
 	</div>
 	<!-- /main navbar -->
 
@@ -361,6 +386,7 @@
       'csrfToken' => csrf_token(),
       'user' => Auth::user(),
       'pusherKey' => config('broadcasting.connections.pusher.key'),
+      'baseUrl' => url('/')
     ]) !!};
   </script>
 </html>

@@ -9,7 +9,8 @@ use App\Participant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Events\MessageSent;
-
+use App\Notifications\MessageNotification;
+use App\Notification;
 
 
 class ChatsController extends Controller
@@ -85,7 +86,14 @@ class ChatsController extends Controller
 	    'message' => $request->input('message')
 	  ]);
 	  Room::find( $request->input('room_id') )->update(['last_message' => $message->id]);
-		Participant::where('room_id', '=', $request->input('room_id')  )->update(['is_read' => 0]);
+	  Participant::where('room_id', '=', $request->input('room_id')  )->update(['is_read' => 0]);
+
+	  $participants = Participant::where('room_id',$request->input('room_id'))->where('user_id','!=',Auth::user()->id)->get();
+	
+      foreach($participants as $participant)
+      {
+        $participant->user->notify(new MessageNotification($message));
+      }
 
 	  broadcast(new MessageSent($user, $message))->toOthers();
 
