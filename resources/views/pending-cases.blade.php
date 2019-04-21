@@ -109,6 +109,7 @@
 
 var table = document.getElementById("sample-table");
 
+@if(count($cases) > 0)
 var x = setInterval(
 function () {
 
@@ -138,7 +139,7 @@ function () {
 
   }
 }, 1000);
-
+@endif
 </script>
 
 @endsection 

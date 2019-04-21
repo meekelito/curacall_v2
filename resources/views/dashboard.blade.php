@@ -1,14 +1,9 @@
 @extends('layouts.app')
-<style type="text/css">
-  .curacall-nav{
-    /*list-style: none;*/
-    
-  }
-/*  .curacall-nav a{
-    color: #000;
-    padding: 20px;
-  }*/
-</style>
+@section('css')
+  <style type="text/css">
+
+  </style>
+@endsection 
 @section('content')
   <div class="page-header page-header-default">
     <div class="page-header-content">
