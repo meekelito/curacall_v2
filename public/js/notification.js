@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 40);
+/******/ 	return __webpack_require__(__webpack_require__.s = 50);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -42725,542 +42725,298 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(6)))
 
 /***/ }),
-/* 40 */
+/* 40 */,
+/* 41 */,
+/* 42 */,
+/* 43 */,
+/* 44 */,
+/* 45 */,
+/* 46 */,
+/* 47 */,
+/* 48 */,
+/* 49 */,
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(41);
-module.exports = __webpack_require__(49);
+module.exports = __webpack_require__(51);
 
 
 /***/ }),
-/* 41 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/* 51 */
+/***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(12);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vue_chat_scroll__ = __webpack_require__(42);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vue_chat_scroll___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_vue_chat_scroll__);
+
+/**
+ * First we will load all of this project's JavaScript dependencies which
+ * includes Vue and other libraries. It is a great starting point when
+ * building robust, powerful web applications using Vue and Laravel.
+ */
 
 __webpack_require__(13);
 
 window.Vue = __webpack_require__(12);
 
+/**
+ * Next, we will create a fresh Vue application instance and attach it to
+ * the page. Then, you may begin adding components to this application
+ * or customize the JavaScript scaffolding to fit your unique needs.
+ */
 
+var NOTIFICATION_TYPES = {
+    chat: 'App\\Notifications\\MessageNotification',
+    case: 'App\\Notifications\\CaseNotification'
+};
 
-__WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vue_chat_scroll___default.a);
+Vue.component('notification', __webpack_require__(52));
+Vue.component('chatnotification', __webpack_require__(55));
 
-__WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('chat-messages', __webpack_require__(43));
-__WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('chat-form', __webpack_require__(46));
-
-var app = new __WEBPACK_IMPORTED_MODULE_0_vue___default.a({
-    el: '#app',
+var app = new Vue({
+    el: '#notificationapp',
     data: {
-        messages: [],
-        newMessage: '',
-        user: '',
-        typing: false
+        notifications: '',
+        chatnotifications: ''
     },
-
     created: function created() {
-        var _this2 = this;
-
-        this.fetchMessages();
-
-        Echo.private('chat').listen('MessageSent', function (e) {
-            _this2.messages.push({
-                message: e.message.message,
-                user: e.user,
-                created_at: e.message.created_at
-            });
-        });
-
         var _this = this;
 
-        Echo.private('chat').listenForWhisper('typing', function (e) {
-            _this2.user = e.user;
-            _this2.room = e.room;
-            _this2.typing = e.typing;
+        this.fetchChatNotifications();
+        this.fetchNotifications();
 
-            // remove is typing indicator after 0.9s
-            setTimeout(function () {
-                _this.typing = false;
-            }, 900);
+        var userId = $('meta[name="userId"]').attr('content');
+        Echo.private('App.User.' + userId).notification(function (notification) {
+            if (notification.type == NOTIFICATION_TYPES.chat) {
+                _this.chatnotifications.unshift(notification);
+                $('#message-notif2').addClass('badge-notif');
+                document.getElementById('chatNotificationAudio').play();
+            } else {
+                _this.notifications.unshift(notification);
+                $('#case-notif2').addClass('badge-notif');
+
+                try {
+                    dt.search('').draw();
+                } catch (err) {
+                    console.log(err);
+                }
+                var playPromise = document.getElementById('caseNotificationAudio').play();
+
+                // In browsers that don’t yet support this functionality,
+                // playPromise won’t be defined.
+                if (playPromise !== undefined) {
+                    playPromise.then(function () {
+                        //alert('playback');
+                        // Automatic playback started!
+                    }).catch(function (error) {
+                        // alert(error);
+                        // Automatic playback failed.
+                        // Show a UI element to let the user manually start playback.
+                    });
+                }
+            }
+
+            console.log(notification.type);
         });
     },
 
-
     methods: {
-        fetchMessages: function fetchMessages() {
+        fetchNotifications: function fetchNotifications() {
+            var _this2 = this;
+
+            axios.post(Laravel.baseUrl + '/notification/get').then(function (response) {
+                _this2.notifications = response.data;
+            });
+        },
+        fetchChatNotifications: function fetchChatNotifications() {
             var _this3 = this;
 
-            var room_id = document.getElementById('room').value;
-            axios.get(Laravel.baseUrl + '/messages?room=' + room_id).then(function (response) {
-                _this3.messages = response.data;
+            axios.post(Laravel.baseUrl + '/notification/chat/get').then(function (response) {
+                _this3.chatnotifications = response.data;
             });
         },
-        addMessage: function addMessage(message) {
+        readNotifications: function readNotifications(message) {
             this.messages.push(message);
             axios.post(Laravel.baseUrl + '/messages', message).then(function (response) {
-                // console.log(response.data);
+                console.log(response.data);
+            });
+        },
+        test: function test() {
+            alert('a');
+        }
+    }
+});
+
+/***/ }),
+/* 52 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(11)
+/* script */
+var __vue_script__ = __webpack_require__(53)
+/* template */
+var __vue_template__ = __webpack_require__(54)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/js/components/Notification.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-6a4ce154", Component.options)
+  } else {
+    hotAPI.reload("data-v-6a4ce154", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 53 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    props: ['notifications'],
+    methods: {
+        MarkAsRead: function MarkAsRead(notification) {
+            var data = {
+                id: notification.id
+            };
+            axios.post('/notification/read', data).then(function (response) {
+                window.location.href = notification.data.action_url;
             });
         }
     }
 });
 
 /***/ }),
-/* 42 */
-/***/ (function(module, exports, __webpack_require__) {
-
-(function (global, factory) {
-	 true ? module.exports = factory() :
-	typeof define === 'function' && define.amd ? define(factory) :
-	(global['vue-chat-scroll'] = factory());
-}(this, (function () { 'use strict';
-
-/**
-* @name VueJS vChatScroll (vue-chat-scroll)
-* @description Monitors an element and scrolls to the bottom if a new child is added
-* @author Theodore Messinezis <theo@theomessin.com>
-* @file v-chat-scroll  directive definition
-*/
-
-var scrollToBottom = function scrollToBottom(el, smooth) {
-  el.scroll({
-    top: el.scrollHeight,
-    behavior: smooth ? 'smooth' : 'instant'
-  });
-};
-
-var vChatScroll = {
-  bind: function bind(el, binding) {
-    var scrolled = false;
-
-    el.addEventListener('scroll', function (e) {
-      scrolled = el.scrollTop + el.clientHeight + 1 < el.scrollHeight;
-    });
-
-    new MutationObserver(function (e) {
-      var config = binding.value || {};
-      var pause = config.always === false && scrolled;
-      if (pause || e[e.length - 1].addedNodes.length != 1) return;
-      scrollToBottom(el, config.smooth);
-    }).observe(el, { childList: true });
-  },
-  inserted: scrollToBottom
-};
-
-/**
-* @name VueJS vChatScroll (vue-chat-scroll)
-* @description Monitors an element and scrolls to the bottom if a new child is added
-* @author Theodore Messinezis <theo@theomessin.com>
-* @file vue-chat-scroll plugin definition
-*/
-
-var VueChatScroll = {
-  install: function install(Vue, options) {
-    Vue.directive('chat-scroll', vChatScroll);
-  }
-};
-
-if (typeof window !== 'undefined' && window.Vue) {
-  window.Vue.use(VueChatScroll);
-}
-
-return VueChatScroll;
-
-})));
-
-
-/***/ }),
-/* 43 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-var normalizeComponent = __webpack_require__(11)
-/* script */
-var __vue_script__ = __webpack_require__(44)
-/* template */
-var __vue_template__ = __webpack_require__(45)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = null
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/js/components/ChatMessages.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-e422daa2", Component.options)
-  } else {
-    hotAPI.reload("data-v-e422daa2", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 44 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['messages', 'user'],
-
-    methods: {
-        formatTime: function formatTime(time) {
-            var previousTime = moment(time, 'YYYY-MM-DD HH:mm:ss').format('x');
-            var timeDifference = moment(previousTime, 'x').fromNow();
-            return timeDifference;
-        }
-    }
-});
-
-/***/ }),
-/* 45 */
+/* 54 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "ul",
-    {
-      directives: [{ name: "chat-scroll", rawName: "v-chat-scroll" }],
-      staticClass: "chat media-list chat-list content-group"
-    },
-    _vm._l(_vm.messages, function(message) {
-      return _c(
-        "li",
-        { class: { "media reversed": message.user.id == _vm.user } },
-        [
-          message.user.id == _vm.user
-            ? _c("div", [
-                _c("div", { staticClass: "media-body" }, [
-                  _c("div", { staticClass: "media-content" }, [
-                    _vm._v(_vm._s(message.message))
-                  ]),
-                  _vm._v(" "),
-                  _c(
-                    "span",
-                    { staticClass: "media-annotation display-block mt-10" },
-                    [
-                      _vm._v(_vm._s(_vm.formatTime(message.created_at))),
-                      _vm._m(0, true)
-                    ]
-                  )
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "media-right" }, [
-                  _c(
-                    "span",
-                    { staticClass: "btn bg-primary btn-rounded btn-icon" },
-                    [
-                      _c("span", { staticClass: "letter-icon" }, [
-                        _vm._v(
-                          _vm._s(message.user.fname.charAt(0).toUpperCase())
-                        )
-                      ])
-                    ]
-                  )
-                ])
-              ])
-            : _c("div", [
-                _c("div", { staticClass: "media-left" }, [
-                  _c(
-                    "span",
-                    { staticClass: "btn bg-brown-400 btn-rounded btn-icon" },
-                    [
-                      _c("span", { staticClass: "letter-icon" }, [
-                        _vm._v(
-                          _vm._s(message.user.fname.charAt(0).toUpperCase())
-                        )
-                      ])
-                    ]
-                  )
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "media-body" }, [
-                  _c("div", { staticClass: "media-content" }, [
-                    _vm._v(_vm._s(message.message))
-                  ]),
-                  _vm._v(" "),
-                  _c(
-                    "span",
-                    { staticClass: "media-annotation display-block mt-10" },
-                    [
-                      _vm._v(_vm._s(_vm.formatTime(message.created_at)) + " "),
-                      _vm._m(1, true)
-                    ]
-                  )
-                ])
-              ])
-        ]
-      )
-    })
-  )
-}
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("a", { attrs: { href: "#" } }, [
-      _c("i", { staticClass: "icon-pin-alt position-right text-muted" })
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("a", { attrs: { href: "#" } }, [
-      _c("i", { staticClass: "icon-pin-alt position-right text-muted" })
-    ])
-  }
-]
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-e422daa2", module.exports)
-  }
-}
-
-/***/ }),
-/* 46 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-var normalizeComponent = __webpack_require__(11)
-/* script */
-var __vue_script__ = __webpack_require__(47)
-/* template */
-var __vue_template__ = __webpack_require__(48)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = null
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/js/components/ChatForm.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-6fb73fa7", Component.options)
-  } else {
-    hotAPI.reload("data-v-6fb73fa7", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 47 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-  props: ['user', 'room_id'],
-
-  data: function data() {
-    return {
-      newMessage: ''
-    };
-  },
-
-
-  methods: {
-    sendMessage: function sendMessage() {
-      var time = moment().format('YYYY-MM-DD HH:mm:ss');
-      this.$emit('messagesent', {
-        user: this.user,
-        room_id: this.room_id,
-        message: this.newMessage,
-        created_at: time
-      });
-
-      this.newMessage = '';
-    },
-    isTyping: function isTyping(room) {
-      var channel = Echo.private('chat');
-
-      setTimeout(function () {
-        channel.whisper('typing', {
-          user: Laravel.user,
-          room: room,
-          typing: true
-        });
-      }, 300);
-    }
-  }
-});
-
-/***/ }),
-/* 48 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c("div", [
-    _c("textarea", {
-      directives: [
-        {
-          name: "model",
-          rawName: "v-model",
-          value: _vm.newMessage,
-          expression: "newMessage"
-        }
-      ],
-      staticClass: "form-control content-group",
-      attrs: {
-        name: "message",
-        id: "btn-input",
-        rows: "3",
-        cols: "1",
-        placeholder: "Type your message here..."
-      },
-      domProps: { value: _vm.newMessage },
-      on: {
-        keyup: function($event) {
-          if (
-            !("button" in $event) &&
-            _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
-          ) {
-            return null
-          }
-          return _vm.sendMessage($event)
-        },
-        keydown: function($event) {
-          _vm.isTyping(_vm.room_id)
-        },
-        input: function($event) {
-          if ($event.target.composing) {
-            return
-          }
-          _vm.newMessage = $event.target.value
-        }
-      }
-    }),
+  return _c("li", { staticClass: "dropdown" }, [
+    _vm._m(0),
     _vm._v(" "),
-    _c("div", { staticClass: "row" }, [
-      _vm._m(0),
+    _c("div", { staticClass: "dropdown-menu dropdown-content" }, [
+      _vm._m(1),
       _vm._v(" "),
-      _c("div", { staticClass: "col-xs-6 text-right" }, [
-        _c(
-          "button",
-          {
-            staticClass: "btn bg-teal-400 btn-labeled btn-labeled-right",
-            attrs: { id: "btn-chat" },
-            on: { click: _vm.sendMessage }
-          },
-          [_vm._m(1), _vm._v(" Send")]
-        )
-      ])
+      _c(
+        "ul",
+        {
+          staticClass:
+            "notification-list media-list dropdown-content-body width-350"
+        },
+        _vm._l(_vm.notifications, function(notification) {
+          return _c(
+            "li",
+            {
+              staticClass: "media",
+              class: [notification.is_read == 0 ? "new" : ""]
+            },
+            [
+              _c("div", { staticClass: "media-left" }, [
+                _c("img", {
+                  staticClass: "img-circle",
+                  attrs: {
+                    width: "30",
+                    src:
+                      "/storage/uploads/users/" + notification.data.from_image,
+                    alt: ""
+                  }
+                })
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "media-body" }, [
+                _c(
+                  "a",
+                  {
+                    on: {
+                      click: function($event) {
+                        _vm.MarkAsRead(notification)
+                      }
+                    }
+                  },
+                  [
+                    _c("div", { staticClass: "text-muted" }, [
+                      _vm._v(_vm._s(notification.data.message))
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "media-annotation" }, [
+                      _vm._v(_vm._s(notification.created_at))
+                    ])
+                  ]
+                )
+              ])
+            ]
+          )
+        })
+      ),
+      _vm._v(" "),
+      _vm._m(2)
     ])
   ])
 }
@@ -43269,66 +43025,37 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "col-xs-6" }, [
-      _c("ul", { staticClass: "icons-list icons-list-extended mt-10" }, [
-        _c("li", [
-          _c(
-            "a",
-            {
-              attrs: {
-                href: "#",
-                "data-popup": "tooltip",
-                title: "Send photo",
-                "data-container": "body"
-              }
-            },
-            [_c("i", { staticClass: "icon-file-picture" })]
-          )
+    return _c(
+      "a",
+      {
+        staticClass: "dropdown-toggle",
+        attrs: { href: "#", "data-toggle": "dropdown" }
+      },
+      [
+        _c("i", { staticClass: "icon-bell2" }),
+        _vm._v(" "),
+        _c("span", { staticClass: "visible-xs-inline-block position-right" }, [
+          _vm._v("Notifications")
         ]),
         _vm._v(" "),
+        _c("span", {
+          staticClass: "bg-warning-400",
+          attrs: { id: "case-notif2" }
+        })
+      ]
+    )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "dropdown-content-heading" }, [
+      _vm._v("\r\n              Notifications\r\n              "),
+      _c("ul", { staticClass: "icons-list" }, [
         _c("li", [
-          _c(
-            "a",
-            {
-              attrs: {
-                href: "#",
-                "data-popup": "tooltip",
-                title: "Send video",
-                "data-container": "body"
-              }
-            },
-            [_c("i", { staticClass: "icon-file-video" })]
-          )
-        ]),
-        _vm._v(" "),
-        _c("li", [
-          _c(
-            "a",
-            {
-              attrs: {
-                href: "#",
-                "data-popup": "tooltip",
-                title: "Send file",
-                "data-container": "body"
-              }
-            },
-            [_c("i", { staticClass: "icon-file-plus" })]
-          )
-        ]),
-        _vm._v(" "),
-        _c("li", [
-          _c(
-            "a",
-            {
-              attrs: {
-                href: "#",
-                "data-popup": "tooltip",
-                title: "Mark as urgent",
-                "data-container": "body"
-              }
-            },
-            [_c("i", { staticClass: "icon-bubble-notification" })]
-          )
+          _c("a", { attrs: { href: "#" } }, [
+            _c("i", { staticClass: "icon-sync" })
+          ])
         ])
       ])
     ])
@@ -43337,7 +43064,15 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("b", [_c("i", { staticClass: "icon-circle-right2" })])
+    return _c("div", { staticClass: "dropdown-content-footer" }, [
+      _c(
+        "a",
+        {
+          attrs: { href: "#", "data-popup": "tooltip", title: "All Messages" }
+        },
+        [_c("i", { staticClass: "icon-menu display-block" })]
+      )
+    ])
   }
 ]
 render._withStripped = true
@@ -43345,15 +43080,245 @@ module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
   module.hot.accept()
   if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-6fb73fa7", module.exports)
+    require("vue-hot-reload-api")      .rerender("data-v-6a4ce154", module.exports)
   }
 }
 
 /***/ }),
-/* 49 */
-/***/ (function(module, exports) {
+/* 55 */
+/***/ (function(module, exports, __webpack_require__) {
 
-// removed by extract-text-webpack-plugin
+var disposed = false
+var normalizeComponent = __webpack_require__(11)
+/* script */
+var __vue_script__ = __webpack_require__(56)
+/* template */
+var __vue_template__ = __webpack_require__(57)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/js/components/ChatNotification.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-d0185564", Component.options)
+  } else {
+    hotAPI.reload("data-v-d0185564", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 56 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    props: ['chatnotifications'],
+    methods: {
+        MarkAsRead: function MarkAsRead(notification) {
+            var data = {
+                id: notification.id
+            };
+            axios.post('/notification/chat/read', data).then(function (response) {
+                window.location.href = notification.data.action_url;
+            });
+        }
+    }
+});
+
+/***/ }),
+/* 57 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("li", { staticClass: "dropdown" }, [
+    _c(
+      "a",
+      {
+        staticClass: "dropdown-toggle",
+        attrs: { href: "#", "data-toggle": "dropdown" }
+      },
+      [
+        _c("i", {
+          staticClass: "icon-bubbles4",
+          on: { click: function($event) {} }
+        }),
+        _vm._v(" "),
+        _c("span", { staticClass: "visible-xs-inline-block position-right" }, [
+          _vm._v("Messages")
+        ]),
+        _vm._v(" "),
+        _c("span", {
+          staticClass: "bg-warning-400",
+          attrs: { id: "message-notif2" }
+        })
+      ]
+    ),
+    _vm._v(" "),
+    _c("div", { staticClass: "dropdown-menu dropdown-content" }, [
+      _vm._m(0),
+      _vm._v(" "),
+      _c(
+        "ul",
+        {
+          staticClass:
+            "notification-list media-list dropdown-content-body width-350"
+        },
+        _vm._l(_vm.chatnotifications, function(notification) {
+          return _c(
+            "li",
+            {
+              staticClass: "media",
+              class: [notification.is_read == 0 ? "new" : ""]
+            },
+            [
+              _c("div", { staticClass: "media-left" }, [
+                _c("img", {
+                  staticClass: "img-circle",
+                  attrs: {
+                    width: "30",
+                    src:
+                      "/storage/uploads/users/" + notification.data.from_image,
+                    alt: ""
+                  }
+                })
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "media-body" }, [
+                _c(
+                  "a",
+                  {
+                    on: {
+                      click: function($event) {
+                        _vm.MarkAsRead(notification)
+                      }
+                    }
+                  },
+                  [_vm._v(_vm._s(notification.data.from_name))]
+                ),
+                _vm._v(" "),
+                _c("div", { staticClass: "text-muted" }, [
+                  _vm._v(_vm._s(notification.data.message))
+                ]),
+                _vm._v(" "),
+                _c("div", { staticClass: "media-annotation" }, [
+                  _vm._v(_vm._s(notification.created_at))
+                ])
+              ])
+            ]
+          )
+        })
+      ),
+      _vm._v(" "),
+      _vm._m(1)
+    ])
+  ])
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "dropdown-content-heading" }, [
+      _vm._v("\r\n              Messages\r\n              "),
+      _c("ul", { staticClass: "icons-list" }, [
+        _c("li", [
+          _c("a", { attrs: { href: "#" } }, [
+            _c("i", { staticClass: "icon-sync" })
+          ])
+        ])
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "dropdown-content-footer" }, [
+      _c(
+        "a",
+        {
+          attrs: { href: "#", "data-popup": "tooltip", title: "All Messages" }
+        },
+        [_c("i", { staticClass: "icon-menu display-block" })]
+      )
+    ])
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-d0185564", module.exports)
+  }
+}
 
 /***/ })
 /******/ ]);

@@ -10,9 +10,9 @@ window.Popper = require('popper.js').default;
  */
 
 try {
-    window.$ = window.jQuery = require('jquery');
+    //window.$ = window.jQuery = require('jquery');
     
-    require('bootstrap');
+    //require('bootstrap');
 } catch (e) {}
 
 
@@ -54,5 +54,6 @@ window.Echo = new Echo({
     broadcaster: 'pusher',
     key: process.env.MIX_PUSHER_APP_KEY,
     cluster: process.env.MIX_PUSHER_APP_CLUSTER,
-    encrypted: true
+    encrypted: true,
+    authEndpoint: Laravel.baseUrl + '/broadcasting/auth'
 });

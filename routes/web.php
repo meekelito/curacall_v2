@@ -20,6 +20,15 @@ Route::post('login', 'Auth\LoginController@login')->name('login');
 Route::post('logout', 'Auth\LoginController@logout')->name('logout');
 
 Route::group(['middleware' => array('auth')], function () {
+    Route::post('/notification/chat/get', 'NotificationController@chatget');
+    Route::post('/notification/chat/read', 'NotificationController@chatread');
+    Route::get('/notification/chat', 'NotificationController@chatnotifications');
+    Route::get('/notification/create', 'NotificationController@addnotification');
+
+    Route::post('/notification/get', 'NotificationController@get');
+    Route::post('/notification/read', 'NotificationController@read');
+    Route::get('/notification', 'NotificationController@notifications');
+
 	Route::get('dashboard','Dashboard\DashboardController@index');
 	Route::get('new-message','Messages\NewMessageController@index');
 	Route::post('new-message','Messages\NewMessageController@createMessage');
@@ -27,8 +36,8 @@ Route::group(['middleware' => array('auth')], function () {
 
 	Route::post('close-message','Messages\ClosedMessagesController@closeMessage');
 
-	Route::get('messages/room/{id}', 'ChatsController@index');
-	Route::get('messages/new/{id}', 'ChatsController@createMessage');
+    Route::get('messages/room/{id}', 'ChatsController@index')->name('chat.room');
+    Route::get('messages/new/{id}', 'ChatsController@createMessage')->name('chat.create');
 	Route::get('messages', 'ChatsController@fetchMessages');
 	Route::post('messages', 'ChatsController@sendMessage');
 
@@ -43,7 +52,7 @@ Route::group(['middleware' => array('auth')], function () {
 
     Route::post('fetch-case','Cases\NewCaseController@fetchCase');
 
-    Route::get('cases/case_id/{id}','Cases\NewCaseController@index');
+    Route::get('cases/case_id/{id}','Cases\NewCaseController@index')->name('case');
     Route::get('case/notes/{id}','Cases\NewCaseController@fetchNotes');
     Route::get('case/participants/{id}','Cases\NewCaseController@fetchParticipants');
     Route::post('case/new-note', 'Cases\NewCaseController@newNote');
