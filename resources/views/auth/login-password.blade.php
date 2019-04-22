@@ -78,7 +78,7 @@
 							<div class="form-group login-options">
 								<div class="row">
 									<div class="col-sm-6">
-										<a>Forgot password?</a>
+										<a href="{{ route('password.request') }}">Forgot Password?</a>
 									</div>
 								</div>
 							</div>
