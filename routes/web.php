@@ -10,16 +10,19 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::group(['middleware' => ['nocache']], function () {
+    Auth::routes(['verify' => true, 'register' => false]);
+    
+    Route::get('/', 'Auth\LoginController@showEmailForm' )->name('login'); 
+    Route::get('login', 'Auth\LoginController@showEmailForm' )->name('login-email'); 
 
-Route::get('/', 'Auth\LoginController@showEmailForm' )->name('login'); 
-Route::get('login', 'Auth\LoginController@showEmailForm' )->name('login-email'); 
+    Route::post('login/email', 'Auth\LoginController@loginEmail' )->name('login-email'); 
+    Route::get('login/password', 'Auth\LoginController@showPasswordForm'); 
+    Route::post('login', 'Auth\LoginController@login')->name('login'); 
+    Route::post('logout', 'Auth\LoginController@logout')->name('logout');
+});
 
-Route::post('login/email', 'Auth\LoginController@loginEmail' )->name('login-email'); 
-Route::get('login/password', 'Auth\LoginController@showPasswordForm'); 
-Route::post('login', 'Auth\LoginController@login')->name('login'); 
-Route::post('logout', 'Auth\LoginController@logout')->name('logout');
-
-Route::group(['middleware' => array('auth')], function () {
+Route::group(['middleware' => array('auth','nocache')], function () {
     Route::post('/notification/chat/get', 'NotificationController@chatget');
     Route::post('/notification/chat/read', 'NotificationController@chatread');
     Route::get('/notification/chat', 'NotificationController@chatnotifications');
