@@ -10,7 +10,7 @@
             <div class="dropdown-content-heading">
               Messages
               <ul class="icons-list">
-                <li><a href="#"><i class="icon-sync"></i></a></li>
+                <li><a href="/new-message"><i class="icon-pencil5"></i></a></li>
               </ul>
             </div>
 
