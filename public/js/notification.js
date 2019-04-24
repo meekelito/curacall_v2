@@ -42782,6 +42782,9 @@ var app = new Vue({
 
         var userId = $('meta[name="userId"]').attr('content');
         Echo.private('App.User.' + userId).notification(function (notification) {
+
+            document.title = document.title + ' (1)';
+
             if (notification.type == NOTIFICATION_TYPES.chat) {
                 _this.chatnotifications.unshift(notification);
                 $('#message-notif2').addClass('badge-notif');

@@ -36,6 +36,9 @@ const app = new Vue({
 
         var userId = $('meta[name="userId"]').attr('content');
         Echo.private('App.User.' + userId).notification((notification) => {
+
+                document.title = document.title + ' (1)';
+                
                 if(notification.type == NOTIFICATION_TYPES.chat)
                 {
                     this.chatnotifications.unshift(notification);

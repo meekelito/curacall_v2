@@ -324,12 +324,13 @@ class NewCaseController extends Controller
         $message = str_replace("[from_name]",Auth::user()->fname . ' ' . Auth::user()->lname,__('notification.new_note'));
         $message = str_replace("[case_id]",$request->case_id,$message);
         $arr = array(
-            'from_id'   => Auth::user()->id,
+            'from_id'     => Auth::user()->id,
             'from_name'   => Auth::user()->fname . ' ' . Auth::user()->lname,
-            'from_image' => Auth::user()->prof_img,
-            'case_id'   => $request->case_id,
-            'message' =>    $message,
-            'action_url'    => route('case',[$request->case_id])
+            'from_image'  => Auth::user()->prof_img,
+            'case_id'     => $request->case_id,
+            'message'     =>    $message,
+            'type'        =>  'added_note',
+            'action_url'  => route('case',[$request->case_id])
         );
 
 
@@ -516,10 +517,7 @@ class NewCaseController extends Controller
 
     // compare the participants and recipients if existing update the ownership if not insert to participants 
 
-    $participants_id = Case_participant::where("case_id",$request->case_id)
-    ->select('user_id')
-    ->get();
-
+    $participants_id = Case_participant::select('user_id')->where("case_id",$request->case_id)->where('user_id','!=',Auth::user()->id)->get();
 
     $participants = array();
     $update = array();
@@ -529,6 +527,10 @@ class NewCaseController extends Controller
       $participants[] = $row->user_id;
     }
 
+   
+
+    $forwarded_recipients = array(); // list of forwarded users
+    // update all participants ownership state to Forwarded
     foreach ($request->recipient as $row) {
       if (in_array($row, $participants)){ 
         Case_participant::where('case_id', $request->case_id)
@@ -537,8 +539,40 @@ class NewCaseController extends Controller
       }else{ 
         Case_participant::create( ["case_id" => $request->case_id,"user_id" => $row, 'ownership' => 2 ] ); 
       } 
+
+        $user = User::find($row);
+        $user_info = array(  
+                        "id"    =>  $user->id,
+                        "name"  =>  $user->fname . ' ' . $user->lname
+                      );
+
+        array_push($forwarded_recipients,$user_info); // add notifiable user info into array
+        
     }
 
+     /** Notification message template **/
+      $message = str_replace("[from_name]",Auth::user()->fname . ' ' . Auth::user()->lname,__('notification.forward_case'));
+      $message = str_replace("[case_id]",$request->case_id,$message);
+      $arr = array(
+          'from_id'     => Auth::user()->id,
+          'from_name'   => Auth::user()->fname . ' ' . Auth::user()->lname,
+          'from_image'  => Auth::user()->prof_img,
+          'case_id'     => $request->case_id,
+          'message'     => $message,
+          'type'        => 'forward_case',
+          'forward_to'  => $forwarded_recipients,
+          'action_url'  => route('case',[$request->case_id])
+      );
+    /** END Notification message template **/
+
+    // Notify all participants of the case except you
+    foreach($participants as $row)
+    {
+         $user = User::find($row);
+         $user->notify(new CaseNotification($arr)); // Notify participant
+    }
+
+      // update the forwarder participant ownership state to Forwarded owner
     $res=Case_participant::where('case_id', $request->case_id)
     ->where('user_id', Auth::user()->id  )
     ->update(['ownership' => 6]); 

@@ -11,7 +11,7 @@
 |
 */
 Route::group(['middleware' => ['nocache']], function () {
-    Auth::routes(['verify' => true, 'register' => false]);
+   // Auth::routes(['verify' => true, 'register' => false]);
     
     Route::get('/', 'Auth\LoginController@showEmailForm' )->name('login'); 
     Route::get('login', 'Auth\LoginController@showEmailForm' )->name('login-email'); 
