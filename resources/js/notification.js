@@ -45,15 +45,50 @@ const app = new Vue({
                     $('#message-notif2').addClass('badge-notif');
                     document.getElementById('chatNotificationAudio').play();
                 }else{
+                  //case notifications below
+
                     this.notifications.unshift(notification);
                     $('#case-notif2').addClass('badge-notif');
+                    //console.log(window.location.pathname + window.location.search);
+                    var current_url = window.location.pathname + window.location.search;
+                    if(current_url == "/cases/case_id/"+notification.data.case_id){
+                      console.log("reload events executed in this page");
+                          /** execute events below based on type **/
+                          switch(notification.data.type)
+                          {
+                            case "added_note":
+                                try{
+                                  dt.search('').draw();
+                                }catch(err)
+                                {
+                                  console.log(err); 
+                                }
+                            break;
+                            case "accept_case":
+                                try{
+                                   fetchCase();
+                                }catch(err)
+                                {
+                                  console.log(err); 
+                                }
+                            break;
+                            case "forward_case":
+                               try{
+                                   fetchCase();
+                                }catch(err)
+                                {
+                                  console.log(err); 
+                                }
+                            break;
+                            default:
 
-                    try{
-                    dt.search('').draw();
-                    }catch(err)
-                    {
-                      console.log(err); 
+                          }
+
                     }
+                     
+                  
+
+                   
                     var playPromise = document.getElementById('caseNotificationAudio').play();
 
                     // In browsers that don’t yet support this functionality,
@@ -71,7 +106,7 @@ const app = new Vue({
 
                 }
             
-              console.log(notification.type);
+              //console.log(notification.type);
         });
     },
     methods: {

@@ -152,9 +152,21 @@ class NewCaseController extends Controller
         "message"=>"This case is already taken by ".$name
       ));
     }
-    $count = Case_participant::where("case_id",$request->case_id)->get();
+    $participants = Case_participant::where("case_id",$request->case_id)->where('user_id','!=',Auth::user()->id)->get();
+ 
+        $message = str_replace("[from_name]",Auth::user()->fname . ' ' . Auth::user()->lname,__('notification.accept_case'));
+        $message = str_replace("[case_id]",$request->case_id,$message);
+        $arr = array(
+            'from_id'     => Auth::user()->id,
+            'from_name'   => Auth::user()->fname . ' ' . Auth::user()->lname,
+            'from_image'  => Auth::user()->prof_img,
+            'case_id'     => $request->case_id,
+            'message'     =>    $message,
+            'type'        =>  'accept_case',
+            'action_url'  => route('case',[$request->case_id])
+        );
 
-    if( $count->count() > 1 ){
+    if( $participants->count() > 1 ){
       
       $update_res = Case_participant::where('case_id', $request->case_id)
       // ->where('ownership', 2 )
@@ -164,6 +176,16 @@ class NewCaseController extends Controller
       $update_res = Case_participant::where('case_id', $request->case_id)
       ->where('user_id', Auth::user()->id )
       ->update(['ownership' => 3]);
+
+      /** Notify case participants that the case was accepted **/
+      if($update_res)
+      {
+          foreach($participants as $row)
+          {
+               $user = User::find($row->user_id);
+               $user->notify(new CaseNotification($arr)); // Notify participant
+          }
+      }
     }
 
     $res = Case_history::create( ["is_visible"=>1,"status"=>2,"case_id" => $request->case_id,"action_note" => "Case Accepted", 'created_by' => Auth::user()->id ] ); 
@@ -558,17 +580,29 @@ class NewCaseController extends Controller
           'from_name'   => Auth::user()->fname . ' ' . Auth::user()->lname,
           'from_image'  => Auth::user()->prof_img,
           'case_id'     => $request->case_id,
-          'message'     => $message,
+          //'message'     => $message,
           'type'        => 'forward_case',
           'forward_to'  => $forwarded_recipients,
           'action_url'  => route('case',[$request->case_id])
       );
     /** END Notification message template **/
 
+    $other_participant_count = count($request->recipient) - 1;
     // Notify all participants of the case except you
     foreach($participants as $row)
     {
          $user = User::find($row);
+         if(in_array($user->id,$request->recipient))
+         {
+            $str_recipients = " You";
+
+            if(count($request->recipient) > 1){
+              $str_recipients = " You and " . $other_participant_count;
+              $str_recipients .= ($other_participant_count == 1) ? " Other" : " Others";
+            }
+
+         }
+           $arr['message'] = $message . $str_recipients;
          $user->notify(new CaseNotification($arr)); // Notify participant
     }
 
