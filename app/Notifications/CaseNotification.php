@@ -31,7 +31,7 @@ class CaseNotification extends Notification
      */
     public function via($notifiable)
     {
-        return [CustomDbChannel::class,'broadcast'];
+        return [CaseDbChannel::class,'broadcast'];
     }
 
     /**

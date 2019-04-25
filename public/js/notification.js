@@ -42777,6 +42777,8 @@ var app = new Vue({
     created: function created() {
         var _this = this;
 
+        this.countNotifications();
+        this.countChatNotifications();
         this.fetchChatNotifications();
         this.fetchNotifications();
 
@@ -42786,14 +42788,18 @@ var app = new Vue({
             document.title = document.title + ' (1)';
 
             if (notification.type == NOTIFICATION_TYPES.chat) {
-                _this.chatnotifications.unshift(notification);
+                //this.chatnotifications.unshift(notification);
                 $('#message-notif2').addClass('badge-notif');
+                _this.fetchChatNotifications();
+
                 document.getElementById('chatNotificationAudio').play();
             } else {
                 //case notifications below
 
-                _this.notifications.unshift(notification);
+                //this.notifications.unshift(notification);
                 $('#case-notif2').addClass('badge-notif');
+                _this.fetchNotifications();
+
                 //console.log(window.location.pathname + window.location.search);
                 var current_url = window.location.pathname + window.location.search;
                 if (current_url == "/cases/case_id/" + notification.data.case_id) {
@@ -42847,6 +42853,16 @@ var app = new Vue({
     },
 
     methods: {
+        countNotifications: function countNotifications() {
+            axios.post(Laravel.baseUrl + '/notification/count').then(function (response) {
+                if (response.data > 0) $('#case-notif2').addClass('badge-notif');
+            });
+        },
+        countChatNotifications: function countChatNotifications() {
+            axios.post(Laravel.baseUrl + '/notification/chat/count').then(function (response) {
+                if (response.data > 0) $('#message-notif2').addClass('badge-notif');
+            });
+        },
         fetchNotifications: function fetchNotifications() {
             var _this2 = this;
 

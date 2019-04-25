@@ -88,11 +88,15 @@ class ChatsController extends Controller
 	  Room::find( $request->input('room_id') )->update(['last_message' => $message->id]);
 	  Participant::where('room_id', '=', $request->input('room_id')  )->update(['is_read' => 0]);
 
+	  $isgroupchat = false;
 	  $participants = Participant::where('room_id',$request->input('room_id'))->where('user_id','!=',Auth::user()->id)->get();
-	
+		if($participants->count() > 1)
+			$isgroupchat = true;
+
       foreach($participants as $participant)
       {
-        $participant->user->notify(new MessageNotification($message));
+
+        $participant->user->notify(new MessageNotification($message,$isgroupchat));
       }
 
 	  broadcast(new MessageSent($user, $message))->toOthers();

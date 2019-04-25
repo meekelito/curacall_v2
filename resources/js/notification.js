@@ -30,9 +30,11 @@ const app = new Vue({
         chatnotifications: '',
     },
     created() {
+        this.countNotifications();
+        this.countChatNotifications();
         this.fetchChatNotifications();
         this.fetchNotifications();
-    
+       
 
         var userId = $('meta[name="userId"]').attr('content');
         Echo.private('App.User.' + userId).notification((notification) => {
@@ -41,14 +43,18 @@ const app = new Vue({
                 
                 if(notification.type == NOTIFICATION_TYPES.chat)
                 {
-                    this.chatnotifications.unshift(notification);
-                    $('#message-notif2').addClass('badge-notif');
+                    //this.chatnotifications.unshift(notification);
+                       $('#message-notif2').addClass('badge-notif');
+                      this.fetchChatNotifications();
+                    
                     document.getElementById('chatNotificationAudio').play();
                 }else{
                   //case notifications below
 
-                    this.notifications.unshift(notification);
-                    $('#case-notif2').addClass('badge-notif');
+                    //this.notifications.unshift(notification);
+                     $('#case-notif2').addClass('badge-notif');
+                     this.fetchNotifications();
+                    
                     //console.log(window.location.pathname + window.location.search);
                     var current_url = window.location.pathname + window.location.search;
                     if(current_url == "/cases/case_id/"+notification.data.case_id){
@@ -110,17 +116,28 @@ const app = new Vue({
         });
     },
     methods: {
-      fetchNotifications() {
+      countNotifications()
+      {
+         axios.post(Laravel.baseUrl +'/notification/count').then(response => {
+           if(response.data > 0)
+              $('#case-notif2').addClass('badge-notif');
+        });
+      },
+      countChatNotifications()
+      {
+         axios.post(Laravel.baseUrl +'/notification/chat/count').then(response => {
+           if(response.data > 0)
+              $('#message-notif2').addClass('badge-notif');
+        });
+      },
 
-        
+      fetchNotifications() {  
         axios.post(Laravel.baseUrl +'/notification/get').then(response => {
             this.notifications = response.data;
         });
       },
 
       fetchChatNotifications() {
-
-        
         axios.post(Laravel.baseUrl +'/notification/chat/get').then(response => {
             this.chatnotifications = response.data;
         });

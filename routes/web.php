@@ -25,12 +25,13 @@ Route::group(['middleware' => ['nocache']], function () {
 Route::group(['middleware' => array('auth','nocache')], function () {
     Route::post('/notification/chat/get', 'NotificationController@chatget');
     Route::post('/notification/chat/read', 'NotificationController@chatread');
-    Route::get('/notification/chat', 'NotificationController@chatnotifications');
-    Route::get('/notification/create', 'NotificationController@addnotification');
+    //Route::get('/notification/chat', 'NotificationController@chatnotifications');
+    //Route::get('/notification/create', 'NotificationController@addnotification');
 
     Route::post('/notification/get', 'NotificationController@get');
     Route::post('/notification/read', 'NotificationController@read');
-    Route::get('/notification', 'NotificationController@notifications');
+    Route::post('/notification/chat/count', 'NotificationController@chatcount');
+    Route::post('/notification/count', 'NotificationController@count');
 
 	Route::get('dashboard','Dashboard\DashboardController@index');
 	Route::get('new-message','Messages\NewMessageController@index');
