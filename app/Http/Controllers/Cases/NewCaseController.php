@@ -11,13 +11,11 @@ use DB;
 use Cache;
 use Auth;
 use Validator;
-use App\Notifications\CaseNotification;
-use App\Notification;
 
 class NewCaseController extends Controller
 {
   public function index($case_id) 
-  {	
+  { 
     $participation = Case_participant::where('case_id',$case_id)
                     ->where('user_id',Auth::user()->id)
                     ->get();
@@ -81,10 +79,10 @@ class NewCaseController extends Controller
   public function fetchNotes($case_id) 
   {    
     $note = Case_history::leftJoin('users AS b','case_history.created_by','=','b.id')
-    				->where('case_history.case_id',$case_id)
+            ->where('case_history.case_id',$case_id)
             ->where('case_history.is_visible',1)
-    				->orderBy('case_history.id','DESC')
-    				->select('case_history.id','case_history.action_note','case_history.note','case_history.created_at','b.prof_img','b.lname','b.fname');
+            ->orderBy('case_history.id','DESC')
+            ->select('case_history.id','case_history.action_note','case_history.note','case_history.created_at','b.prof_img','b.lname','b.fname');
 
 
 
@@ -140,7 +138,7 @@ class NewCaseController extends Controller
 
     $state = Case_participant::leftJoin('users AS b','case_participants.user_id','=','b.id')
     ->where("case_participants.case_id",$request->case_id)
-    ->where('case_participants.ownership',3)
+    ->where('case_participants.ownership',2)
     ->select('b.fname','b.lname')
     ->get(); 
 
@@ -152,19 +150,17 @@ class NewCaseController extends Controller
         "message"=>"This case is already taken by ".$name
       ));
     }
-    $count = Case_participant::where("case_id",$request->case_id)->get();
+    // $count = Case_participant::where("case_id",$request->case_id)->get();
 
-    if( $count->count() > 1 ){
+    // if( $count->count() > 1 ){
       
       $update_res = Case_participant::where('case_id', $request->case_id)
-      // ->where('ownership', 2 )
-      // ->orWhere('ownership', 6 )
-      ->update(['ownership' => 5]); 
+      ->update(['ownership' => 4]); 
 
       $update_res = Case_participant::where('case_id', $request->case_id)
       ->where('user_id', Auth::user()->id )
-      ->update(['ownership' => 3]);
-    }
+      ->update(['ownership' => 2]);
+    // }
 
     $res = Case_history::create( ["is_visible"=>1,"status"=>2,"case_id" => $request->case_id,"action_note" => "Case Accepted", 'created_by' => Auth::user()->id ] ); 
 
@@ -252,17 +248,17 @@ class NewCaseController extends Controller
 
 
   public function getModalForwardCase(Request $request) 
-  {				
-    $case_id = $request->case_id;	
-  	$users = User::where('id','!=',Auth::user()->id)
+  {       
+    $case_id = $request->case_id; 
+    $users = User::where('id','!=',Auth::user()->id)
                 ->where('status','active')
                 ->orderBy('fname') 
-                ->get();  	
+                ->get();    
     return view('components.cases.forward-case-md',[ 'users'=>$users,'case_id' => $case_id ]); 
   }
   
   public function getModalCloseCase(Request $request) 
-  {							 
+  {              
     $case_id = $request->case_id;
     return view('components.cases.close-case-md',['case_id' => $case_id]); 
   }
@@ -274,8 +270,8 @@ class NewCaseController extends Controller
   }
 
   public function getModalAddNote(Request $request) 
-  {							 
-  	$case_id = $request->case_id;
+  {              
+    $case_id = $request->case_id;
     return view('components.cases.add-note-md',['case_id' => $case_id]); 
   }
 
@@ -291,7 +287,7 @@ class NewCaseController extends Controller
 
   public function newNote(Request $request)
   {
-  	$validator = Validator::make($request->all(), [
+    $validator = Validator::make($request->all(), [
         'case_id' => 'required',
         'note' => 'required',
     ]);
@@ -305,9 +301,9 @@ class NewCaseController extends Controller
     }
 
     if( $request->case_form == "close" ){
-    	$res = Cases::find($request->case_id);
-	    $res->status = 3;
-	    $res->save();
+      $res = Cases::find($request->case_id);
+      $res->status = 3;
+      $res->save();
     }
 
     if( $request->case_form == "reopen" ){
@@ -316,40 +312,21 @@ class NewCaseController extends Controller
       $res->save();
     }
 
-  	$res = Case_history::create( $request->all()+[ "is_visible"=>1,'created_by' => Auth::user()->id ] ); 
+    $res = Case_history::create( $request->all()+[ "is_visible"=>1,'created_by' => Auth::user()->id ] ); 
 
-  	if($res){
-
-       $participants = Case_participant::where('case_id',$request->case_id)->where('user_id','!=',Auth::user()->id)->get();
-        $message = str_replace("[from_name]",Auth::user()->fname . ' ' . Auth::user()->lname,__('notification.new_note'));
-        $message = str_replace("[case_id]",$request->case_id,$message);
-        $arr = array(
-            'from_id'   => Auth::user()->id,
-            'from_name'   => Auth::user()->fname . ' ' . Auth::user()->lname,
-            'from_image' => Auth::user()->prof_img,
-            'case_id'   => $request->case_id,
-            'message' =>    $message,
-            'action_url'    => route('case',[$request->case_id])
-        );
-
-
-      foreach($participants as $participant)
-      {
-          $participant->user->notify(new CaseNotification($arr));
-      }
-      
-  		return json_encode(array(
+    if($res){
+      return json_encode(array(
         "status"=>1,
         "response"=>"success",
         "message"=>"Note successfully added."
       ));
-  	}else{
-  		return json_encode(array(
+    }else{
+      return json_encode(array(
         "status"=>0,
         "response"=>"failed", 
         "message"=>"Error in connection."
       ));
-  	}
+    }
   }
 
   public function closeCase(Request $request)
@@ -432,7 +409,7 @@ class NewCaseController extends Controller
   {
      $state = Case_participant::leftJoin('users AS b','case_participants.user_id','=','b.id')
     ->where("case_participants.case_id",$request->case_id)
-    ->where('case_participants.ownership',3)
+    ->where('case_participants.ownership',2)
     ->select('b.fname','b.lname')
     ->get(); 
 
@@ -493,26 +470,19 @@ class NewCaseController extends Controller
 
   public function forwardCase(Request $request)
   {
+    $validator = Validator::make($request->all(), [
+        'case_id' => 'required',
+        'note' => 'required',
+        'recipient' => 'required'
+    ]);
 
-    // return json_encode(array(
-    //   "status"=>2,
-    //   "response"=>"error",
-    //   "message"=>"weee"
-    // ));
-
-    // $validator = Validator::make($request->all(), [
-    //     'case_id' => 'required',
-    //     'note' => 'required',
-    //     'recipient' => 'required'
-    // ]);
-
-    // if ($validator->fails()) {
-    //   return json_encode(array(
-    //     "status"=>2,
-    //     "response"=>"error",
-    //     "message"=>$validator->errors()
-    //   ));
-    // }
+    if ($validator->fails()) {
+      return json_encode(array(
+        "status"=>2,
+        "response"=>"error",
+        "message"=>$validator->errors()
+      ));
+    }
 
     // compare the participants and recipients if existing update the ownership if not insert to participants 
 
@@ -533,15 +503,17 @@ class NewCaseController extends Controller
       if (in_array($row, $participants)){ 
         Case_participant::where('case_id', $request->case_id)
         ->where('user_id', $row )
-        ->update(['ownership' => 2]); 
+        ->update(['ownership' => 1]); 
       }else{ 
-        Case_participant::create( ["case_id" => $request->case_id,"user_id" => $row, 'ownership' => 2 ] ); 
+        Case_participant::create( ["case_id" => $request->case_id,"user_id" => $row, 'ownership' => 1 ] ); 
       } 
+
+      Case_history::create( $request->all()+["is_visible" => 1,"status" => 2,"action_note" => "Case Forwarded","sent_to"=>$row, 'created_by' => Auth::user()->id ] ); 
     }
 
     $res=Case_participant::where('case_id', $request->case_id)
     ->where('user_id', Auth::user()->id  )
-    ->update(['ownership' => 6]); 
+    ->update(['ownership' => 5]); 
    
   
     if($res){

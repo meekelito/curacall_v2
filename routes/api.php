@@ -29,6 +29,9 @@ Route::post('/case-accept', 'Api\ApiController@acceptCase' );
 
 Route::post('/case-close', 'Api\ApiController@closeCase' );  
 
+
+Route::get('/case-test', 'Api\ApiController@testCase' );  
+
 Route::fallback(function(){
     return response()->json([
         'message' => 'Page Not Found. If error persists, contact info@website.com'], 404);

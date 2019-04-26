@@ -12097,7 +12097,7 @@ window.Pusher = __webpack_require__(35);
 
 window.Echo = new __WEBPACK_IMPORTED_MODULE_0_laravel_echo___default.a({
   broadcaster: 'pusher',
-  key: "5d69e82ae952f35384ff",
+  key: "e02e9ad4a0cb0046f6f7",
   cluster: "ap1",
   encrypted: true,
   authEndpoint: Laravel.baseUrl + '/broadcasting/auth'
