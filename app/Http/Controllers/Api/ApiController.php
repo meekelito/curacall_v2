@@ -253,6 +253,90 @@ class ApiController extends Controller
     }
   }
 
+  public function testCasex(Request $request)
+  {
+    $cases = Cases::with("participants")->get();
+
+
+    return response()->json([ 
+      "message"=>$cases
+    ]);
+
+  }
+
+  public function testCase()
+  {
+    // $cases = Cases::with('participants')->where('status',1)->get();
+    $cases_in = Cases::Join('case_participants AS b','cases.id','=','b.case_id')
+              ->where('b.user_id',3)
+              ->where('b.is_silent',0) 
+              ->where('cases.status',1)
+              ->orderBy('cases.id','DESC')
+              ->select('cases.id')
+              ->get();
+
+
+    $cases = Cases::with('participants')
+              ->whereIn('id',$cases_in)
+              ->orderBy('cases.id','DESC')
+              ->get();
+
+    $cases_arr = array();
+    foreach($cases as $case)
+    {
+      $participants_arr = array();
+      foreach($case->participants as $participant)
+      {
+        array_push($participants_arr, 
+          array(
+            'ownership'=>$participant->ownership,
+            'fname'=>$participant->user->fname,
+            'lname'=>$participant->user->lname,
+          )
+        );
+      }
+
+      $cases_arr[] = array(
+        "id"=>$case->id,
+        "case_id" => $case->case_id,
+        "call_type" => $case->call_type,
+        "subcall_type"=> $case->subcall_type,
+        "case_message" => $case->case_message,
+        "status" => $case->status,
+        "created_at" => $case->created_at,
+        "participants"=> $participants_arr
+      );
+      
+    }
+
+    return response()->json(["result"=>$cases_arr]);
+  }
+
+  public function testCasexx(Request $request)
+  {
+    $cases_in = Cases::Join('case_participants AS b','cases.id','=','b.case_id')
+              ->where('b.user_id',3)
+              ->where('b.is_silent',0) 
+              ->where('cases.status',1)
+              ->orderBy('cases.id','DESC')
+              ->select('cases.id')
+              ->get();
+
+    $cases = Cases::leftJoin('case_participants AS b','cases.id','=','b.case_id')
+              ->leftJoin('users AS c','b.user_id','c.id')
+    
+              ->where('cases.status',1)
+              ->orderBy('cases.id','DESC')
+              ->select('cases.id','cases.case_id','cases.sender_fullname','cases.status','cases.created_at','c.fname')
+              ->get();
+
+
+    return response()->json([ 
+      "message"=>$cases_in
+    ]);
+
+  }
+
 
 
 }

@@ -58,7 +58,7 @@
 
 					<!-- Advanced login -->
 					<form method="POST" action="{{ url('login') }}">
-            {{ csrf_field() }}
+            			{{ csrf_field() }}
 						<div class="panel panel-body login-form">
 							<div class="text-center">
 								<img src="{{ asset('assets/images/curacall_logo.jpg') }}" width="100">
@@ -70,7 +70,7 @@
 								<div class="form-control-feedback">
 									<i class="icon-lock2 text-muted"></i>
 								</div>
-              	@if ($message = Session::get('warning'))
+              			@if ($message = Session::get('warning'))
 				            <span class="help-block text-warning-400"><i class="icon-cancel-circle2 position-left"></i>{{ $message }}</span>
 				        @endif
 							</div>
@@ -78,7 +78,7 @@
 							<div class="form-group login-options">
 								<div class="row">
 									<div class="col-sm-6">
-										<a>Forgot password?</a>
+										<a href="#">Forgot Password?</a>
 									</div>
 								</div>
 							</div>

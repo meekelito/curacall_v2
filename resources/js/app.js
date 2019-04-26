@@ -53,14 +53,14 @@ const app = new Vue({
       fetchMessages() {
 
         const room_id = document.getElementById('room').value;
-        axios.get('/messages?room='+room_id).then(response => {
+        axios.get(Laravel.baseUrl +'/messages?room='+room_id).then(response => {
             this.messages = response.data;
         });
       },
 
       addMessage(message) {
           this.messages.push(message);
-          axios.post('/messages', message).then(response => {
+          axios.post(Laravel.baseUrl +'/messages', message).then(response => {
             // console.log(response.data);
           });
       },

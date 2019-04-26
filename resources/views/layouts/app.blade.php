@@ -6,6 +6,7 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="csrf-token" content="{{ csrf_token() }}">
+  <meta name="userId" content="{{ Auth::check() ? Auth::user()->id : '' }}">
 	<title>CuraCall</title>
   <link rel="shortcut icon" href="{{ asset('assets/images/curacall-ico.png') }}" />
 
@@ -23,6 +24,7 @@
   <!-- <script src="{{ asset('js/core.js') }}"></script> --> 
   <!-- <script  src="{{ asset('js/app.js') }}" type="text/javascript" defer></script>  -->
 	<!-- <script type="text/javascript" src="{{ asset('assets/js/plugins/loaders/pace.min.js') }}" ></script> -->
+  <script  src="{{ asset('js/notification.js') }}" type="text/javascript" defer></script> 
 	<script type="text/javascript" src="{{ asset('assets/js/core/libraries/jquery.min.js') }}" ></script>
 	<script type="text/javascript" src="{{ asset('assets/js/core/libraries/bootstrap.min.js') }}" ></script>
 	<script type="text/javascript" src="{{ asset('assets/js/plugins/loaders/blockui.min.js') }}" ></script>
@@ -80,6 +82,15 @@
 
     body.wait-pointer * {cursor: wait !important;}
     
+    .badge-notif{
+      background-color:#F44336 !important;position: relative;top:-10px;right:10px;
+      height: 15px;
+      width: 15px;
+      border-radius: 50%;
+      display: inline-block;
+      position:relative;
+      top:-5px;
+    }
   </style>
 </head>
 
@@ -99,10 +110,23 @@
 			</ul>
 		</div>
 
+  <div id="notificationapp">
+     <audio id="caseNotificationAudio">
+      <source src="{{ asset('assets/notification/sounds/facebook_notif.mp3') }}" type="audio/mpeg">
+      Your browser does not support the audio element.
+    </audio>
+
+    <audio id="chatNotificationAudio">
+      <source src="{{ asset('assets/notification/sounds/facebook_chat_2016.mp3') }}" type="audio/mpeg">
+      Your browser does not support the audio element.
+    </audio>
+
 		<div class="navbar-collapse collapse" id="navbar-mobile"> 
 			<ul class="nav navbar-nav">
 
         <li><a class="sidebar-control sidebar-main-toggle hidden-xs"><i class="icon-transmission"></i></a></li>
+         <chatnotification v-bind:chatnotifications="chatnotifications"></chatnotification>
+         <notification v-bind:notifications="notifications"></notification>
 			</ul>
 
 			<p class="navbar-text">
@@ -148,6 +172,7 @@
 				</ul>
 			</div>
 		</div>
+  </div>
 	</div>
 	<!-- /main navbar -->
 
@@ -260,11 +285,10 @@
                 <div class="category-content no-padding">
                     <ul class="navigation navigation-alt navigation-accordion submenu-curacall">
                         <li class="submenu-cases-all-cases"><a href="{{ url('/all-cases') }}"><i class="icon-files-empty"></i> All cases <span class="badge badge-default" id="case-count-all">0</span></a></li> 
-                        <li class="submenu-cases-silent-cases"><a href="{{ url('/silent-cases') }}"><i class="icon-volume-mute5"></i> Silent cases <span class="badge badge-warning" style="background-color: #90A4AE; border-color: #90A4AE;" id="case-count-silent">0</span></a></li>
                         <li class="submenu-cases-active-cases"><a href="{{ url('/active-cases') }}"><i class="icon-file-plus"></i> Active cases <span class="badge badge-danger" style="background-color: #03a9f4; border-color: #03a9f4;" id="case-count-active">0</span></a></li> 
                         <li class="submenu-cases-pending-cases"><a href="{{ url('/pending-cases') }}"><i class="icon-hour-glass"></i> Pending cases <span class="badge badge-warning" style="background-color: #f44336; border-color: #f44336;" id="case-count-pending">0</span></a></li>
                         <li class="submenu-cases-closed-cases"><a href="{{ url('/closed-cases') }}"><i class="icon-file-locked"></i> Closed cases <span class="badge badge-warning" style="background-color: #4caf50; border-color: #4caf50;" id="case-count-closed">0</span></a></li>
-                        <!-- <li class="submenu-cases-silent-cases"><a href="{{ url('/silent-cases') }}"><i class="icon-volume-mute5"></i> Silent cases <span class="badge badge-warning" style="background-color: #90A4AE; border-color: #90A4AE;" id="case-count-silent">0</span></a></li> -->
+                        <li class="submenu-cases-silent-cases"><a href="{{ url('/silent-cases') }}"><i class="icon-volume-mute5"></i> Silent cases <span class="badge badge-warning" style="background-color: #90A4AE; border-color: #90A4AE;" id="case-count-silent">0</span></a></li>
                         <!-- <li class="submenu-cases-deleted-cases"><a href="{{ url('/deleted-cases') }}"><i class="icon-bin"></i> Deleted cases</a></li> -->
                     </ul>
                 </div>
@@ -361,6 +385,7 @@
       'csrfToken' => csrf_token(),
       'user' => Auth::user(),
       'pusherKey' => config('broadcasting.connections.pusher.key'),
+      'baseUrl' => url('/')
     ]) !!};
   </script>
 </html>

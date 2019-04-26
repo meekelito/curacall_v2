@@ -211,7 +211,7 @@
   $(".menu-cases").addClass('active');
   $(".submenu-curacall li").removeClass("active");
   $(".submenu-cases-all-cases").addClass('active');
-  fetchCase();
+  //fetchCase();
 </script>
 
 @endsection 

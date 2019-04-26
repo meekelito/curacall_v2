@@ -9,28 +9,27 @@
         </li>
       </ul>
       <div class="navbar-collapse collapse">
-        @if( ($case_info[0]->status == 1 && ($participation[0]->ownership == 1 || $participation[0]->ownership == 2)) ||
-         ($case_info[0]->status == 2 &&  $participation[0]->ownership == 2) )  
+        @if( ($case_info[0]->status == 1 && $participation[0]->ownership == 1) || ($case_info[0]->status == 2 &&  $participation[0]->ownership == 1) )  
         <div class="btn-group navbar-btn">
           <a class="btn btn-primary btn-accept"><i class="icon-thumbs-up3"></i> <span class="hidden-xs position-right">Accept</span></a>
           <!-- <a class="btn btn-warning btn-decline"><i class="icon-thumbs-down3"></i> <span class="hidden-xs position-right">Decline</span></a> -->
         </div>
         @endif
-        @if( $case_info[0]->status == 2 && ($participation[0]->ownership == 1 || $participation[0]->ownership == 3 || $participation[0]->ownership == 6 ) )
+        @if( $case_info[0]->status == 2 && ($participation[0]->ownership == 2 || $participation[0]->ownership == 5 ) )
         <div class="btn-group navbar-btn">
           <a class="btn btn-default btn-forward"><i class="icon-forward"></i> <span class="hidden-xs position-right">Forward</span></a>
           <a class="btn btn-default btn-close"><i class="icon-checkmark4"></i> <span class="hidden-xs position-right">Close</span></a>
         </div>
         @endif
-        @if( $case_info[0]->status == 3 && ($participation[0]->ownership == 1 || $participation[0]->ownership == 3) )
+        @if( $case_info[0]->status == 3 && ($participation[0]->ownership == 2 || $participation[0]->ownership == 5 ) )
         <div class="btn-group navbar-btn">
           <a class="btn btn-default btn-reopen"><i class="icon-checkmark4"></i> <span class="hidden-xs position-right">Re-Open</span></a>
         </div>
         @endif
-        @if( $case_info[0]->status == 2 && ($participation[0]->ownership == 4 || $participation[0]->ownership == 5 ) ) 
+        @if( $case_info[0]->status == 2 && ($participation[0]->ownership == 3 || $participation[0]->ownership == 4 ) ) 
         <div class="btn-group navbar-btn">
           @foreach($participants as $row)
-            @if( $row->ownership == 3 )
+            @if( $row->ownership == 2 )
              <a class="btn"> Assigned to :  {{ ucwords($row->fname.' '.$row->lname) }}</a>
             @endif
           @endforeach
@@ -39,9 +38,9 @@
         
         <div class="pull-right-lg">
           <p class="navbar-text">
-            @if(!empty($case_info[0]->created_at ))
-              {{  date_format($case_info[0]->created_at,"M d,Y  h:i a") }}
-            @endif
+
+            {{  date_format($case_info[0]->created_at,"M d,Y  h:i a") }}
+           
           </p>
           <div class="btn-group navbar-btn">
             <a class="btn btn-default"><i class="icon-printer"></i> <span class="hidden-xs position-right">PDF</span></a>
