@@ -11,6 +11,9 @@ use DB;
 use Cache;
 use Auth;
 use Validator;
+use App\Notifications\CaseNotification;
+use App\Notification;
+
 class NewCaseController extends Controller
 {
   public function index($case_id) 
@@ -136,6 +139,28 @@ class NewCaseController extends Controller
     // }
     $res = Case_history::create( ["is_visible"=>1,"status"=>2,"case_id" => $request->case_id,"action_note" => "Case Accepted", 'created_by' => Auth::user()->id ] ); 
     if($res){
+       /** Notify case participants that the case was accepted **/
+          $participants = Case_participant::where("case_id",$request->case_id)->where('user_id','!=',Auth::user()->id)->get();
+ 
+          $message = str_replace("[from_name]",Auth::user()->fname . ' ' . Auth::user()->lname,__('notification.accept_case'));
+          $message = str_replace("[case_id]",$request->case_id,$message);
+          $arr = array(
+              'from_id'     => Auth::user()->id,
+              'from_name'   => Auth::user()->fname . ' ' . Auth::user()->lname,
+              'from_image'  => Auth::user()->prof_img,
+              'case_id'     => $request->case_id,
+              'message'     =>    $message,
+              'type'        =>  'accept_case',
+              'action_url'  => route('case',[$request->case_id])
+          );
+
+          foreach($participants as $row)
+          {
+               $user = User::find($row->user_id);
+               $user->notify(new CaseNotification($arr)); // Notify participant
+          }
+      /** End notifcation **/
+
       return json_encode(array(
         "status"=>1,
         "response"=>"success",
@@ -264,6 +289,26 @@ class NewCaseController extends Controller
     }
     $res = Case_history::create( $request->all()+[ "is_visible"=>1,'created_by' => Auth::user()->id ] ); 
     if($res){
+
+       $participants = Case_participant::where('case_id',$request->case_id)->where('user_id','!=',Auth::user()->id)->get();
+        $message = str_replace("[from_name]",Auth::user()->fname . ' ' . Auth::user()->lname,__('notification.new_note'));
+        $message = str_replace("[case_id]",$request->case_id,$message);
+        $arr = array(
+            'from_id'     => Auth::user()->id,
+            'from_name'   => Auth::user()->fname . ' ' . Auth::user()->lname,
+            'from_image'  => Auth::user()->prof_img,
+            'case_id'     => $request->case_id,
+            'message'     =>    $message,
+            'type'        =>  'added_note',
+            'action_url'  => route('case',[$request->case_id])
+        );
+
+
+      foreach($participants as $participant)
+      {
+          $participant->user->notify(new CaseNotification($arr));
+      }
+
       return json_encode(array(
         "status"=>1,
         "response"=>"success",
@@ -413,15 +458,20 @@ class NewCaseController extends Controller
       ));
     }
     // compare the participants and recipients if existing update the ownership if not insert to participants 
-    $participants_id = Case_participant::where("case_id",$request->case_id)
-    ->select('user_id')
-    ->get();
+    // $participants_id = Case_participant::where("case_id",$request->case_id)
+    // ->select('user_id')
+    // ->get();
+    $participants_id = Case_participant::select('user_id')->where("case_id",$request->case_id)->where('user_id','!=',Auth::user()->id)->get();// jeric's update, exclude self for notification purposes
     $participants = array();
-    $update = array();
-    $insert = array();
+    //$update = array();
+    //$insert = array();
+     $forwarded_recipients = array(); // list of forwarded users
     foreach ($participants_id as $row) {
       $participants[] = $row->user_id;
     }
+
+   
+    // update all participants ownership state to Forwarded
     foreach ($request->recipient as $row) {
       if (in_array($row, $participants)){ 
         Case_participant::where('case_id', $request->case_id)
@@ -430,8 +480,61 @@ class NewCaseController extends Controller
       }else{ 
         Case_participant::create( ["case_id" => $request->case_id,"user_id" => $row, 'ownership' => 1 ] ); 
       } 
+
+      /** create recipients list for notification **/
+      $user = User::find($row);
+      $user_info = array(  
+                        "id"    =>  $user->id,
+                        "name"  =>  $user->fname . ' ' . $user->lname
+                      );
+
+      array_push($forwarded_recipients,$user_info); // add notifiable user info into array
+      /** end create recipients list for notification **/
+
       Case_history::create( $request->all()+["is_visible" => 1,"status" => 2,"action_note" => "Case Forwarded","sent_to"=>$row, 'created_by' => Auth::user()->id ] ); 
     }
+
+      /** Notification message template **/
+      $message = str_replace("[from_name]",Auth::user()->fname . ' ' . Auth::user()->lname,__('notification.forward_case'));
+      $message = str_replace("[case_id]",$request->case_id,$message);
+      $arr = array(
+          'from_id'     => Auth::user()->id,
+          'from_name'   => Auth::user()->fname . ' ' . Auth::user()->lname,
+          'from_image'  => Auth::user()->prof_img,
+          'case_id'     => $request->case_id,
+          //'message'     => $message,
+          'type'        => 'forward_case',
+          'forward_to'  => $forwarded_recipients,
+          'action_url'  => route('case',[$request->case_id])
+      );
+    /** END Notification message template **/
+
+    /** Sending Notifcation part **/
+     $other_participant_count = count($request->recipient) - 1;
+    // Notify all participants of the case except you
+    foreach($participants as $row)
+    {
+         $user = User::find($row);
+        
+         if(in_array($user->id,$request->recipient))
+         {
+            $str_recipients = "You";
+            if(count($request->recipient) > 1){
+              $str_recipients = "You and " . $other_participant_count;
+              $str_recipients .= ($other_participant_count == 1) ? " Other" : " Others";
+            }
+         }else{
+              $str_recipients = $forwarded_recipients[0]['name'];
+              if(count($request->recipient) > 1){
+                $str_recipients = $forwarded_recipients[0]['name'] . " and " . $other_participant_count;
+                $str_recipients .= ($other_participant_count == 1) ? " Other" : " Others";
+              }
+         }
+         $arr['message'] = $message . $str_recipients;
+         $user->notify(new CaseNotification($arr)); // Notify participant
+    }
+    /** End Sending Notification part **/
+
     $res=Case_participant::where('case_id', $request->case_id)
     ->where('user_id', Auth::user()->id  )
     ->update(['ownership' => 5]); 
