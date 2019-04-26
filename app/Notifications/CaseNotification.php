@@ -11,16 +11,16 @@ use Carbon\Carbon;
 class CaseNotification extends Notification
 {
     use Queueable;
-    public $fields;
+    public $data;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($fields)
+    public function __construct($data)
     {
-        $this->fields = $fields;
+        $this->data = $data;
     }
 
     /**
@@ -31,7 +31,7 @@ class CaseNotification extends Notification
      */
     public function via($notifiable)
     {
-        return [CustomDbChannel::class,'broadcast'];
+        return [CaseDbChannel::class,'broadcast'];
     }
 
     /**
@@ -42,28 +42,15 @@ class CaseNotification extends Notification
      */
     public function toDatabase($notifiable)
     {
-        return [
-            'from_id'   => $this->fields['from_id'],
-            'from_name'   => $this->fields['from_name'],
-            'from_image' =>  $this->fields['from_image'],
-            'case_id'      =>   $this->fields['case_id'],
-            'message' => $this->fields['message'],
-            'action_url'    =>  $this->fields['action_url']
-        ];
+       return $this->data;
     }
 
     public function toBroadcast($notifiable)
     {
         return [
-            'data' => [
-                'from_id'   => $this->fields['from_id'],
-                'from_name'   => $this->fields['from_name'],
-                'from_image' =>  $this->fields['from_image'],
-                'message' => $this->fields['message'],
-                'action_url'    =>  $this->fields['action_url']
-            ],
+            'data'          =>  $this->data,
             "created_at"    =>  Carbon::now()->diffForHumans(),
-            "is_read"       => 0   
+            "is_read"       =>  0   
         ];
     }
 

@@ -12,21 +12,21 @@ use App\User;
 class NotificationController extends Controller
 {
 
-    public function addnotification(Request $request)
-    {
-        $user = User::findOrFail($request->notifiable_id);
-        $message = str_replace("[from_name]",$request->from_name,__('notification.'.$request->type));
-        $message = str_replace("[case_id]",$request->case_id,$message);
-        $arr = array(
-            'from_id'   => $request->from_id,
-            'from_name'   => $request->from_name,
-            'from_image' => '1551097384photo.jpg',
-            'case_id'   => $request->case_id,
-            'message' =>    $message,
-            'action_url'    => route('case',[$request->case_id])
-        );
-        $user->notify(new CaseNotification($arr));
-    }
+    // public function addnotification(Request $request)
+    // {
+    //     $user = User::findOrFail($request->notifiable_id);
+    //     $message = str_replace("[from_name]",$request->from_name,__('notification.'.$request->type));
+    //     $message = str_replace("[case_id]",$request->case_id,$message);
+    //     $arr = array(
+    //         'from_id'   => $request->from_id,
+    //         'from_name'   => $request->from_name,
+    //         'from_image' => '1551097384photo.jpg',
+    //         'case_id'   => $request->case_id,
+    //         'message' =>    $message,
+    //         'action_url'    => route('case',[$request->case_id])
+    //     );
+    //     $user->notify(new CaseNotification($arr));
+    // }
 
 
     public function get() {
@@ -52,16 +52,24 @@ class NotificationController extends Controller
         return $result;
     }
 
-
-
-    public function notifications()
+    public function count()
     {
              //$notification = Auth::user()->unreadNotifications;
-             $notification = Notification::select('data','created_at',DB::raw("(CASE WHEN ISNULL(read_at) THEN 0 ELSE 1 END) as is_read"))
-             ->where('notifiable_id',Auth::user()->id)
+             $notification = Notification::where('notifiable_id',Auth::user()->id)
+             ->where('type','App\Notifications\CaseNotification')
+             ->whereNull('read_at')
+             ->take(10)
+             ->count();
+
+            return $notification;
+    }
+
+    public function chatcount()
+    {
+             //$notification = Auth::user()->unreadNotifications;
+             $notification = Notification::where('notifiable_id',Auth::user()->id)
              ->where('type','App\Notifications\MessageNotification')
              ->whereNull('read_at')
-             ->latest()
              ->take(10)
              ->count();
 
@@ -74,11 +82,11 @@ class NotificationController extends Controller
     public function chatget() {
 
         //$notification = Auth::user()->unreadNotifications;
-        $notification = Notification::select('data','created_at',DB::raw("(CASE WHEN ISNULL(read_at) THEN 0 ELSE 1 END) as is_read"))
+        $notification = Notification::select('data','created_at')
         					->where('notifiable_id',Auth::user()->id)
         					->where('type','App\Notifications\MessageNotification')
-        					->latest()
-        					->take(10)
+        					->groupBy('room_id')
+                            ->orderBy('created_at','desc')
         					->get()->toJson(JSON_PRETTY_PRINT);
 
         return $notification;
@@ -96,17 +104,17 @@ class NotificationController extends Controller
 
 
 
-    public function chatnotifications()
-    {
-             //$notification = Auth::user()->unreadNotifications;
-             $notification = Notification::select('data','created_at',DB::raw("(CASE WHEN ISNULL(read_at) THEN 0 ELSE 1 END) as is_read"))
-             ->where('notifiable_id',Auth::user()->id)
-             ->where('type','App\Notifications\MessageNotification')
-             ->whereNull('read_at')
-             ->latest()
-             ->take(10)
-             ->count();
+    // public function chatnotifications()
+    // {
+    //          //$notification = Auth::user()->unreadNotifications;
+    //          $notification = Notification::select('data','created_at',DB::raw("(CASE WHEN ISNULL(read_at) THEN 0 ELSE 1 END) as is_read"))
+    //          ->where('notifiable_id',Auth::user()->id)
+    //          ->where('type','App\Notifications\MessageNotification')
+    //          ->whereNull('read_at')
+    //          ->latest()
+    //          ->take(10)
+    //          ->count();
 
-            return $notification;
-    }
+    //         return $notification;
+    // }
 }

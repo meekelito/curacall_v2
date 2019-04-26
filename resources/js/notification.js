@@ -30,27 +30,71 @@ const app = new Vue({
         chatnotifications: '',
     },
     created() {
+        this.countNotifications();
+        this.countChatNotifications();
         this.fetchChatNotifications();
         this.fetchNotifications();
-    
+       
 
         var userId = $('meta[name="userId"]').attr('content');
         Echo.private('App.User.' + userId).notification((notification) => {
+
+                document.title = document.title + ' (1)';
+                
                 if(notification.type == NOTIFICATION_TYPES.chat)
                 {
-                    this.chatnotifications.unshift(notification);
-                    $('#message-notif2').addClass('badge-notif');
+                    //this.chatnotifications.unshift(notification);
+                       $('#message-notif2').addClass('badge-notif');
+                      this.fetchChatNotifications();
+                    
                     document.getElementById('chatNotificationAudio').play();
                 }else{
-                    this.notifications.unshift(notification);
-                    $('#case-notif2').addClass('badge-notif');
+                  //case notifications below
 
-                    try{
-                    dt.search('').draw();
-                    }catch(err)
-                    {
-                      console.log(err); 
+                    //this.notifications.unshift(notification);
+                     $('#case-notif2').addClass('badge-notif');
+                     this.fetchNotifications();
+                    
+                    //console.log(window.location.pathname + window.location.search);
+                    var current_url = window.location.pathname + window.location.search;
+                    if(current_url == "/cases/case_id/"+notification.data.case_id){
+                      console.log("reload events executed in this page");
+                          /** execute events below based on type **/
+                          switch(notification.data.type)
+                          {
+                            case "added_note":
+                                try{
+                                  dt.search('').draw();
+                                }catch(err)
+                                {
+                                  console.log(err); 
+                                }
+                            break;
+                            case "accept_case":
+                                try{
+                                   fetchCase();
+                                }catch(err)
+                                {
+                                  console.log(err); 
+                                }
+                            break;
+                            case "forward_case":
+                               try{
+                                   fetchCase();
+                                }catch(err)
+                                {
+                                  console.log(err); 
+                                }
+                            break;
+                            default:
+
+                          }
+
                     }
+                     
+                  
+
+                   
                     var playPromise = document.getElementById('caseNotificationAudio').play();
 
                     // In browsers that don’t yet support this functionality,
@@ -68,21 +112,32 @@ const app = new Vue({
 
                 }
             
-              console.log(notification.type);
+              //console.log(notification.type);
         });
     },
     methods: {
-      fetchNotifications() {
+      countNotifications()
+      {
+         axios.post(Laravel.baseUrl +'/notification/count').then(response => {
+           if(response.data > 0)
+              $('#case-notif2').addClass('badge-notif');
+        });
+      },
+      countChatNotifications()
+      {
+         axios.post(Laravel.baseUrl +'/notification/chat/count').then(response => {
+           if(response.data > 0)
+              $('#message-notif2').addClass('badge-notif');
+        });
+      },
 
-        
+      fetchNotifications() {  
         axios.post(Laravel.baseUrl +'/notification/get').then(response => {
             this.notifications = response.data;
         });
       },
 
       fetchChatNotifications() {
-
-        
         axios.post(Laravel.baseUrl +'/notification/chat/get').then(response => {
             this.chatnotifications = response.data;
         });

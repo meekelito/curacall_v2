@@ -11,7 +11,7 @@
 |
 */
 Route::group(['middleware' => ['nocache']], function () {
-    Auth::routes(['verify' => true, 'register' => false]);
+   // Auth::routes(['verify' => true, 'register' => false]);
     
     Route::get('/', 'Auth\LoginController@showEmailForm' )->name('login'); 
     Route::get('login', 'Auth\LoginController@showEmailForm' )->name('login-email'); 
@@ -25,12 +25,13 @@ Route::group(['middleware' => ['nocache']], function () {
 Route::group(['middleware' => array('auth','nocache')], function () {
     Route::post('/notification/chat/get', 'NotificationController@chatget');
     Route::post('/notification/chat/read', 'NotificationController@chatread');
-    Route::get('/notification/chat', 'NotificationController@chatnotifications');
-    Route::get('/notification/create', 'NotificationController@addnotification');
+    //Route::get('/notification/chat', 'NotificationController@chatnotifications');
+    //Route::get('/notification/create', 'NotificationController@addnotification');
 
     Route::post('/notification/get', 'NotificationController@get');
     Route::post('/notification/read', 'NotificationController@read');
-    Route::get('/notification', 'NotificationController@notifications');
+    Route::post('/notification/chat/count', 'NotificationController@chatcount');
+    Route::post('/notification/count', 'NotificationController@count');
 
 	Route::get('dashboard','Dashboard\DashboardController@index');
 	Route::get('new-message','Messages\NewMessageController@index');

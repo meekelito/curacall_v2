@@ -13,15 +13,16 @@ class MessageNotification extends Notification
 {
     use Queueable;
     public $message;
-
+    public $isgroupchat;
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct(Message $message)
+    public function __construct(Message $message,$isgroupchat = false)
     {
         $this->message = $message;
+        $this->isgroupchat = $isgroupchat;
     }
 
     /**
@@ -32,7 +33,7 @@ class MessageNotification extends Notification
      */
     public function via($notifiable)
     {
-        return [CustomDbChannel::class,'broadcast'];
+        return [ChatDbChannel::class,'broadcast'];
     }
 
     /**
@@ -46,7 +47,7 @@ class MessageNotification extends Notification
         return [
             'from_id'   => $this->message->user['id'],
             'from_name'   => $this->message->user['fname'] . ' ' . $this->message->user['lname'],
-            'from_image' => $this->message->user['prof_img'],
+            'from_image' => $this->isgroupchat ? 'groupchat.png' : $this->message->user['prof_img'],
             'message_id'    => $this->message['id'],
             'room_id'    => $this->message['room_id'],
             'message' => $this->message['message'],

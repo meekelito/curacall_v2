@@ -42777,24 +42777,61 @@ var app = new Vue({
     created: function created() {
         var _this = this;
 
+        this.countNotifications();
+        this.countChatNotifications();
         this.fetchChatNotifications();
         this.fetchNotifications();
 
         var userId = $('meta[name="userId"]').attr('content');
         Echo.private('App.User.' + userId).notification(function (notification) {
+
+            document.title = document.title + ' (1)';
+
             if (notification.type == NOTIFICATION_TYPES.chat) {
-                _this.chatnotifications.unshift(notification);
+                //this.chatnotifications.unshift(notification);
                 $('#message-notif2').addClass('badge-notif');
+                _this.fetchChatNotifications();
+
                 document.getElementById('chatNotificationAudio').play();
             } else {
-                _this.notifications.unshift(notification);
-                $('#case-notif2').addClass('badge-notif');
+                //case notifications below
 
-                try {
-                    dt.search('').draw();
-                } catch (err) {
-                    console.log(err);
+                //this.notifications.unshift(notification);
+                $('#case-notif2').addClass('badge-notif');
+                _this.fetchNotifications();
+
+                //console.log(window.location.pathname + window.location.search);
+                var current_url = window.location.pathname + window.location.search;
+                if (current_url == "/cases/case_id/" + notification.data.case_id) {
+                    console.log("reload events executed in this page");
+                    /** execute events below based on type **/
+                    switch (notification.data.type) {
+                        case "added_note":
+                            try {
+                                dt.search('').draw();
+                            } catch (err) {
+                                console.log(err);
+                            }
+                            break;
+                        case "accept_case":
+                            try {
+                                fetchCase();
+                            } catch (err) {
+                                console.log(err);
+                            }
+                            break;
+                        case "forward_case":
+                            try {
+                                fetchCase();
+                            } catch (err) {
+                                console.log(err);
+                            }
+                            break;
+                        default:
+
+                    }
                 }
+
                 var playPromise = document.getElementById('caseNotificationAudio').play();
 
                 // In browsers that don’t yet support this functionality,
@@ -42811,11 +42848,21 @@ var app = new Vue({
                 }
             }
 
-            console.log(notification.type);
+            //console.log(notification.type);
         });
     },
 
     methods: {
+        countNotifications: function countNotifications() {
+            axios.post(Laravel.baseUrl + '/notification/count').then(function (response) {
+                if (response.data > 0) $('#case-notif2').addClass('badge-notif');
+            });
+        },
+        countChatNotifications: function countChatNotifications() {
+            axios.post(Laravel.baseUrl + '/notification/chat/count').then(function (response) {
+                if (response.data > 0) $('#message-notif2').addClass('badge-notif');
+            });
+        },
         fetchNotifications: function fetchNotifications() {
             var _this2 = this;
 
