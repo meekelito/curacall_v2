@@ -4,6 +4,8 @@ CREATE TABLE `notifications` (
   `notifiable_type` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `notifiable_id` bigint(20) unsigned NOT NULL,
   `data` text COLLATE utf8_unicode_ci NOT NULL,
+  `case_id` bigint(20) unsigned DEFAULT NULL,
+  `room_id` bigint(20) unsigned DEFAULT NULL,
   `notified_by` bigint(20) unsigned DEFAULT NULL,
   `read_at` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
