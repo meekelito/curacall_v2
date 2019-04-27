@@ -1,6 +1,6 @@
 <template>
 <li class="dropdown">
-        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" v-on:click="MarkAllNotificationRead()">
             <i class="icon-bell2"></i>
             <span class="visible-xs-inline-block position-right">Notifications</span>
             <span id="case-notif2" class="bg-warning-400"></span>
@@ -46,6 +46,11 @@
                 };
                 axios.post('/notification/read', data).then(response => {
                     window.location.href = notification.data.action_url;
+                });
+            },
+             MarkAllNotificationRead: function() {
+                axios.post('/notification/read').then(response => {
+                   $('#case-notif2').removeClass('badge-notif');
                 });
             }
         }

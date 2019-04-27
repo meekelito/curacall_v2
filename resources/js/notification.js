@@ -40,11 +40,16 @@ const app = new Vue({
         Echo.private('App.User.' + userId).notification((notification) => {
 
                 document.title = document.title + ' (1)';
-                
+                var current_url = window.location.pathname + window.location.search;
+
                 if(notification.type == NOTIFICATION_TYPES.chat)
                 {
                     //this.chatnotifications.unshift(notification);
-                       $('#message-notif2').addClass('badge-notif');
+                      $('#message-notif2').addClass('badge-notif');
+
+                      if (current_url.indexOf("messages/room/") >= 0)
+                         $('#message-notif2').removeClass('badge-notif');
+
                       this.fetchChatNotifications();
                     
                     document.getElementById('chatNotificationAudio').play();
@@ -56,7 +61,7 @@ const app = new Vue({
                      this.fetchNotifications();
                     
                     //console.log(window.location.pathname + window.location.search);
-                    var current_url = window.location.pathname + window.location.search;
+                 
                     if(current_url == "/cases/case_id/"+notification.data.case_id){
                       console.log("reload events executed in this page");
                           /** execute events below based on type **/

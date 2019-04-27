@@ -1,7 +1,7 @@
 <template>
 <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-            <i class="icon-bubbles4" v-on:click=""></i>
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" v-on:click="MarkAllMessageRead()">
+            <i class="icon-bubbles4"></i>
             <span class="visible-xs-inline-block position-right">Messages</span>
             <span id="message-notif2" class="bg-warning-400"></span>
           </a>
@@ -45,6 +45,11 @@
                 };
                 axios.post('/notification/chat/read', data).then(response => {
                    window.location.href = notification.data.action_url;
+                });
+            },
+            MarkAllMessageRead: function() {
+                axios.post('/notification/chat/read').then(response => {
+                   $('#message-notif2').removeClass('badge-notif');
                 });
             }
         }
