@@ -120,7 +120,7 @@ function select_account_report(){
         success: function (data) {  
           //$(".content-case").html( data );
           var chart_data = $.parseJSON(data);
-          if(chart_data.length > 1)
+          if(chart_data.length > 0)
           {
             var total_result = 0;
             $.each( chart_data, function( key, value ) {
