@@ -65,6 +65,28 @@ class ReportsController extends Controller
                       ->select(DB::raw('count(*) as total'))
                       ->get();  
     }
+
+    if( Auth::user()->role_id == 7  ){
+      $active_count = Cases::Join('case_participants AS b','cases.id','=','b.case_id')
+                      ->where('b.user_id',Auth::user()->id)
+                      ->whereBetween('cases.created_at', array($from, $to))
+                      ->where('cases.status',1)
+                      ->select(DB::raw('count(cases.id) as total'))
+                      ->get();
+
+      $pending_count = Cases::Join('case_participants AS b','cases.id','=','b.case_id')
+                      ->where('b.user_id',Auth::user()->id)
+                      ->whereBetween('cases.created_at', array($from, $to))
+                      ->where('cases.status',2)
+                      ->select(DB::raw('count(*) as total'))
+                      ->get();
+      $closed_count = Cases::Join('case_participants AS b','cases.id','=','b.case_id')
+                      ->where('b.user_id',Auth::user()->id)
+                      ->whereBetween('cases.created_at', array($from, $to))
+                      ->where('cases.status',3)
+                      ->select(DB::raw('count(*) as total'))
+                      ->get();  
+    }
     
     return view( 'components.reports.report-oncall',['users'=>$users,'active_count'=>$active_count[0],'pending_count'=>$pending_count[0],'closed_count'=>$closed_count[0],'account_id'=>$request->account_id,'range'=>$request->range]);
   }

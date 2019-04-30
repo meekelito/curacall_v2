@@ -14,6 +14,57 @@ use Validator;
 
 class ApiController extends Controller
 {
+  public function newCase(Request $request)
+  {
+    $validator = Validator::make($request->all(),[ 
+      'case_id' => 'required|unique:cases,case_id', 
+      'account_id' => 'required',
+      'call_type' => 'required',
+      'subcall_type' => 'required',
+      'case_message' => 'required',
+      'sender_id' => 'required',
+      'sender_fullname' => 'required',
+      'api_key' => 'required'
+    ]); 
+
+    if( $validator->fails() ){
+      return json_encode(array( 
+        "status"=>0,
+        "response"=>"error", 
+        "message"=>$validator->errors()
+      ));
+    }
+
+    $key_status = Keys::where('api_key',$request->api_key)
+                ->where('status','active')
+                ->get();
+
+    if ( $key_status->isEmpty() ){
+      return json_encode(array(
+        "status" => 0,
+        "response" => "failed", 
+        "message" => "Error in connection."
+      ));
+    }
+      
+
+    $res = Cases::create($request->all());
+
+    if($res){
+      return json_encode(array(
+        "status" => 1,
+        "response" => "success", 
+        "message" => "Successfully sent."
+      ));
+    }else{
+      return json_encode(array(
+        "status" => 0,
+        "response" => "failed", 
+        "message" => "Error in connection."
+      ));
+    }
+  }
+
   public function getCases($status = 'all',$user_id)
   {
     if($status=='all'){
