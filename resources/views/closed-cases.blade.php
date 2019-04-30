@@ -55,34 +55,49 @@
               <span class="badge bg-success">{{ $closed_count->total }}</span>
             </td>
           </tr>
-          @forelse($cases as $row)    
+          @forelse($cases as $case)    
+            @php
+            $owner = "";
+            @endphp
+            @foreach($case['participants'] as $participant)
+              @if( $participant['ownership'] == 2 )
+                @php
+                  $owner = $participant['fname'].' '.$participant['lname'];
+                @endphp
+              @elseif( $participant['ownership'] == 5 )
+                @php
+                  $owner = $participant['fname'].' '.$participant['lname'];
+                @endphp
+              @endif  
+
+            @endforeach
             <tr>
               <td class="text-center">
                 <!-- <i class="icon-checkmark3 text-success"></i> -->
                 @php
-                $datetime1 = new DateTime($row->created_at);
-                $datetime2 = new DateTime($row->updated_at);
+                $datetime1 = new DateTime($case['created_at']);
+                $datetime2 = new DateTime($case['updated_at']);
                 $interval = $datetime1->diff($datetime2);
                 @endphp
                 {{ $interval->format('%ad %hh %im %ss') }}
               </td>
               <td>
                 <div class="media-body">
-                  <a href="{{ url('/cases/case_id',$row->id) }}" class="display-inline-block text-default letter-icon-title">{{ $row->sender_fullname }}</a>
+                  <a href="{{ url('/cases/case_id',$case['id']) }}" class="display-inline-block text-default letter-icon-title">{{ $owner }}</a>
                   <div class="text-muted text-size-small"><span class="status-mark border-success position-left"></span> Closed</div>
                 </div>
               </td>
               <td>
-                <a href="{{ url('/cases/case_id',$row->id) }}" class="text-default display-inline-block">
-                  <span>[#{{ $row->case_id }}] Call type</span>
+                <a href="{{ url('/cases/case_id',$case['id']) }}" class="text-default display-inline-block">
+                  <span>[#{{ $case['case_id'] }}] Call type</span>
                   <span class="display-block text-muted">Full message of the case...</span>
                 </a>
               </td>
               <td class="text-left">
                 <span class="text-muted">
-                  @if(!empty($row->created_at))
-                    {{  date_format($row->created_at,"M d,Y") }}<br>
-                    {{  date_format($row->created_at,"h:i a") }}
+                  @if(!empty($case['created_at']))
+                    {{  date_format($case['created_at'],"M d,Y") }}<br>
+                    {{  date_format($case['created_at'],"h:i a") }}
                   @endif
                 </span>
               </td>

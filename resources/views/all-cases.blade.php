@@ -1,8 +1,9 @@
 @extends('layouts.app')
-
 @section('css')
   <style type="text/css">
-
+  .label{
+    border-radius: 20px;
+  }
   </style>
 @endsection 
 
@@ -45,6 +46,7 @@
           <tr>
             <th style="width: 50px">Sitting Time</th>
             <th style="width: 150px;">User</th>
+            <th style="width: 150px;">Action</th>
             <th>Description</th>
             <th class="text-center" style="width: 20px;"><i class="icon-arrow-down12"></i></th>
             <th style="display: none;"></th>
@@ -57,13 +59,43 @@
           @endphp
 
 
-          @forelse($cases as $row)
+          @forelse($cases as $case)
 
-          @switch($row->status)
+
+          @php
+          $label = "";
+          $owner = ""; 
+          $recipient = ""; 
+          $recipient_name = "";
+          @endphp
+
+          @foreach($case['participants'] as $participant)
+            @if( $participant['ownership'] == 2)
+              @php 
+                $label = "accepted";
+                $recipient = $participant['fname']." ".$participant['lname'];
+                $owner = $participant['fname']." ".$participant['lname'];
+              @endphp
+            @endif
+            @if( $participant['ownership'] == 5)
+              @php
+                $label = "forwarded";
+                $owner = $participant['fname']." ".$participant['lname'];
+                $recipient = $case['participants'][0]['fname']." ".$case['participants'][0]['lname'];
+              @endphp
+            @endif
+            @php
+              $recipient_name .= $participant['fname'].' '.$participant['lname'].',';
+            @endphp
+          
+          @endforeach
+
+
+          @switch($case['status'])
               @case(1)
-                @if($row->status == '1' && $ctr == 1 )
+                @if($case['status'] == '1' && $ctr == 1 )
                 <tr class="active border-double">
-                  <td colspan="3">Active cases</td>
+                  <td colspan="4">Active cases</td>
                   <td class="text-center">
                     <span class="badge bg-blue">{{ $active_count->total }}</span>
                   </td>
@@ -75,25 +107,35 @@
                   </td>
                   <td>
                     <div class="media-body">
-                      <a href="{{ url('/cases/case_id',$row->id) }}" class="display-inline-block text-default text-semibold letter-icon-title">{{ $row->sender_fullname }}</a>
+                      <a href="{{ url('/cases/case_id',$case['id']) }}" class="display-inline-block text-default text-semibold letter-icon-title">CuraCall</a>
                       <div class="text-muted text-size-small"><span class="status-mark border-blue position-left"></span> Active</div>
                     </div>
                   </td>
                   <td>
-                    <a href="{{ url('/cases/case_id',$row->id) }}" class="text-default display-inline-block">
-                      <span class="text-semibold">[#{{ $row->case_id }}] Call type</span>
+                    <div class="media-body">
+                      <div class="text-muted text-size-small"><span class="label label-primary">Active</span></div>
+                      <a href="{{ url('/cases/case_id',$case['id']) }}" class="display-inline-block text-default text-semibold letter-icon-title" title="{{ rtrim($recipient_name,',') }}">{{ $case['participants'][0]['fname']." ".$case['participants'][0]['lname'] }}
+                      @if( count($case['participants']) > 1)
+                        and {{ count($case['participants'])-1 }} others
+                      @endif
+                      </a>
+                    </div>
+                  </td>
+                  <td>
+                    <a href="{{ url('/cases/case_id',$case['id']) }}" class="text-default display-inline-block">
+                      <span class="text-semibold">[#{{ $case['case_id'] }}] Call type</span>
                       <span class="display-block text-muted">Full message of the case...</span>
                     </a>
                   </td>
                   <td class="text-left">
                     <span class="text-muted">
-                      @if(!empty($row->created_at))
-                        {{  date_format($row->created_at,"M d,Y") }}<br>
-                        {{  date_format($row->created_at,"h:i a") }}
+                      @if(!empty($case['created_at']))
+                        {{  date_format($case['created_at'],"M d,Y") }}<br>
+                        {{  date_format($case['created_at'],"h:i a") }}
                       @endif
                     </span>
                   </td>
-                  <td style="display: none;">{{ $row->created_at }}</td>
+                  <td style="display: none;">{{ $case['created_at'] }}</td>
                   <th style="display: none;"></th>
                 </tr>
                 
@@ -105,9 +147,9 @@
               @break
 
               @case(2)
-                @if($row->status == '2' && $ctr == 1 )
+                @if($case['status'] == '2' && $ctr == 1 )
                 <tr class="active border-double">
-                  <td colspan="3">Pending cases</td>
+                  <td colspan="4">Pending cases</td>
                   <td class="text-center">
                     <span class="badge bg-danger">{{ $pending_count->total }}</span>
                   </td>
@@ -119,25 +161,39 @@
                   </td>
                   <td>
                     <div class="media-body">
-                      <a href="{{ url('/cases/case_id',$row->id) }}" class="display-inline-block text-default">{{ $row->sender_fullname }}</a>
+                      <a href="{{ url('/cases/case_id',$case['id']) }}" class="display-inline-block text-default">{{ $owner }}</a>
                       <div class="text-muted text-size-small"><span class="status-mark border-warning position-left"></span> Pending</div>
                     </div>
                   </td>
                   <td>
-                    <a href="{{ url('/cases/case_id',$row->id) }}" class="text-default display-inline-block">
-                      <span>[#{{ $row->case_id }}]  Call type</span>
+                    <div class="media-body">
+                      @if($label == "accepted")
+                      <div class="text-muted text-size-small"><span class="label label-primary">accepted</span></div>
+                      <a href="{{ url('/cases/case_id',$case['id']) }}" class="display-inline-block text-default text-semibold letter-icon-title">{{ $recipient }}</a>
+                      @else
+                      <div class="text-muted text-size-small"><span class="label label-warning">forwarded</span></div>
+                      <a href="{{ url('/cases/case_id',$case['id']) }}" class="display-inline-block text-default text-semibold letter-icon-title" title="{{ rtrim($recipient_name,',') }}">{{ $recipient }}</a>
+                      @if( count($case['participants']) > 1)
+                        and {{ count($case['participants'])-1 }} others
+                      @endif
+                      @endif
+                    </div>
+                  </td>
+                  <td>
+                    <a href="{{ url('/cases/case_id',$case['id']) }}" class="text-default display-inline-block">
+                      <span>[#{{ $case['case_id'] }}]  Call type</span>
                       <span class="display-block text-muted">Full message of the case...</span>
                     </a>
                   </td>
                   <td class="text-left">
                     <span class="text-muted">
-                      @if(!empty($row->created_at))
-                        {{  date_format($row->created_at,"M d,Y") }}<br>
-                        {{  date_format($row->created_at,"h:i a") }}
+                      @if(!empty($case['created_at']))
+                        {{  date_format($case['created_at'],"M d,Y") }}<br>
+                        {{  date_format($case['created_at'],"h:i a") }}
                       @endif
                     </span>
                   </td>
-                  <td style="display: none;">{{ $row->created_at }}</td>
+                  <td style="display: none;">{{ $case['created_at'] }}</td>
                   <th style="display: none;"></th>
                 </tr>
 
@@ -149,9 +205,9 @@
               @break
 
               @case(3)
-                @if($row->status == '3' && $ctr == 1 )
+                @if($case['status'] == '3' && $ctr == 1 )
                 <tr class="active border-double">
-                  <td colspan="3">Closed cases</td>
+                  <td colspan="4">Closed cases</td>
                   <td class="text-center">
                     <span class="badge bg-success">{{ $closed_count->total }}</span>
                   </td>
@@ -161,33 +217,39 @@
                   <td class="text-left">
                     <!-- <i class="icon-checkmark3 text-success"></i> -->
                     @php
-                    $datetime1 = new DateTime($row->created_at);
-                    $datetime2 = new DateTime($row->updated_at);
+                    $datetime1 = new DateTime($case['created_at']);
+                    $datetime2 = new DateTime($case['updated_at']);
                     $interval = $datetime1->diff($datetime2);
                     @endphp
                     {{ $interval->format('%ad %hh %im %ss') }}
                   </td>
                   <td>
                     <div class="media-body">
-                      <a href="{{ url('/cases/case_id',$row->id) }}" class="display-inline-block text-default letter-icon-title">{{ $row->sender_fullname }}</a>
+                      <a href="{{ url('/cases/case_id',$case['id']) }}" class="display-inline-block text-default letter-icon-title">{{ $owner }}</a>
                       <div class="text-muted text-size-small"><span class="status-mark border-success position-left"></span> Closed</div>
                     </div>
                   </td>
                   <td>
-                    <a href="{{ url('/cases/case_id',$row->id) }}" class="text-default display-inline-block">
-                      <span>[#{{ $row->case_id }}] Call type</span>
+                    <div class="media-body">
+                      <div class="text-muted text-size-small"><span class="label label-success">Closed</span></div>
+                      <a href="{{ url('/cases/case_id',$case['id']) }}" class="display-inline-block text-default text-semibold letter-icon-title" >{{ $owner }}</a>
+                    </div>
+                  </td>
+                  <td>
+                    <a href="{{ url('/cases/case_id',$case['id']) }}" class="text-default display-inline-block">
+                      <span>[#{{ $case['case_id'] }}] Call type</span>
                       <span class="display-block text-muted">Full message of the case...</span>
                     </a>
                   </td>
                   <td class="text-left">
                     <span class="text-muted">
-                      @if(!empty($row->created_at))
-                        {{  date_format($row->created_at,"M d,Y") }}<br>
-                        {{  date_format($row->created_at,"h:i a") }}
+                      @if(!empty($case['created_at']))
+                        {{  date_format($case['created_at'],"M d,Y") }}<br>
+                        {{  date_format($case['created_at'],"h:i a") }}
                       @endif
                     </span>
                   </td>
-                  <td style="display: none;">{{ $row->created_at }}</td>
+                  <td style="display: none;">{{ $case['created_at'] }}</td>
                   <th style="display: none;">closed</th>
                 </tr>
               @break
@@ -229,10 +291,10 @@
         for (var i = 2, row; row = table.rows[i]; i++) {
             //iterate through rows
             //rows would be accessed using the "row" variable assigned in the for loop
-            if(row.cells[4] != null && row.cells[5].innerHTML != "closed"){
+            if(row.cells[5] != null && row.cells[6].innerHTML != "closed"){
 
 
-            var endDate = row.cells[4];
+            var endDate = row.cells[5];
             var countDownDate = new Date(endDate.innerHTML).getTime();
             var countDown = row.cells[0];
             // Update the count down every 1 second

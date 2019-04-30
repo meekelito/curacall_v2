@@ -48,6 +48,7 @@ class ActiveCasesController extends Controller
         "case_message" => $case->case_message,
         "status" => $case->status,
         "created_at" => $case->created_at,
+        "updated_at" => $case->updated_at,
         "participants"=> $participants_arr
       );
       
