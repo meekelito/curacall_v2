@@ -122,6 +122,15 @@ function select_account_report(){
           var chart_data = $.parseJSON(data);
           if(chart_data.length > 1)
           {
+            var total_result = 0;
+            $.each( chart_data, function( key, value ) {
+              total_result += value.value;
+            });
+
+            $.each( chart_data, function( key, value ) {
+              var percentage = (value.value/total_result) * 100;
+              value.name = value.name + " (" + percentage.toPrecision(3) +"%) : " + value.value;
+            });
 
          //console.log($('.date-range-val').val());
              // Set paths
@@ -156,7 +165,7 @@ function select_account_report(){
                         // Add tooltip
                         tooltip: {
                             trigger: 'item',
-                            formatter: "{a} <br/>{b}: {c}"
+                            formatter: "{a} <br/>{b}"
                             // formatter: "{a} <br/>{b}: {c} ({d}%)"
                         },
                         // Add series
