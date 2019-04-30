@@ -87,6 +87,7 @@ Route::group(['middleware' => array('auth','nocache')], function () {
     //Reports
     Route::post('report-account','Reports\ReportsController@getReportAccount');
     Route::post('report-oncall','Reports\ReportsController@getReportOncall');
+    Route::get('report-account/subcalltypes','Reports\ReportsController@getSubcalltypes')->name('reports.subcalltypes');
 
     Route::post('report-active-case-list','Reports\ReportsController@getReportActiveCase'); 
     Route::post('report-pending-case-list','Reports\ReportsController@getReportPendingCase'); 

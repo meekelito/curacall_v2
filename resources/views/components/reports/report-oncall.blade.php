@@ -1,5 +1,6 @@
 <div class="container-fluid">
     <div class="row">
+        @if( Auth::user()->role_id != 7 )
         <div class="form-group form-group-xs col-sm-3">
             <select class="form-control oncall-user">
                 <option value="all">Select On call</option>
@@ -8,6 +9,7 @@
                 @endforeach
             </select>
         </div>
+        @endif 
         <div class="form-group form-group-xs col-sm-3">
             <input type="text" class="form-control daterange-basic date-range-val" 
             @if(!empty($range)) value="{{$range}}" 
@@ -16,6 +18,7 @@
             >
         </div>
     </div>
+    
     <div class="row">
         <div class="col-sm-3 active-case-report" style="border: 5px solid #03a9f4; padding: 10px">
             <span class="text-semibold" style="margin: 10px; font-size: 15px;">Active</span><br>

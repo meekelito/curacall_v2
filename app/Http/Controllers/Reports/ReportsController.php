@@ -8,14 +8,28 @@ use App\Cases;
 use App\Case_participant;
 use DB;
 use Auth;
-
+use App\CallType;
+use App\SubcallType;
 class ReportsController extends Controller
 {
   public function getReportAccount()
   {
     $account = Account::all();
-    return view( 'components.reports.report-accounts',['account'=>$account]);
+    $calltypes = CallType::all();
+
+    return view( 'components.reports.report-accounts',['account'=>$account,'calltypes'=>$calltypes]);
   }
+
+  public function getSubcalltypes(Request $request)
+  {
+    //temporary name use isntead of id
+      $calltype = CallType::where('name',$request->call_type)->first();
+      if(!$calltype)
+        return json_encode([]);
+      $subcalltypes = SubcallType::where('call_type',$calltype->id)->get();
+      return json_encode($subcalltypes);
+  }
+
   public function getReportOncall(Request $request)
   {
     
@@ -60,6 +74,28 @@ class ReportsController extends Controller
                       ->get();
       $closed_count = Cases::Join('case_participants AS b','cases.id','=','b.case_id')
                       ->where('b.user_id',$request->account_id)
+                      ->whereBetween('cases.created_at', array($from, $to))
+                      ->where('cases.status',3)
+                      ->select(DB::raw('count(*) as total'))
+                      ->get();  
+    }
+
+    if( Auth::user()->role_id == 7  ){
+      $active_count = Cases::Join('case_participants AS b','cases.id','=','b.case_id')
+                      ->where('b.user_id',Auth::user()->id)
+                      ->whereBetween('cases.created_at', array($from, $to))
+                      ->where('cases.status',1)
+                      ->select(DB::raw('count(cases.id) as total'))
+                      ->get();
+
+      $pending_count = Cases::Join('case_participants AS b','cases.id','=','b.case_id')
+                      ->where('b.user_id',Auth::user()->id)
+                      ->whereBetween('cases.created_at', array($from, $to))
+                      ->where('cases.status',2)
+                      ->select(DB::raw('count(*) as total'))
+                      ->get();
+      $closed_count = Cases::Join('case_participants AS b','cases.id','=','b.case_id')
+                      ->where('b.user_id',Auth::user()->id)
                       ->whereBetween('cases.created_at', array($from, $to))
                       ->where('cases.status',3)
                       ->select(DB::raw('count(*) as total'))

@@ -27,10 +27,12 @@ Route::get('/case-count', 'Api\ApiController@getCaseCount' );
 
 Route::post('/case-accept', 'Api\ApiController@acceptCase' );  
 
-Route::post('/case-close', 'Api\ApiController@closeCase' );  
+Route::post('/case-close', 'Api\ApiController@closeCase' ); 
+
+ Route::post('/case-new', 'Api\ApiController@newCase' );  
 
 
-Route::get('/case-test', 'Api\ApiController@testCase' );  
+Route::post('/case-test', 'Api\ApiController@testCase' );  
 
 Route::fallback(function(){
     return response()->json([
