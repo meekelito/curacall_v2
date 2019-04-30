@@ -19,7 +19,7 @@
             <select id="report_account_calltype" class="form-control" onchange="select_account_report();get_subcalltype()">
                 <option value="all">Select Call type</option>
                 @foreach($calltypes as $row)
-                  <option value="{{ $row->id }}">{{ $row->name }}</option>
+                  <option value="{{ $row->name }}">{{ $row->name }}</option>
                 @endforeach
               <!--   <option>Shift Cancelation</option>
                 <option>Medical</option>
@@ -72,7 +72,7 @@
                         $("#report_account_subcalltype").append("<option value='all'>Select Sub-Call Type</option>");
                       
                         $.each(obj, function(i, item) {
-                            $("#report_account_subcalltype").append("<option value='"+item.id+"'>"+item.name+"</option>");
+                            $("#report_account_subcalltype").append("<option value='"+item.name+"'>"+item.name+"</option>");
                         });
 
                        // $('#report_account_subcalltype').trigger('change'); 
