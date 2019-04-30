@@ -8,14 +8,24 @@ use App\Cases;
 use App\Case_participant;
 use DB;
 use Auth;
-
+use App\CallType;
+use App\SubcallType;
 class ReportsController extends Controller
 {
   public function getReportAccount()
   {
     $account = Account::all();
-    return view( 'components.reports.report-accounts',['account'=>$account]);
+    $calltypes = CallType::all();
+
+    return view( 'components.reports.report-accounts',['account'=>$account,'calltypes'=>$calltypes]);
   }
+
+  public function getSubcalltypes(Request $request)
+  {
+      $subcalltypes = SubcallType::where('call_type',$request->call_type)->get();
+      return json_encode($subcalltypes);
+  }
+
   public function getReportOncall(Request $request)
   {
     
