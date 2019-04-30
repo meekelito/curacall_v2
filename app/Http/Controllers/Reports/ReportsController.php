@@ -22,7 +22,10 @@ class ReportsController extends Controller
 
   public function getSubcalltypes(Request $request)
   {
-      $subcalltypes = SubcallType::where('call_type',$request->call_type)->get();
+    //temporary name use isntead of id
+      $calltype = CallType::where('name',$request->call_type)->first();
+
+      $subcalltypes = SubcallType::where('call_type',$calltype->id)->get();
       return json_encode($subcalltypes);
   }
 
