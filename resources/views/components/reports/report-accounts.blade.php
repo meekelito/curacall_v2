@@ -9,6 +9,8 @@
                 @endforeach
             </select>
         </div>
+        @else
+            <input type="hidden" id="report_account_id" value="{{ Auth::user()->account_id }}">
         @endif
         <div class="form-group form-group-xs col-sm-3">
             <input type="text" class="form-control daterange-basic date-range-val" value="{{ date ( 'm/01/Y' ) }} - {{ date ( 'm/d/Y' ) }}">
