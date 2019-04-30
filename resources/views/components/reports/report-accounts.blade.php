@@ -1,35 +1,36 @@
 <div class="container-fluid">
     <div class="row">
         <div class="form-group form-group-xs col-sm-3">
-            <select class="form-control">
-                <option value="all">Select Account</option>
+            <select id="report_account_id" class="form-control" onchange="select_account_report()">
+                <option value="all">Select All Account</option>
                 @foreach($account as $row)
-                <option>{{ $row->account_name }}</option>
+                <option value="{{ $row->id }}">{{ $row->account_name }}</option>
                 @endforeach
             </select>
         </div>
         <div class="form-group form-group-xs col-sm-3">
-            <input type="text" class="form-control daterange-basic" value="{{ date ( 'm/01/Y' ) }} - {{ date ( 'm/d/Y' ) }}">
+            <input type="text" class="form-control daterange-basic date-range-val" value="{{ date ( 'm/01/Y' ) }} - {{ date ( 'm/d/Y' ) }}">
         </div>
         <div class="form-group form-group-xs col-sm-3">
-            <select class="form-control">
+            <select id="report_account_calltype" class="form-control" onchange="select_account_report()">
                 <option value="all">Select Call type</option>
-                <option value="1">Shift Cancelation</option>
-                <option value="2">Medical</option>
-                <option value="3">Office</option>
-                <option value="4">Referral or Agency Contract </option>
-                <option value="5">Scheduling</option>
-                <option value="6">Contact Request</option>
-                <option value="7">Clocking Out / Checkin-Checkout</option>
-                <option value="8">Complaints - Shift Related Complaint</option>
-                <option value="9">Other</option>
+                <option>Shift Cancelation</option>
+                <option>Medical</option>
+                <option>Office</option>
+                <option>Referral or Agency Contract </option>
+                <option>Scheduling</option>
+                <option>Contact Request</option>
+                <option>Clocking Out / Checkin-Checkout</option>
+                <option>Complaints - Shift Related Complaint</option>
+                <option>Other</option>
             </select>
         </div>
         <div class="form-group form-group-xs col-sm-3">
-            <select class="form-control">
+            <select id="report_account_subcalltype" class="form-control" onchange="select_account_report()">
                 <option value="all">Select Sub-Call Type</option>
-                <option value="1">Patient Canceling Shift</option>
-                <option value="2">Caregiver Canceling Shift</option>
+                <option>Payroll</option>
+                <option>Patient Canceling Shift</option>
+                <option>Caregiver Canceling Shift</option>
             </select>
         </div>
     </div>
@@ -43,6 +44,10 @@
             applyClass: 'bg-slate-600',
             cancelClass: 'btn-default'
         });
-        all_accounts();
+        select_account_report();
     }); 
+
+      $( ".date-range-val" ).change(function() {
+        select_account_report();
+      });
 </script>

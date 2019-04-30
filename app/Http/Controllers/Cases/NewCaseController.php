@@ -470,6 +470,18 @@ class NewCaseController extends Controller
       $participants[] = $row->user_id;
     }
 
+    /** Notification message template **/
+      $message = str_replace("[from_name]",Auth::user()->fname . ' ' . Auth::user()->lname,__('notification.forward_case'));
+      $message = str_replace("[case_id]",$request->case_id,$message);
+      $arr = array(
+          'case_id'     => $request->case_id,
+          //'message'     => $message,
+          'type'        => 'forward_case',
+          //'forward_to'  => $forwarded_recipients,
+          'action_url'  => route('case',[$request->case_id])
+      );
+    /** END Notification message template **/
+
    
     // update all participants ownership state to Forwarded
     foreach ($request->recipient as $row) {
@@ -479,6 +491,11 @@ class NewCaseController extends Controller
         ->update(['ownership' => 1]); 
       }else{ 
         Case_participant::create( ["case_id" => $request->case_id,"user_id" => $row, 'ownership' => 1 ] ); 
+        $user = User::find($row);
+
+        $arr['forward_to'] = $user->fname . ' ' . $user->lname;
+        $arr['message'] = $message . "you";
+        Notification::notify_user($arr,$user);
       } 
 
       /** create recipients list for notification **/
@@ -494,20 +511,7 @@ class NewCaseController extends Controller
       Case_history::create( $request->all()+["is_visible" => 1,"status" => 2,"action_note" => "Case Forwarded","sent_to"=>$row, 'created_by' => Auth::user()->id ] ); 
     }
 
-      /** Notification message template **/
-      $message = str_replace("[from_name]",Auth::user()->fname . ' ' . Auth::user()->lname,__('notification.forward_case'));
-      $message = str_replace("[case_id]",$request->case_id,$message);
-      $arr = array(
-          'from_id'     => Auth::user()->id,
-          'from_name'   => Auth::user()->fname . ' ' . Auth::user()->lname,
-          'from_image'  => Auth::user()->prof_img,
-          'case_id'     => $request->case_id,
-          //'message'     => $message,
-          'type'        => 'forward_case',
-          'forward_to'  => $forwarded_recipients,
-          'action_url'  => route('case',[$request->case_id])
-      );
-    /** END Notification message template **/
+
 
     /** Sending Notifcation part **/
      $other_participant_count = count($request->recipient) - 1;
@@ -530,8 +534,10 @@ class NewCaseController extends Controller
                 $str_recipients .= ($other_participant_count == 1) ? " Other" : " Others";
               }
          }
+         $arr['forward_to'] = $forwarded_recipients;
          $arr['message'] = $message . $str_recipients;
-         $user->notify(new CaseNotification($arr)); // Notify participant
+         //$user->notify(new CaseNotification($arr)); // Notify participant
+         Notification::notify_user($arr,$user);
     }
     /** End Sending Notification part **/
 
