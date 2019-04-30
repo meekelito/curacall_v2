@@ -12,10 +12,10 @@ class ActiveCasesController extends Controller
   public function index()
   {
     $cases_in = Cases::Join('case_participants AS b','cases.id','=','b.case_id')
-              ->where('b.user_id',3)
+              ->where('b.user_id',Auth::user()->id)
               ->where('b.is_silent',0) 
               ->where('cases.status',1)
-              ->orderBy('cases.id','DESC')
+              
               ->select('cases.id')
               ->get();
 
