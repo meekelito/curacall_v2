@@ -34,6 +34,8 @@ Route::group(['middleware' => array('auth','nocache')], function () {
     Route::post('/notification/count', 'NotificationController@count');
 
 	Route::get('dashboard','Dashboard\DashboardController@index');
+    Route::get('dashboard/cases/count','Dashboard\DashboardController@casescount')->name('dashboard.cases.count');
+
 	Route::get('new-message','Messages\NewMessageController@index');
 	Route::post('new-message','Messages\NewMessageController@createMessage');
 	Route::post('create-room','Messages\NewMessageController@createRoom');

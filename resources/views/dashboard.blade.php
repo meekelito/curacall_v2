@@ -85,7 +85,7 @@
       }
     });
   }
-
+  
   function reportAccount(){
     $.ajax({ 
       type: "POST", 
@@ -106,79 +106,97 @@
       }
     });
   }
-function all_accounts(){ 
-  
-    // Set paths
-    // ------------------------------
-    require.config({
-        paths: {
-            echarts: "{{ asset('assets/js/plugins/visualization/echarts') }}"
-        } 
-    });
-    // Configuration
-    // ------------------------------
-    require(
-        [
-            'echarts',
-            'echarts/theme/limitless',
-            'echarts/chart/pie',
-            'echarts/chart/funnel'
-        ],
-        // Charts setup
-        function (ec, limitless) {
-            // Initialize charts
+function select_account_report(){ 
+    var account_id = $('#report_account_id').val();
+     $.ajax({ 
+        type: "GET", 
+        url: "{{ route('dashboard.cases.count') }}", 
+        data: {  
+          range: $('.date-range-val').val(),
+          account_id: account_id,
+          call_type: $('#report_account_calltype').val(),
+          subcall_type: $('#report_account_subcalltype').val()
+        },
+        success: function (data) {  
+          //$(".content-case").html( data );
+          var chart_data = $.parseJSON(data);
+         //console.log($('.date-range-val').val());
+             // Set paths
             // ------------------------------
-            var rose_diagram_visible = ec.init(document.getElementById('rose_diagram_visible'), limitless);
+            require.config({
+                paths: {
+                    echarts: "{{ asset('assets/js/plugins/visualization/echarts') }}"
+                } 
+            });
+            // Configuration
+            // ------------------------------
+            require(
+                [
+                    'echarts',
+                    'echarts/theme/limitless',
+                    'echarts/chart/pie',
+                    'echarts/chart/funnel'
+                ],
+                // Charts setup
+                function (ec, limitless) {
+                    // Initialize charts
+                    // ------------------------------
+                    var rose_diagram_visible = ec.init(document.getElementById('rose_diagram_visible'), limitless);
 
-            rose_diagram_visible_options = {
-                // Add title
-                title: {
-                    text: 'All Cases',
-                    subtext: 'From January 01, 2019 to Present',
-                    x: 'center'
-                },
-                // Add tooltip
-                tooltip: {
-                    trigger: 'item',
-                    formatter: "{a} <br/>{b}: {c}"
-                    // formatter: "{a} <br/>{b}: {c} ({d}%)"
-                },
-                // Add series
-                series: [
-                    {
-                        name: 'Cases',
-                        type: 'pie',
-                        radius: ['15%', '73%'],
-                        center: ['50%', '57%'],
-                        roseType: 'area',
+                    rose_diagram_visible_options = {
+                        // Add title
+                        title: {
+                            text: 'All Cases',
+                            subtext: $('.date-range-val').val(),
+                            x: 'center'
+                        },
+                        // Add tooltip
+                        tooltip: {
+                            trigger: 'item',
+                            formatter: "{a} <br/>{b}: {c}"
+                            // formatter: "{a} <br/>{b}: {c} ({d}%)"
+                        },
+                        // Add series
+                        series: [
+                            {
+                                name: 'Cases',
+                                type: 'pie',
+                                radius: ['15%', '73%'],
+                                center: ['50%', '57%'],
+                                roseType: 'area',
 
-                        data: [
-                          {value: 535, name: 'A&J Home Care (19.37%)'}, 
-                          {value: 310, name: 'Ameribest Home Care (11.22%)'},
-                          {value: 234, name: 'Americare CSS (8.47%)'},
-                          {value: 135, name: 'Americare Inc. (4.89%)'},
-                          {value: 948, name: 'Better Home Health Care (34.32%)'},
-                          {value: 251, name: 'Broadway Homecare - Brooklyn (9.09%)'},
-                          {value: 147, name: 'Community Home Care (5.32%)'},
-                          {value: 202, name: 'Complete Homecare Harrisburg, PA (7.31%)'}
+                                data: chart_data
+                            }
                         ]
-                    }
-                ]
-            };
+                    };
 
-            rose_diagram_visible.setOption(rose_diagram_visible_options);
+                    rose_diagram_visible.setOption(rose_diagram_visible_options);
 
-            // Resize charts
-            // ------------------------------
+                    // Resize charts
+                    // ------------------------------
 
-            // window.onresize = function () {
-            //     setTimeout(function (){
-            //       rose_diagram_visible.resize();
-            //     }, 200);
-            // }
+                    // window.onresize = function () {
+                    //     setTimeout(function (){
+                    //       rose_diagram_visible.resize();
+                    //     }, 200);
+                    // }
+                }
+            );
+        },
+        error: function (data){
+          swal({
+            title: "Oops..!",
+            text: "No connection could be made because the target machine actively refused it. Please refresh the browser and try again.",
+            confirmButtonColor: "#EF5350",
+            type: "error"
+          });
         }
-    );
-};
+      });
+
+  
+   
+}
+
 
 </script>
 @endsection  
