@@ -15,7 +15,7 @@ class ClosedCasesController extends Controller
   						->where('b.user_id',Auth::user()->id)
   						->where('cases.status',3)
   						->orderBy('cases.id','DESC')
-  						->select('cases.id','cases.case_id','cases.sender_fullname','cases.status','cases.created_at')
+  						->select('cases.id','cases.case_id','cases.sender_fullname','cases.status','cases.created_at','cases.updated_at')
   						->get();
 
 		$closed_count = Cases::Join('case_participants AS b','cases.id','=','b.case_id')

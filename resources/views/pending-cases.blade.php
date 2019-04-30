@@ -1,7 +1,9 @@
 @extends('layouts.app')
 @section('css')
   <style type="text/css">
-
+  .label{
+    border-radius: 20px;
+  }
   </style>
 @endsection 
 
@@ -54,7 +56,7 @@
           <tr class="active border-double">
             <td colspan="4">Pending cases</td>
             <td class="text-center">
-              <span class="badge bg-orange">{{ $pending_count->total }}</span>
+              <span class="badge bg-warning">{{ $pending_count->total }}</span>
             </td>
           </tr>
           @forelse($cases as $case)    
@@ -62,19 +64,27 @@
             $label = "";
             $owner = ""; 
             $recipient = ""; 
+            $recipient_name = "";
             @endphp
 
             @foreach($case['participants'] as $participant)
               @if( $participant['ownership'] == 2)
-                @php
+                @php 
+                  $label = "accepted";
+                  $recipient = $participant['fname']." ".$participant['lname'];
                   $owner = $participant['fname']." ".$participant['lname'];
                 @endphp
               @endif
               @if( $participant['ownership'] == 5)
                 @php
+                  $label = "forwarded";
                   $owner = $participant['fname']." ".$participant['lname'];
+                  $recipient = $case['participants'][0]['fname']." ".$case['participants'][0]['lname'];
                 @endphp
               @endif
+              @php
+                $recipient_name .= $participant['fname'].' '.$participant['lname'].',';
+              @endphp
             
             @endforeach
             <tr>
@@ -84,15 +94,21 @@
               <td>
                 <div class="media-body">
                   <a href="{{ url('/cases/case_id',$case['id']) }}" class="display-inline-block text-default text-semibold letter-icon-title">{{ $owner }}</a>
-                  <div class="text-muted text-size-small"><span class="status-mark border-blue position-left"></span> Active</div>
+                  <div class="text-muted text-size-small"><span class="status-mark border-warning position-left"></span> Pending</div>
                 </div>
               </td>
               <td>
                 <div class="media-body">
+                  @if($label == "accepted")
+                  <div class="text-muted text-size-small"><span class="label label-primary">accepted</span></div>
+                  <a href="{{ url('/cases/case_id',$case['id']) }}" class="display-inline-block text-default text-semibold letter-icon-title">{{ $recipient }}</a>
+                  @else
                   <div class="text-muted text-size-small"><span class="label label-warning">forwarded</span></div>
-                  @foreach($case['participants'] as $participant)
-                  <a href="{{ url('/cases/case_id',$case['id']) }}" class="display-inline-block text-default text-semibold letter-icon-title">{{ $participant['fname'].' '.$participant['lname'] }}</a>
-                  @endforeach
+                  <a href="{{ url('/cases/case_id',$case['id']) }}" class="display-inline-block text-default text-semibold letter-icon-title" title="{{ rtrim($recipient_name,',') }}">{{ $recipient }}</a>
+                  @if( count($case['participants']) > 1)
+                    and {{ count($case['participants'])-1 }} others
+                  @endif
+                  @endif
                 </div>
               </td>
               <td>

@@ -17,7 +17,7 @@ class AllCasesController extends Controller
               ->where('cases.status',"!=",4)
   						->orderBy('cases.status')
   						->orderBy('cases.id','DESC')
-  						->select('cases.id','cases.case_id','cases.sender_fullname','cases.status','cases.created_at')
+  						->select('cases.id','cases.case_id','cases.sender_fullname','cases.status','cases.created_at','cases.updated_at')
   						->get();
 
 

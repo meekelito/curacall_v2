@@ -53,7 +53,7 @@
           <tr class="active border-double">
             <td colspan="3">Silent cases</td>
             <td class="text-right">
-              <span class="badge bg-blue">{{ $active_count->total }}</span>
+              <span class="badge bg-slate-300">{{ $active_count->total }}</span>
             </td>
           </tr>
           @forelse($cases as $row)    

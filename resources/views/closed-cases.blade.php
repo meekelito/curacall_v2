@@ -61,7 +61,7 @@
                 <!-- <i class="icon-checkmark3 text-success"></i> -->
                 @php
                 $datetime1 = new DateTime($row->created_at);
-                $datetime2 = new DateTime('now');
+                $datetime2 = new DateTime($row->updated_at);
                 $interval = $datetime1->diff($datetime2);
                 @endphp
                 {{ $interval->format('%ad %hh %im %ss') }}
@@ -88,7 +88,7 @@
               </td>
             </tr>
           @empty 
-          <tr class="unread"><td colspan="3">No active case(s) found.</td></tr>
+          <tr class="unread"><td colspan="4">No closed case(s) found.</td></tr>
           @endforelse
         </tbody>
       </table>

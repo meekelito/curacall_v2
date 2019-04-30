@@ -162,7 +162,7 @@
                     <!-- <i class="icon-checkmark3 text-success"></i> -->
                     @php
                     $datetime1 = new DateTime($row->created_at);
-                    $datetime2 = new DateTime('now');
+                    $datetime2 = new DateTime($row->updated_at);
                     $interval = $datetime1->diff($datetime2);
                     @endphp
                     {{ $interval->format('%ad %hh %im %ss') }}
