@@ -7,6 +7,7 @@ use App\User;
 use App\Cases;
 use App\Case_participant;
 use DB;
+use Auth;
 
 class ReportsController extends Controller
 {
@@ -17,7 +18,13 @@ class ReportsController extends Controller
   }
   public function getReportOncall(Request $request)
   {
-    $users = User::all();
+    
+    if( Auth::user()->is_curacall ){
+      $users = User::all();
+    }else{
+      $users = User::where('account_id',Auth::user()->account_id)->get();
+    }
+
     $r1 = explode("-", $request->range);
     $date=date_create($r1[0]);
     $from = date_format($date,"Y-m-d H:i:s");

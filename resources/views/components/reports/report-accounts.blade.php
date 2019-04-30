@@ -1,5 +1,6 @@
 <div class="container-fluid">
     <div class="row">
+        @if( Auth::user()->role_id == 1 )
         <div class="form-group form-group-xs col-sm-3">
             <select id="report_account_id" class="form-control" onchange="select_account_report()">
                 <option value="all">Select All Account</option>
@@ -8,6 +9,7 @@
                 @endforeach
             </select>
         </div>
+        @endif
         <div class="form-group form-group-xs col-sm-3">
             <input type="text" class="form-control daterange-basic date-range-val" value="{{ date ( 'm/01/Y' ) }} - {{ date ( 'm/d/Y' ) }}">
         </div>

@@ -233,10 +233,23 @@ class NewCaseController extends Controller
   public function getModalForwardCase(Request $request) 
   {       
     $case_id = $request->case_id; 
-    $users = User::where('id','!=',Auth::user()->id)
+    // $users = User::where('id','!=',Auth::user()->id)
+    //             ->where('status','active')
+    //             ->orderBy('fname') 
+    //             ->get();   
+    if( Auth::user()->is_curacall ){
+      $users = User::where('id','!=',Auth::user()->id)
                 ->where('status','active')
-                ->orderBy('fname') 
-                ->get();    
+                ->orderBy('fname')
+                ->get();
+    }else{
+      $users = User::where('id','!=',Auth::user()->id)
+                ->where('status','active')
+                ->where('account_id',Auth::user()->account_id)
+                ->orderBy('fname')
+                ->get();
+    }
+                 
     return view('components.cases.forward-case-md',[ 'users'=>$users,'case_id' => $case_id ]); 
   }
   

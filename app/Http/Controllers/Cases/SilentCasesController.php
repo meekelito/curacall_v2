@@ -14,7 +14,10 @@ class SilentCasesController extends Controller
     $cases = Cases::Join('case_participants AS b','cases.id','=','b.case_id')
               ->where('b.user_id',Auth::user()->id)
               ->where('b.is_silent',1) 
-              ->where('cases.status',1)
+              ->where(function($q) {
+                  $q->where('cases.status',1)
+                  ->orWhere('cases.status',2);
+              })
               ->orderBy('cases.id','DESC')
               ->select('cases.id','cases.case_id','cases.sender_fullname','cases.status','cases.created_at')
               ->get();
@@ -22,7 +25,10 @@ class SilentCasesController extends Controller
     $active_count = Cases::Join('case_participants AS b','cases.id','=','b.case_id')
                   ->where('b.user_id',Auth::user()->id)
                   ->where('b.is_silent',1)
-                  ->where('cases.status',1)
+                  ->where(function($q) {
+                    $q->where('cases.status',1)
+                    ->orWhere('cases.status',2);
+                  })
                   ->select(DB::raw('count(cases.id) as total'))
                   ->get();    
                             

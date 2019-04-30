@@ -243,7 +243,7 @@
                   @if( Auth::user()->role_id == 4 )
                     <li class="navigation-header"><span>Admin Console</span> <i class="icon-menu" title="Admin Console"></i></li>
                     <li class="menu-account-general-info"><a href="{{ url('/account/general-info') }}"><i class="icon-hammer-wrench"></i> <span>General Information</span></a></li>
-                    <li class="menu-account-roles"><a href="{{ url('/account/roles') }}"><i class="icon-share3"></i> <span>Roles</span></a></li>
+                    <!-- <li class="menu-account-roles"><a href="{{ url('/account/roles') }}"><i class="icon-share3"></i> <span>Roles</span></a></li> -->
                   @endif
                 @endif
               </ul>
