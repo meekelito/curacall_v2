@@ -14,10 +14,23 @@ class NewMessageController extends Controller
 
   public function index()
   {
-  	$users = User::where('id','!=',Auth::user()->id)
+  	// $users = User::where('id','!=',Auth::user()->id)
+   //              ->where('status','active')
+   //              ->orderBy('fname')
+   //              ->get();
+
+    if( Auth::user()->is_curacall ){
+      $users = User::where('id','!=',Auth::user()->id)
                 ->where('status','active')
                 ->orderBy('fname')
                 ->get();
+    }else{
+      $users = User::where('id','!=',Auth::user()->id)
+                ->where('status','active')
+                ->where('account_id',Auth::user()->account_id)
+                ->orderBy('fname')
+                ->get();
+    }
 
     $rooms = Participant::where('user_id',Auth::user()->id)
               ->select('room_id')

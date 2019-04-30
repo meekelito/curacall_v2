@@ -46,25 +46,44 @@
             <th style="width: 150px;">User</th>
             <th style="width: 150px;">Action</th>
             <th>Description</th>
-            <th class="text-center" style="width: 150px;"><i class="icon-arrow-down12"></i></th>
+            <th class="text-center" style="width: 50px;"><i class="icon-arrow-down12"></i></th>
             <th style="display: none;"></th>
           </tr>
         </thead>
         <tbody>      
           <tr class="active border-double">
-            <td colspan="4">Active cases</td>
-            <td class="text-right">
-              <span class="badge bg-blue">{{ $pending_count->total }}</span>
+            <td colspan="4">Pending cases</td>
+            <td class="text-center">
+              <span class="badge bg-orange">{{ $pending_count->total }}</span>
             </td>
           </tr>
           @forelse($cases as $case)    
+            @php
+            $label = "";
+            $owner = ""; 
+            $recipient = ""; 
+            @endphp
+
+            @foreach($case['participants'] as $participant)
+              @if( $participant['ownership'] == 2)
+                @php
+                  $owner = $participant['fname']." ".$participant['lname'];
+                @endphp
+              @endif
+              @if( $participant['ownership'] == 5)
+                @php
+                  $owner = $participant['fname']." ".$participant['lname'];
+                @endphp
+              @endif
+            
+            @endforeach
             <tr>
               <td class="text-center">
        
               </td>
               <td>
                 <div class="media-body">
-                  <a href="{{ url('/cases/case_id',$case['id']) }}" class="display-inline-block text-default text-semibold letter-icon-title">Fullname</a>
+                  <a href="{{ url('/cases/case_id',$case['id']) }}" class="display-inline-block text-default text-semibold letter-icon-title">{{ $owner }}</a>
                   <div class="text-muted text-size-small"><span class="status-mark border-blue position-left"></span> Active</div>
                 </div>
               </td>
@@ -97,7 +116,7 @@
               </td>
             </tr>
           @empty
-          <tr class="unread" id="unread"><td colspan="4">No pending case(s) found.</td></tr>
+          <tr class="unread" id="unread"><td colspan="5">No pending case(s) found.</td></tr>
           @endforelse
         </tbody>
       </table>

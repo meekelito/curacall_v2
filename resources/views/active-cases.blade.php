@@ -46,49 +46,54 @@
             <th style="width: 150px;">User</th>
             <th style="width: 150px;">Action</th>
             <th>Description</th>
-            <th class="text-center" style="width: 150px;"><i class="icon-arrow-down12"></i></th>
+            <th class="text-center" style="width: 50px;"><i class="icon-arrow-down12"></i></th>
             <th style="display: none;"></th>
           </tr>
         </thead>
         <tbody>      
           <tr class="active border-double">
             <td colspan="4">Active cases</td>
-            <td class="text-right">
+            <td class="text-center">
               <span class="badge bg-blue">{{ $active_count->total }}</span>
             </td>
           </tr>
           @forelse($cases as $case)  
             @php
-              $sender = "CuraCall";
-              $action = "";
+            $recipient_name = "";
             @endphp
             @foreach($case['participants'] as $participant)  
-              @if( $participant['ownership'] == 5 )
-                $sender = $participant['fname'].' '.$participant['lname'];
-              @endif
-
-              @if( $participant['ownership'] == 2 )
-                $action = $participant['fname'].' '.$participant['lname'];
-              @endif
+              @php
+                $recipient_name .= $participant['fname'].' '.$participant['lname'].',';
+              @endphp
             @endforeach
             <tr>
               <td class="text-center">
        
-              </td>
+              </td> 
               <td>
                 <div class="media-body">
-                  <a href="{{ url('/cases/case_id',$case['id']) }}" class="display-inline-block text-default text-semibold letter-icon-title">{{ $sender }}</a>
+                  <a href="{{ url('/cases/case_id',$case['id']) }}" class="display-inline-block text-default text-semibold letter-icon-title">CuraCall</a>
                   <div class="text-muted text-size-small"><span class="status-mark border-blue position-left"></span> Active</div>
                 </div>
               </td>
               <td>
+                <div class="media-body">
+                  <div class="text-muted text-size-small"><span class="label label-primary">Send</span></div>
+                  <a href="{{ url('/cases/case_id',$case['id']) }}" class="display-inline-block text-default text-semibold letter-icon-title" title="{{ rtrim($recipient_name,',') }}"><i>{{ $case['participants'][0]['fname']." ".$case['participants'][0]['lname'] }} </i>
+                  @if( count($case['participants']) > 1)
+                    and {{ count($case['participants'])-1 }} others
+                  @endif
+                  </a>
+                </div>
+              </td>
+              <!-- <td>
                 <div class="media-body">
                   <div class="text-muted text-size-small"><span class="label label-warning">forwarded</span></div>
                   @foreach($case['participants'] as $participant)
                   <a href="{{ url('/cases/case_id',$case['id']) }}" class="display-inline-block text-default text-semibold letter-icon-title">{{ $participant['fname'].' '.$participant['lname'] }}</a>
                   @endforeach
                 </div>
-              </td>
+              </td> -->
               <td>
                 <a href="{{ url('/cases/case_id',$case['id']) }}" class="text-default display-inline-block">
                   <span class="text-semibold">[#{{ $case['case_id'] }}] Call type</span>
