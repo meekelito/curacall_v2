@@ -24,7 +24,8 @@ class ReportsController extends Controller
   {
     //temporary name use isntead of id
       $calltype = CallType::where('name',$request->call_type)->first();
-
+      if(!$calltype)
+        return json_encode([]);
       $subcalltypes = SubcallType::where('call_type',$calltype->id)->get();
       return json_encode($subcalltypes);
   }
