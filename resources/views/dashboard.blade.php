@@ -120,6 +120,9 @@ function select_account_report(){
         success: function (data) {  
           //$(".content-case").html( data );
           var chart_data = $.parseJSON(data);
+          if(chart_data.length > 1)
+          {
+
          //console.log($('.date-range-val').val());
              // Set paths
             // ------------------------------
@@ -169,7 +172,7 @@ function select_account_report(){
                             }
                         ]
                     };
-
+                    rose_diagram_visible.hideLoading();
                     rose_diagram_visible.setOption(rose_diagram_visible_options);
 
                     // Resize charts
@@ -182,6 +185,9 @@ function select_account_report(){
                     // }
                 }
             );
+          }else{
+            $('#rose_diagram_visible').html('No result');
+          }
         },
         error: function (data){
           swal({
