@@ -32,7 +32,17 @@ class DashboardController extends Controller
   					->get();
 
   		  	return json_encode($cases);
-  	}else
+  	}if($request->call_type == "all")
+    {
+      $cases = Cases::whereBetween('cases.created_at',[$from,$to])
+            ->account($request->account_id)
+            ->select('cases.call_type as name',DB::raw('count(0) as value'))->groupBy('cases.call_type')
+            ->calltype($request->call_type)
+            ->subcalltype($request->subcall_type)
+            ->get();
+
+          return json_encode($cases);
+    }else
   	{
   		$cases = Cases::whereBetween('cases.created_at',[$from,$to])
   					->account($request->account_id)
