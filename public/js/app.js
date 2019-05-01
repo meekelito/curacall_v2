@@ -11857,9 +11857,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
-//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -11911,32 +11908,24 @@ var render = function() {
                 ]),
                 _vm._v(" "),
                 _c("div", { staticClass: "media-right" }, [
-                  _c(
-                    "span",
-                    { staticClass: "btn bg-primary btn-rounded btn-icon" },
-                    [
-                      _c("span", { staticClass: "letter-icon" }, [
-                        _vm._v(
-                          _vm._s(message.user.fname.charAt(0).toUpperCase())
-                        )
-                      ])
-                    ]
-                  )
+                  _c("img", {
+                    staticClass: "img-circle img-md",
+                    attrs: {
+                      src:
+                        "../../storage/uploads/users/" + message.user.prof_img
+                    }
+                  })
                 ])
               ])
             : _c("div", [
                 _c("div", { staticClass: "media-left" }, [
-                  _c(
-                    "span",
-                    { staticClass: "btn bg-brown-400 btn-rounded btn-icon" },
-                    [
-                      _c("span", { staticClass: "letter-icon" }, [
-                        _vm._v(
-                          _vm._s(message.user.fname.charAt(0).toUpperCase())
-                        )
-                      ])
-                    ]
-                  )
+                  _c("img", {
+                    staticClass: "img-circle img-md",
+                    attrs: {
+                      src:
+                        "../../storage/uploads/users/" + message.user.prof_img
+                    }
+                  })
                 ]),
                 _vm._v(" "),
                 _c("div", { staticClass: "media-body" }, [

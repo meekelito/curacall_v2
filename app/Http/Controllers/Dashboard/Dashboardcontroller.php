@@ -36,13 +36,15 @@ class DashboardController extends Controller
   	{
   		$cases = Cases::whereBetween('cases.created_at',[$from,$to])
   					->account($request->account_id)
-  					->select('cases.call_type as name',DB::raw('count(0) as value'))->groupBy('cases.call_type')
+  					->select('cases.subcall_type as name',DB::raw('count(0) as value'))->groupBy('cases.subcall_type')
   					->calltype($request->call_type)
   					->subcalltype($request->subcall_type)
   					->get();
 
   		return json_encode($cases);
   	}
+
+
  
 
 

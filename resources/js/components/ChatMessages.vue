@@ -8,17 +8,14 @@
             </div>
 
             <div class="media-right">
-              <span class="btn bg-primary btn-rounded btn-icon">
-                <span class="letter-icon">{{ message.user.fname.charAt(0).toUpperCase() }}</span>
-              </span>
+              <img class="img-circle img-md" v-bind:src="'../../storage/uploads/users/'+message.user.prof_img">
             </div> 
           </div>
 
           <div v-else>
             <div class="media-left">
-              <span class="btn bg-brown-400 btn-rounded btn-icon">
-              <span class="letter-icon">{{ message.user.fname.charAt(0).toUpperCase() }}</span>
-              </span>
+       
+              <img class="img-circle img-md" v-bind:src="'../../storage/uploads/users/'+message.user.prof_img">
             </div>
 
             <div class="media-body">
