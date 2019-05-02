@@ -68,7 +68,6 @@
 
     .navbar-header{
       background-color: #fff;
-      /*min-width: 315px;*/
     }
 
     .navbar-brand img {
@@ -78,9 +77,17 @@
 
     .navbar{
       border-top: none;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 10000;
+   
     }
 
     body.wait-pointer * {cursor: wait !important;}
+    .page-container{
+      margin-top: 46px;
+    }
     
     .badge-notif{
       background-color:#F44336 !important;position: relative;top:-10px;right:10px;
@@ -95,7 +102,6 @@
 </head>
 
 <body class="sidebar-xs">
-  
 	<!-- Main navbar -->
 	<div class="navbar navbar-inverse">
 		<div class="navbar-header">
@@ -123,16 +129,13 @@
 
 		<div class="navbar-collapse collapse" id="navbar-mobile"> 
 			<ul class="nav navbar-nav">
-
         <li><a class="sidebar-control sidebar-main-toggle hidden-xs"><i class="icon-transmission"></i></a></li>
          <chatnotification v-bind:chatnotifications="chatnotifications"></chatnotification>
          <notification v-bind:notifications="notifications"></notification>
 			</ul>
-
 			<p class="navbar-text">
 				<span class="label bg-success">Online</span>
 			</p>
-
 			<div class="navbar-right">
 				<ul class="nav navbar-nav">
 		      <li><a>Features</a></li>
@@ -148,8 +151,9 @@
               @endif
 
 							<span>
-                {{ ucwords(Auth::user()->fname) }}
+                {{ ucwords(Auth::user()->fname) }}, {{ Auth::user()->role->role_title }}
               </span>
+
 							<i class="caret"></i>
 						</a>
             @endif
@@ -193,9 +197,9 @@
 							<div class="media">
 								<a href="#" class="media-left">
                   @if( file_exists('storage/uploads/users/'.Auth::user()->prof_img) )
-                  <img src="{{ asset('storage/uploads/users/'.Auth::user()->prof_img.'?v='.strtotime('now')) }}" class="img-circle img-sm" alt="">
+                  <img src="{{ asset('storage/uploads/users/'.Auth::user()->prof_img.'?v='.strtotime('now')) }}" class="img-circle img-sm" alt=""></a>
                   @else
-                  <img src="{{ asset('storage/uploads/users/default.png') }}" class="img-circle img-sm"  alt="">
+                  <img src="{{ asset('storage/uploads/users/default.png') }}" class="img-circle img-sm"  alt=""></a>
                   @endif
 								<div class="media-body">
 									<span class="media-heading text-semibold">
@@ -204,14 +208,14 @@
                     @endif
                   </span>
 									<div class="text-size-mini text-muted">
-										<i class="icon-pin text-size-small"></i> &nbsp;Santa Ana, CA
+										<i class="icon-briefcase text-size-small"></i> &nbsp; {{ Auth::user()->role->role_title }} 
 									</div>
 								</div>
 
 								<div class="media-right media-middle">
 									<ul class="icons-list">
 										<li>
-											<a href="#"><i class="icon-cog3"></i></a>
+											<a href="{{ url('user-account-settings') }}"><i class="icon-cog3"></i></a>
 										</li>
 									</ul>
 								</div>
@@ -227,7 +231,9 @@
                 <li class="navigation-header"><span>Main</span> <i class="icon-menu" title="Main pages"></i></li>
                 <li  class="menu-dashboard"><a href="{{ url('/dashboard') }}"><i class="icon-home4"></i> <span>Dashboard</span></a></li>
                 @if( Auth::user() ) 
-                  <li class="menu-cases"><a href="{{ url('/all-cases') }}"><i class="icon-briefcase"></i> <span>Cases</span></a></li>
+                  @if( Auth::user()->role_id != 8 )
+                    <li class="menu-cases"><a href="{{ url('/all-cases') }}"><i class="icon-briefcase"></i> <span>Cases</span></a></li>
+                  @endif
                   <li class="menu-messages"><a href="{{ url('/new-message') }}"><i class="icon-bubbles4"></i> <span>Messages</span></a></li>
                   <li class="menu-contacts"><a href="{{ url('/contacts') }}"><i class="icon-address-book2"></i> <span>Contacts</span></a></li>
                   <!-- <li class="menu-directory"><a href="{{ url('/directory') }}"><i class="icon-book3"></i> <span>Directory</span></a></li> -->
@@ -258,23 +264,17 @@
 			<!-- Secondary sidebar -->
       <div class="sidebar sidebar-secondary sidebar-default">
           <div class="sidebar-content">
-            <!-- Actions -->
-            <!-- <div class="sidebar-category">
-              <div class="category-title">
-                <span>Action</span>
-                <ul class="icons-list">
-                  <li><a href="#" data-action="collapse"></a></li>
-                </ul>
-              </div>
-
-              <div class="category-content"> 
-                <a href="{{ url('/new-message') }}" class="btn bg-primary btn-rounded btn-block btn-xs">New message</a>
-              </div>
-            </div> -->
-            <!-- /actions -->
-
             <!-- Sub navigation -->
             <div class="sidebar-category">
+                <div class="category-title" align="center">
+                  <span style="font-size: 16px;">
+                    @if(empty(Auth::user()->account->account_name))
+                    CuraCall
+                    @else
+                    {{ Auth::user()->account->account_name }}
+                    @endif
+                  </span>
+                </div>
                 <div class="category-title">
                     <span>Cases</span>
                     <ul class="icons-list">
@@ -289,7 +289,6 @@
                         <li class="submenu-cases-pending-cases"><a href="{{ url('/pending-cases') }}"><i class="icon-hour-glass"></i> Pending cases <span class="badge badge-warning" style="background-color: #f44336; border-color: #f44336;" id="case-count-pending">0</span></a></li>
                         <li class="submenu-cases-closed-cases"><a href="{{ url('/closed-cases') }}"><i class="icon-file-locked"></i> Closed cases <span class="badge badge-warning" style="background-color: #4caf50; border-color: #4caf50;" id="case-count-closed">0</span></a></li>
                         <li class="submenu-cases-silent-cases"><a href="{{ url('/silent-cases') }}"><i class="icon-volume-mute5"></i> Silent cases <span class="badge badge-warning" style="background-color: #90A4AE; border-color: #90A4AE;" id="case-count-silent">0</span></a></li>
-                        <!-- <li class="submenu-cases-deleted-cases"><a href="{{ url('/deleted-cases') }}"><i class="icon-bin"></i> Deleted cases</a></li> -->
                     </ul>
                 </div>
             </div>
@@ -387,6 +386,17 @@
       'pusherKey' => config('broadcasting.connections.pusher.key'),
       'baseUrl' => url('/')
     ]) !!};
+
+      setInterval(function(){ 
+
+        $.get("{{ route('checkuser') }}?id="+$('meta[name="userId"]').attr('content'), function(data,status){
+              console.log(data + ' ' + status);
+          }).fail(function() {
+            console.log( "user logged out" );
+         });
+
+      }, 8000);
+     
   </script>
 </html>
 

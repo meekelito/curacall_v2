@@ -35,6 +35,7 @@ Route::group(['middleware' => array('auth','nocache')], function () {
 
 	Route::get('dashboard','Dashboard\DashboardController@index');
     Route::get('dashboard/cases/count','Dashboard\DashboardController@casescount')->name('dashboard.cases.count');
+    Route::get('dashboard/checkauth','Dashboard\DashboardController@checkuser')->name('checkuser');
 
 	Route::get('new-message','Messages\NewMessageController@index');
 	Route::post('new-message','Messages\NewMessageController@createMessage');

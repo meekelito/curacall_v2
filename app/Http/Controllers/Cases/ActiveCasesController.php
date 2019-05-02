@@ -15,7 +15,6 @@ class ActiveCasesController extends Controller
               ->where('b.user_id',Auth::user()->id)
               ->where('b.is_silent',0) 
               ->where('cases.status',1)
-              
               ->select('cases.id')
               ->get();
 
