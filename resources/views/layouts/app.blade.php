@@ -393,8 +393,8 @@
              if(data == 0)
              {
                 swal({
-                  title: "You had been idle",
-                  text: "Your session expired. Please login again",
+                  title: "Your session expired",
+                  text: "You may had been idle. Please login again",
                   type: "info",
                   //timer: 2000,
                   showConfirmButton: true,
@@ -406,8 +406,8 @@
               console.log(data + ' ' + status);
           }).fail(function() {
               swal({
-                  title: "You had been idle",
-                  text: "Your session expired. Please login again",
+                  title: "Your session expired",
+                  text: "You may had been idle. Please login again",
                   type: "info",
                   //timer: 2000,
                   showConfirmButton: true,
