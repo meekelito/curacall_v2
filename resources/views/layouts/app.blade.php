@@ -390,9 +390,31 @@
       setInterval(function(){ 
 
         $.get("{{ route('checkuser') }}?id="+$('meta[name="userId"]').attr('content'), function(data,status){
+             if(data == 0)
+             {
+                swal({
+                  title: "You had been idle",
+                  text: "Your session expired. Please login again",
+                  type: "info",
+                  //timer: 2000,
+                  showConfirmButton: true,
+                  confirmButtonText: "Login"
+                }, function(){
+                      window.location.href = "{{ url('/') }}";
+                });
+             }
               console.log(data + ' ' + status);
           }).fail(function() {
-            console.log( "user logged out" );
+              swal({
+                  title: "You had been idle",
+                  text: "Your session expired. Please login again",
+                  type: "info",
+                  //timer: 2000,
+                  showConfirmButton: true,
+                  confirmButtonText: "Login"
+                }, function(){
+                      window.location.href = "{{ url('/') }}";
+              });
          });
 
       }, 8000);
