@@ -49,7 +49,6 @@
             <th style="width: 150px;">Action</th>
             <th>Description</th>
             <th class="text-center" style="width: 50px;"><i class="icon-arrow-down12"></i></th>
-            <th style="display: none;"></th>
           </tr>
         </thead>
         <tbody>      
@@ -89,7 +88,12 @@
             @endforeach
             <tr>
               <td class="text-center">
-       
+                @php
+                $datetime1 = new DateTime($case['created_at']);
+                $datetime2 = new DateTime('now');
+                $interval = $datetime1->diff($datetime2);
+                @endphp
+                {{ $interval->format('%ad %hh %im %ss') }}
               </td>
               <td>
                 <div class="media-body">
@@ -125,11 +129,6 @@
                   @endif
                 </span>
               </td>
-              <td class="text-center" style="display: none;">
-                @if(!empty($case['created_at']))
-                {{ $case['created_at'] }}
-                @endif
-              </td>
             </tr>
           @empty
           <tr class="unread" id="unread"><td colspan="5">No pending case(s) found.</td></tr>
@@ -148,44 +147,6 @@
     $(".menu-cases").addClass('active');
     $(".submenu-curacall li").removeClass("active");
     $(".submenu-cases-pending-cases").addClass('active');
-
-    var table = document.getElementById("pending-table");
-
-    var leng = document.getElementById('pending-table').rows.length-1;
-    var td_content = document.getElementById("pending-table").rows[leng].cells[0].innerHTML;
-    if( td_content != "No pending case(s) found." ){
-      var x = setInterval(
-      function () {
-
-        for (var i = 2, row; row = table.rows[i]; i++) {
-            //iterate through rows
-            //rows would be accessed using the "row" variable assigned in the for loop
-            var endDate = row.cells[5];
-            var countDownDate = new Date(endDate.innerHTML).getTime();
-            var countDown = row.cells[0];
-            // Update the count down every 1 second
-
-            // Get todays date and time
-            var now = new Date().getTime();
-
-            // Find the distance between now an the count down date
-            var distance = now - countDownDate;
-
-            // Time calculations for days, hours, minutes and seconds
-            var days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-            // Display the result in the element
-            countDown.innerHTML = (days + "d " + hours + "h "
-                + minutes + "m " + seconds + "s ");
-
-        }
-      }, 1000);
-    }
   });
-
 </script>
-
 @endsection 
