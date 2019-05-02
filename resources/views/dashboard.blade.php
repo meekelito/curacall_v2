@@ -158,7 +158,7 @@ function select_account_report(){
                     rose_diagram_visible_options = {
                         // Add title
                         title: {
-                            text: 'All Cases',
+                            text: 'Total Cases: ' + ' (' + total_result.toLocaleString() + ')',
                             subtext: $('.date-range-val').val(),
                             x: 'center'
                         },

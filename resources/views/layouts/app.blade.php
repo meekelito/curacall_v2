@@ -326,7 +326,7 @@
 <script src="{{ asset('js/moment.min.js') }}"></script>
   <script type="text/javascript">
     $(function() {
-      $(document).on('pjaxopstate', function() {
+      $(document).on('pjax:popstate', function() {
         location.reload();
       }); 
 
