@@ -34,6 +34,16 @@ class User extends Authenticatable
       return $this->hasMany(Message::class);
     }
 
+    public function account()
+    {
+      return $this->hasOne(Account::class,'id','account_id');
+    }
+
+    public function role()
+    {
+      return $this->hasOne(Role::class,'id','role_id');
+    }
+
     public function scopeIsCuraCall($query){
         if( Auth::user()->is_curacall ){
             return $query;

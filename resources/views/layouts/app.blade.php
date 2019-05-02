@@ -95,7 +95,6 @@
 </head>
 
 <body class="sidebar-xs">
-  
 	<!-- Main navbar -->
 	<div class="navbar navbar-inverse">
 		<div class="navbar-header">
@@ -132,7 +131,15 @@
 			<p class="navbar-text">
 				<span class="label bg-success">Online</span>
 			</p>
+      <p class="navbar-text">
+      
 
+      @if(empty(Auth::user()->account->account_name))
+      CuraCall
+      @else
+      {{ Auth::user()->account->account_name }}
+      @endif
+      </p>
 			<div class="navbar-right">
 				<ul class="nav navbar-nav">
 		      <li><a>Features</a></li>
@@ -148,8 +155,9 @@
               @endif
 
 							<span>
-                {{ ucwords(Auth::user()->fname) }}
+                {{ ucwords(Auth::user()->fname) }}, {{ Auth::user()->role->role_title }}
               </span>
+
 							<i class="caret"></i>
 						</a>
             @endif
@@ -193,9 +201,9 @@
 							<div class="media">
 								<a href="#" class="media-left">
                   @if( file_exists('storage/uploads/users/'.Auth::user()->prof_img) )
-                  <img src="{{ asset('storage/uploads/users/'.Auth::user()->prof_img.'?v='.strtotime('now')) }}" class="img-circle img-sm" alt="">
+                  <img src="{{ asset('storage/uploads/users/'.Auth::user()->prof_img.'?v='.strtotime('now')) }}" class="img-circle img-sm" alt=""></a>
                   @else
-                  <img src="{{ asset('storage/uploads/users/default.png') }}" class="img-circle img-sm"  alt="">
+                  <img src="{{ asset('storage/uploads/users/default.png') }}" class="img-circle img-sm"  alt=""></a>
                   @endif
 								<div class="media-body">
 									<span class="media-heading text-semibold">
@@ -204,14 +212,14 @@
                     @endif
                   </span>
 									<div class="text-size-mini text-muted">
-										<i class="icon-pin text-size-small"></i> &nbsp;Santa Ana, CA
+										<i class="icon-briefcase text-size-small"></i> &nbsp; Admin 
 									</div>
 								</div>
 
 								<div class="media-right media-middle">
 									<ul class="icons-list">
 										<li>
-											<a href="#"><i class="icon-cog3"></i></a>
+											<a href="{{ url('user-account-settings') }}"><i class="icon-cog3"></i></a>
 										</li>
 									</ul>
 								</div>
