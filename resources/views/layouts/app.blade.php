@@ -395,6 +395,17 @@
       'pusherKey' => config('broadcasting.connections.pusher.key'),
       'baseUrl' => url('/')
     ]) !!};
+
+      setInterval(function(){ 
+
+        $.get("{{ route('checkuser') }}?id="+$('meta[name="userId"]').attr('content'), function(data,status){
+              console.log(data + ' ' + status);
+          }).fail(function() {
+            console.log( "user logged out" );
+         });
+
+      }, 8000);
+     
   </script>
 </html>
 
