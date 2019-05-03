@@ -11670,11 +11670,15 @@ var app = new __WEBPACK_IMPORTED_MODULE_0_vue___default.a({
         this.fetchMessages();
 
         Echo.private('chat').listen('MessageSent', function (e) {
-            _this2.messages.push({
-                message: e.message.message,
-                user: e.user,
-                created_at: e.message.created_at
-            });
+            var current_chat_room_id = $('#room').val();
+
+            if (e.message.room_id == current_chat_room_id) {
+                _this2.messages.push({
+                    message: e.message.message,
+                    user: e.user,
+                    created_at: e.message.created_at
+                });
+            }
         });
 
         var _this = this;
