@@ -77,16 +77,11 @@
 
     .navbar{
       border-top: none;
-      position: fixed;
-      top: 0;
-      width: 100%;
-      z-index: 10000;
-   
     }
 
     body.wait-pointer * {cursor: wait !important;}
     .page-container{
-      margin-top: 46px;
+      margin-top: 47px;
     }
     
     .badge-notif{
@@ -103,7 +98,8 @@
 
 <body class="sidebar-xs">
 	<!-- Main navbar -->
-	<div class="navbar navbar-inverse">
+	<div class="navbar navbar-inverse" style="position: fixed;
+      top: 0;width: 100%;z-index: 999;">
 		<div class="navbar-header">
 			<!-- <a class="navbar-brand" href="#" style="font-size: 26px;">CuraCall
       </a> --> 
