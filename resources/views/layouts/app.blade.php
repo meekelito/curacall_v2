@@ -49,7 +49,7 @@
   <script type="text/javascript" src="{{ asset('assets/js/plugins/forms/styling/switch.min.js') }}" ></script> 
   <script type="text/javascript" src="{{ asset('assets/js/plugins/visualization/echarts/echarts.js') }}"></script>
 	<script type="text/javascript" src="{{ asset('assets/js/core/app.js') }}"></script> 
-
+  <script src="{{ asset('js/jquery.getscripts.min.js') }}"></script>
 	<!-- /theme JS files -->
 	<style type="text/css">
 	 	.navbar-inverse {
@@ -311,6 +311,7 @@
     
 </body>
 <script src="{{ asset('js/moment.min.js') }}"></script>
+
   <script type="text/javascript">
     $(function() {
       $(document).on('pjax:popstate', function() {
