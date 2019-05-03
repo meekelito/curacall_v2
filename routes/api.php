@@ -17,6 +17,12 @@ use Illuminate\Http\Request;
 //     return $request->user();
 // });
 
+Route::apiResources([
+    'case' => 'Api\CaseController',
+    'messages' => 'Api\MessageController',
+    'contacts' => 'Api\UserController'
+]);
+
 Route::get('/cases/{status?}/{user_id}', 'Api\ApiController@getCases' ); 
 
 Route::get('/case-preview', 'Api\ApiController@getCaseSpecific' ); 

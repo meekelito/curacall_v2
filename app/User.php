@@ -29,6 +29,15 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
+    protected $appends = [
+      'avatar',
+    ];
+      
+    public function getAvatarAttribute()
+    {
+      return url('/').'/storage/uploads/users/'.$this->attributes['prof_img'];
+    }
+
     public function messages()
     {
       return $this->hasMany(Message::class);
