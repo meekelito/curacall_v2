@@ -98,7 +98,7 @@
               <td>
                 <div class="media-body">
                   <a href="{{ url('/cases/case_id',$case['id']) }}" class="display-inline-block text-default text-semibold letter-icon-title">{{ $owner }}</a>
-                  <div class="text-muted text-size-small"><span class="status-mark border-warning position-left"></span> Pending</div>
+                  <div class="text-muted text-size-small"><span class="status-mark border-warning position-left @if($case['participants'][0]['is_read']) ) bg-warning @endif"></span> Pending</div>
                 </div>
               </td>
               <td>

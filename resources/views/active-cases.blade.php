@@ -68,6 +68,7 @@
               @endphp
             @endforeach
             <tr>
+
               <td class="text-center">
               @php
               $datetime1 = new DateTime($case['created_at']);
@@ -79,7 +80,7 @@
               <td>
                 <div class="media-body">
                   <a href="{{ url('/cases/case_id',$case['id']) }}" class="display-inline-block text-default text-semibold letter-icon-title">CuraCall</a>
-                  <div class="text-muted text-size-small"><span class="status-mark border-blue position-left"></span> Active</div>
+                  <div class="text-muted text-size-small"><span class="status-mark @if($case['participants'][0]['is_read']) ) bg-blue @endif border-blue position-left"></span> Active</div>
                 </div>
               </td>
               <td>

@@ -241,6 +241,7 @@
                     <li class="menu-admin-console-roles"><a href="{{ url('/admin-console/roles') }}"><i class="icon-share3"></i> <span>Roles</span></a></li>
                     <li class="menu-admin-console-users"><a href="{{ url('/admin-console/users') }}"><i class="icon-users"></i> <span>Users</span></a></li>
                     <li class="menu-admin-console-accounts"><a href="{{ url('/admin-console/accounts') }}"><i class="icon-office"></i> <span>Accounts</span></a></li>
+                    <li class="menu-admin-console-reports"><a href=""><i class="icon-graph"></i> <span>Reports</span></a></li>
                   @endif
                   @if( Auth::user()->role_id == 4 )
                     <li class="navigation-header"><span>Admin Console</span> <i class="icon-menu" title="Admin Console"></i></li>

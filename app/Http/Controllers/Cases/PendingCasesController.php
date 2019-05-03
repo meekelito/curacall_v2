@@ -47,6 +47,7 @@ class PendingCasesController extends Controller
       {
         array_push($participants_arr, 
           array(
+            'is_read'=>$participant->is_read,
             'ownership'=>$participant->ownership,
             'fname'=>$participant->user->fname,
             'lname'=>$participant->user->lname,
