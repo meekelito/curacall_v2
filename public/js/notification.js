@@ -12365,12 +12365,14 @@ var app = new Vue({
 
       document.title = document.title + ' (1)';
       var current_url = window.location.pathname + window.location.search;
-
+      console.log(current_url);
       if (notification.type == NOTIFICATION_TYPES.chat) {
         //this.chatnotifications.unshift(notification);
         $('#message-notif2').addClass('badge-notif');
-
-        if (current_url.indexOf("messages/room/") >= 0) $('#message-notif2').removeClass('badge-notif');
+        if (notification.data.room_id == $('#room').val()) {
+          $('#message-notif2').removeClass('badge-notif');
+          _this.MarkAllMessageRead();
+        }
 
         _this.fetchChatNotifications();
 
@@ -12459,10 +12461,14 @@ var app = new Vue({
         _this3.chatnotifications = response.data;
       });
     },
-    readNotifications: function readNotifications(message) {
-      this.messages.push(message);
-      axios.post(Laravel.baseUrl + '/messages', message).then(function (response) {
-        console.log(response.data);
+    MarkAllMessageRead: function MarkAllMessageRead() {
+      axios.post('/notification/chat/read').then(function (response) {
+        $('#message-notif2').removeClass('badge-notif');
+      });
+    },
+    MarkAllNotificationRead: function MarkAllNotificationRead() {
+      axios.post('/notification/read').then(function (response) {
+        $('#case-notif2').removeClass('badge-notif');
       });
     },
     test: function test() {
