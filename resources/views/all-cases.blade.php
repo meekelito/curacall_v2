@@ -118,7 +118,7 @@
                   <td>
                     <div class="media-body">
                       <a href="{{ url('/cases/case_id',$case['id']) }}" class="display-inline-block text-default text-semibold letter-icon-title">CuraCall</a>
-                      <div class="text-muted text-size-small"><span class="status-mark border-blue position-left @if($is_read) bg-blue @endif"></span> Active</div>
+                      <div class="text-muted text-size-small"><span class="status-mark border-blue position-left @if(!$is_read) bg-blue @endif"></span> Active</div>
                     </div>
                   </td>
                   <td>
@@ -175,7 +175,7 @@
                   <td>
                     <div class="media-body">
                       <a href="{{ url('/cases/case_id',$case['id']) }}" class="display-inline-block text-default">{{ $owner }}</a>
-                      <div class="text-muted text-size-small"><span class="status-mark border-warning position-left @if($is_read) bg-warning @endif"></span> Pending</div>
+                      <div class="text-muted text-size-small"><span class="status-mark border-warning position-left @if(!$is_read) bg-warning @endif"></span> Pending</div>
                     </div>
                   </td>
                   <td>
