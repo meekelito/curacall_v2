@@ -23,6 +23,22 @@ Route::apiResources([
     'contacts' => 'Api\UserController'
 ]);
 
+
+Route::post('login', 'Api\AuthController@login');
+Route::post('logout', 'Api\AuthController@logout');
+
+Route::group([
+    'middleware' => 'jwt.auth',
+], function ($router) {
+    Route::post('refresh', 'Api\AuthController@refresh');
+    Route::post('me', 'Api\AuthController@me');
+});
+
+Route::middleware('jwt.auth')->get('users', function () {
+    return auth('api')->user();
+});
+
+
 Route::get('/cases/{status?}/{user_id}', 'Api\ApiController@getCases' ); 
 
 Route::get('/case-preview', 'Api\ApiController@getCaseSpecific' ); 
