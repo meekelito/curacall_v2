@@ -16,8 +16,8 @@
     </div>
     <div class="breadcrumb-line">
         <ul class="breadcrumb">
-            <li><a href="#l"><i class="icon-home2 position-left"></i> Home</a></li>
-            <li><a href="#">Messages</a></li>
+            <li><a href="{{ url('/') }}"><i class="icon-home2 position-left"></i> Home</a></li>
+            <li><a href="{{ url('new-message') }}">Messages</a></li>
             <li class="active">Conversation</li>
         </ul>
     </div>
