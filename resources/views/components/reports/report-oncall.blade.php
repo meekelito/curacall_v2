@@ -21,19 +21,19 @@
 
     <div class="row">
         <div class="col-sm-3 active-case-report" style="border: 5px solid #f5f5f5; padding: 10px;text-align:center;background-color:#0F56A3;color:#ffffff">
-            <div class="text-semibold" style="margin: 10px; font-size: 30px;background-color:#1F2D40">70%</div>
+            <div class="text-semibold" style="margin: 10px; font-size: 30px;background-color:#1F2D40">{{ $closed_percentage }}%</div>
             <div class="text-semibold" style="margin: 10px; font-size: 15px;">
              Completed Closed Case
             </div>
         </div>
          <div class="col-sm-3 pending-case-report" style="border: 5px solid #f5f5f5; padding: 10px;text-align:center;background-color:#E66E2B;color:#ffffff">
-            <div class="text-semibold" style="margin: 10px; font-size: 30px;background-color:#4B332A">12 min</div>
+            <div class="text-semibold" style="margin: 10px; font-size: 30px;background-color:#4B332A">{{ $acceptedAverage }}</div>
             <div class="text-semibold" style="margin: 10px; font-size: 15px;">
              Case Average Time Accepted
             </div>
         </div>
         <div class="col-sm-3 pending-case-report" style="border: 5px solid #f5f5f5; padding: 10px;text-align:center;background-color:#04A9F4;color:#ffffff">
-            <div class="text-semibold" style="margin: 10px; font-size: 30px;background-color:#1E3E52">14 min</div>
+            <div class="text-semibold" style="margin: 10px; font-size: 30px;background-color:#1E3E52">{{ $closedAverage }}</div>
             <div class="text-semibold" style="margin: 10px; font-size: 15px;">
              Case Average Time Closed
             </div>
