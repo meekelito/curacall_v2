@@ -121,9 +121,11 @@ class ReportsController extends Controller
                       ->whereBetween('created_at', array($from, $to))
                       ->get();  
     }else{
-      $acceptedAverage = $this->getAverageTime(2,$from,$to,$request->account_id);
-      $closedAverage = $this->getAverageTime(3,$from,$to,$request->account_id);
-
+      if( Auth::user()->role_id != 7){
+        $acceptedAverage = $this->getAverageTime(2,$from,$to,$request->account_id);
+        $closedAverage = $this->getAverageTime(3,$from,$to,$request->account_id);
+      }
+      
       $active_count = Cases::Join('case_participants AS b','cases.id','=','b.case_id')
                       ->where('b.user_id',$request->account_id)
                       ->whereBetween('cases.created_at', array($from, $to))
@@ -146,6 +148,9 @@ class ReportsController extends Controller
     }
 
     if( Auth::user()->role_id == 7  ){
+      $acceptedAverage = $this->getAverageTime(2,$from,$to);
+      $closedAverage = $this->getAverageTime(3,$from,$to);
+
       $active_count = Cases::Join('case_participants AS b','cases.id','=','b.case_id')
                       ->where('b.user_id',Auth::user()->id)
                       ->whereBetween('cases.created_at', array($from, $to))
