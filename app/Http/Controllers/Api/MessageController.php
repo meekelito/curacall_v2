@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Room;
 
 class MessageController extends Controller
 {
@@ -12,9 +13,9 @@ class MessageController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        return Room::where('name', 'like', '%'.$request->user_id.'%')->get();
     }
 
     /**
