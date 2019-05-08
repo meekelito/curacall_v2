@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Api;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
+use App\User;
 
 class AuthController extends Controller
 {
@@ -14,7 +16,7 @@ class AuthController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login']]);
+        $this->middleware('jwt.auth', ['except' => ['login', 'check_email']]);
     }
 
     /**
@@ -27,7 +29,7 @@ class AuthController extends Controller
         $credentials = request(['email', 'password']);
 
         if (! $token = auth('api')->attempt($credentials)) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+            return response()->json(['error' => 'Password did not match']);
         }
 
         return $this->respondWithToken($token);
@@ -41,6 +43,17 @@ class AuthController extends Controller
     public function me()
     {
         return response()->json(auth('api')->user());
+    }
+
+    /**
+     * Get the user User.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function check_email(Request $request)
+    {
+        $user = User::where('email', $request->email)->count();
+        return response()->json(['count'=>$user, 'email'=>$request->email]);
     }
 
     /**
@@ -75,9 +88,10 @@ class AuthController extends Controller
     protected function respondWithToken($token)
     {
         return response()->json([
-            'access_token' => $token,
+            'token' => $token,
             'token_type' => 'bearer',
-            'expires_in' => auth('api')->factory()->getTTL() * 60
+            'expires_in' => auth('api')->factory()->getTTL() * 60,
+            'user'=>auth('api')->user()
         ]);
     }
 }

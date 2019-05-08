@@ -13,17 +13,19 @@ class MobCases extends Model
 
   
   protected $appends = [
-    'link',
     'status_text',
     'status_color',
     'ownership_text',
     'ownership_color',
-    'participants'
+    'participants',
+    'is_read'
   ];
     
-  public function getLinkAttribute()
+  public function getIsReadAttribute()
   {
-      return 'wwoww';
+    $status = $this->attributes['status'];
+
+    return $this->attributes['status'] === '3';
   }
   
   public function getStatusTextAttribute()
@@ -41,8 +43,8 @@ class MobCases extends Model
   {
     $statusColors = [
       'secondary',
-      'primary',
       'danger',
+      'success',
       'secondary',
     ];
     $stat = $this->attributes['status'];
@@ -53,11 +55,13 @@ class MobCases extends Model
     $status = $this->attributes['status'];
     $ownership = $this->attributes['ownership'];
     $text = ($status === '1') ? 'Active' : 'Closed';
-    if ($ownership === '2'){
-      $text = 'Accepted';
-    }
-    else if ($ownership === '5'){
-      $text = 'Forwarded';
+    if ($status !== '3') {
+      if ($ownership === '2'){
+        $text = 'Accepted';
+      }
+      else if ($ownership === '5'){
+        $text = 'Forwarded';
+      }
     }
     return $text;
   }
@@ -66,8 +70,10 @@ class MobCases extends Model
     $status = $this->attributes['status'];
     $ownership = $this->attributes['ownership'];
     $text = ($status === '1') ? 'secondary' : 'success';
-    if ($ownership === '2' || $ownership === '5'){
-      $text = 'warning';
+    if ($status !== '3') {
+      if ($ownership === '2' || $ownership === '5'){
+        $text = 'warning';
+      }
     }
     return $text;
   }

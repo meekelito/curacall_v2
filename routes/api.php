@@ -17,21 +17,23 @@ use Illuminate\Http\Request;
 //     return $request->user();
 // });
 
-Route::apiResources([
-    'case' => 'Api\CaseController',
-    'messages' => 'Api\MessageController',
-    'contacts' => 'Api\UserController'
-]);
-
 
 Route::post('login', 'Api\AuthController@login');
-Route::post('logout', 'Api\AuthController@logout');
+Route::post('check_email', 'Api\AuthController@check_email');
 
 Route::group([
     'middleware' => 'jwt.auth',
 ], function ($router) {
+    Route::post('logout', 'Api\AuthController@logout');
     Route::post('refresh', 'Api\AuthController@refresh');
     Route::post('me', 'Api\AuthController@me');
+
+    Route::apiResources([
+        'case' => 'Api\CaseController',
+        'messages' => 'Api\MessageController',
+        'contacts' => 'Api\UserController'
+    ]);
+
 });
 
 Route::middleware('jwt.auth')->get('users', function () {
@@ -56,10 +58,10 @@ Route::post('/case-close', 'Api\ApiController@closeCase' );
 
 Route::post('/case-test', 'Api\ApiController@testCase' );  
 
-Route::fallback(function(){
-    return response()->json([
-        'message' => 'Page Not Found. If error persists, contact info@website.com'], 404);
-});
+// Route::fallback(function(){
+//     return response()->json([
+//         'message' => 'Page Not Found. If error persists, contact info@website.com'], 404);
+// });
 
 
 

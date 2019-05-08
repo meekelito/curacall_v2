@@ -4,10 +4,6 @@ namespace App\Exceptions;
 
 use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-
-use Tymon\JWTAuth\Exceptions\TokenExpiredException;
-use Tymon\JWTAuth\Exceptions\TokenInvalidException;
-use Tymon\JWTAuth\Exceptions\TokenBlacklistedException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class Handler extends ExceptionHandler
@@ -52,21 +48,21 @@ class Handler extends ExceptionHandler
     public function render($request, Exception $exception)
     {
         
-        if($request->expectsJson()) 
-        {
-            // detect instance
-            if ($exception instanceof UnauthorizedHttpException) {
-                // detect previous instance
-                if ($exception->getPrevious() instanceof TokenExpiredException) {
-                    return response()->json(['error' => 'TOKEN_EXPIRED'], $exception->getStatusCode());
-                } else if ($exception->getPrevious() instanceof TokenInvalidException) {
-                    return response()->json(['error' => 'TOKEN_INVALID'], $exception->getStatusCode());
-                } else if ($exception->getPrevious() instanceof TokenBlacklistedException) {
-                    return response()->json(['error' => 'TOKEN_BLACKLISTED'], $exception->getStatusCode());
-                } else {
-                    return response()->json(['error' => "UNAUTHORIZED_REQUEST"], 401);
-                }
-            }
+        if ($exception instanceof UnauthorizedHttpException) {
+            $preException = $exception->getPrevious();
+            if ($preException instanceof
+                          \Tymon\JWTAuth\Exceptions\TokenExpiredException) {
+                return response()->json(['error' => 'TOKEN_EXPIRED']);
+            } else if ($preException instanceof
+                          \Tymon\JWTAuth\Exceptions\TokenInvalidException) {
+                return response()->json(['error' => 'TOKEN_INVALID']);
+            } else if ($preException instanceof
+                     \Tymon\JWTAuth\Exceptions\TokenBlacklistedException) {
+                 return response()->json(['error' => 'TOKEN_BLACKLISTED']);
+           }
+           if ($exception->getMessage() === 'Token not provided') {
+               return response()->json(['error' => 'Token not provided']);
+           }
         }
 
         return parent::render($request, $exception);
