@@ -57,22 +57,9 @@
 
 @section('script')
 <script type="text/javascript">
-	var dt_messages;
-  $(document).ready(function () {
+    $(document).ready(function () {
 	 	$(".menu-curacall li").removeClass("active");
-		$(".menu-archive-messages").addClass('active');
-
-    dt_messages = $('.tbl-messages').DataTable({
-      responsive: true,
-      processing: true,
-      serverSide: true,
-      ajax: "{{ url('archived-messages/all') }}",
-      columns: [
-        {data: 'id'},
-        {data: 'message'},
-        {data: 'action', orderable: false, searchable: false}
-      ]
-    }); 
+		$(".menu-archive-cases").addClass('active');
 	});
 </script>
 @endsection 

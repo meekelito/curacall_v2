@@ -30,7 +30,7 @@
             </ul>
 
             <div class="dropdown-content-footer">
-              <a href="#" data-popup="tooltip" title="All Messages"><i class="icon-menu display-block"></i></a>
+              <a href="#" data-popup="tooltip" title="All Notifications"><i class="icon-menu display-block"></i></a>
             </div>
           </div>
         </li>

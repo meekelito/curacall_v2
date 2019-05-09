@@ -43127,7 +43127,11 @@ var staticRenderFns = [
       _c(
         "a",
         {
-          attrs: { href: "#", "data-popup": "tooltip", title: "All Messages" }
+          attrs: {
+            href: "#",
+            "data-popup": "tooltip",
+            title: "All Notifications"
+          }
         },
         [_c("i", { staticClass: "icon-menu display-block" })]
       )
