@@ -38,6 +38,12 @@
 			padding: 40px 30px 20px !important;
 			width: 360px !important;
 		}
+		.g-recaptcha{
+			transform:scale(0.92);
+			-webkit-transform:scale(0.92);
+			transform-origin:0 0;
+			-webkit-transform-origin:0 0;
+		}
 	</style>
 
 </head>
@@ -82,7 +88,12 @@
 									</div>
 								</div>
 							</div>
-
+							<div class="form-group">
+								@if ($errors->has('g-recaptcha-response') || $re_captcha)
+	                               	{!! NoCaptcha::renderJs() !!}
+	      							{!! NoCaptcha::display() !!}
+      							@endif
+                            </div>
 							<div class="form-group">
 								<button type="submit" class="btn bg-blue btn-block">Login <i class="icon-circle-right2 position-right"></i></button>
 
