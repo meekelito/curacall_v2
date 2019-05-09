@@ -309,7 +309,6 @@
 
 	</div>
 	<!-- /page container -->
-    
 </body>
 <script src="{{ asset('js/moment.min.js') }}"></script>
 
@@ -416,7 +415,6 @@
          });
 
       }, 8000);
-     
   </script>
 </html>
 
