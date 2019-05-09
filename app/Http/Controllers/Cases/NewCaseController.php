@@ -10,6 +10,7 @@ use DataTables;
 use DB;
 use Cache;
 use Auth;
+use PDF;
 use Validator;
 use App\Notifications\CaseNotification;
 use App\Notification;
@@ -18,27 +19,60 @@ class NewCaseController extends Controller
 {
   public function index($case_id) 
   { 
+    if( Auth::user()->role_id == 4 ){
+      $case_info = Cases::where('id',$case_id)
+                  ->where('account_id',Auth::user()->account_id)
+                  ->get();
+
+      if( $case_info[0]->status == 1 ){
+        Case_history::updateOrCreate( ["is_visible"=>1,"status"=>1,"case_id" => $case_id,"action_note" => "Case Read", 'created_by' => Auth::user()->id ] ); 
+      }
+      // Case_participant::where('case_id', $case_id)->where('user_id', Auth::user()->id)->update(['is_read' => 1]); 
+      return view( 'cases', [ 'case_id' => $case_id ] );
+    }
+
+
     $participation = Case_participant::where('case_id',$case_id)
                     ->where('user_id',Auth::user()->id)
                     ->get();
     if( $participation->isEmpty() ){
-      return redirect('all-cases');
+      abort(404);
     }
+
     $case_info = Cases::where('id',$case_id)->get();
     if( $case_info[0]->status == 1 ){
-      $res =  Case_history::updateOrCreate( ["is_visible"=>1,"status"=>1,"case_id" => $case_id,"action_note" => "Case Read", 'created_by' => Auth::user()->id ] ); 
+      Case_history::updateOrCreate( ["is_visible"=>1,"status"=>1,"case_id" => $case_id,"action_note" => "Case Read", 'created_by' => Auth::user()->id ] ); 
     }
+    Case_participant::where('case_id', $case_id)->where('user_id', Auth::user()->id)->update(['is_read' => 1]); 
+
     return view( 'cases', [ 'case_id' => $case_id ] );
+
   }
+
   public function fetchCase(Request $request) 
   { 
     $case_id = $request->input('case_id');  
+    if( Auth::user()->role_id == 4 ){
+      $participation = Cases::where('account_id',Auth::user()->account_id)->get();
+      if( $participation->isEmpty()){
+        abort(404);
+      }
+
+      $case_info = Cases::where('id',$case_id)->get();
+      $participants = Case_participant::leftJoin('users AS b','case_participants.user_id','=','b.id')
+      ->where('case_participants.case_id',$case_id)
+      ->orderBy('case_participants.ownership')
+      ->get();
+      return view( 'components.cases.content-case', [ 'case_id' => $case_id,'case_info' => $case_info,'participation'=>$participation,'participants'=>$participants ] );
+    }
+
     $participation = Case_participant::where('case_id',$case_id)
                     ->where('user_id',Auth::user()->id)
                     ->get();
-    if( $participation->isEmpty() ){
-      return redirect('all-cases');
+    if( $participation->isEmpty()){
+      abort(404);
     }
+
     $case_info = Cases::where('id',$case_id)->get();
     $participants = Case_participant::leftJoin('users AS b','case_participants.user_id','=','b.id')
     ->where('case_participants.case_id',$case_id)
@@ -46,6 +80,7 @@ class NewCaseController extends Controller
     ->get();
     return view( 'components.cases.content-case', [ 'case_id' => $case_id,'case_info' => $case_info,'participation'=>$participation,'participants'=>$participants ] );
   }
+
   public function fetchParticipants($case_id) 
   {    
     $participants = Case_participant::leftJoin('users AS b','case_participants.user_id','=','b.id')->where('case_participants.case_id',$case_id)->select('b.prof_img','b.fname','b.lname','b.title','b.phone_no','b.email');
@@ -64,6 +99,7 @@ class NewCaseController extends Controller
     ->rawColumns(['participants'])
     ->make(true);                                                               
   } 
+
   public function fetchNotes($case_id) 
   {    
     $note = Case_history::leftJoin('users AS b','case_history.created_by','=','b.id')
@@ -112,6 +148,16 @@ class NewCaseController extends Controller
         "message"=>$validator->errors()
       ));
     }
+
+
+    if( Auth::user()->role_id == 4){
+      return json_encode(array( 
+        "status"=>1,
+        "response"=>"success",
+        "message"=>"Account admin test."
+      ));
+    }
+
     $res = Cases::find($request->case_id);
     $res->status = 2;
     $res->save();
@@ -132,7 +178,7 @@ class NewCaseController extends Controller
     // if( $count->count() > 1 ){
       
       $update_res = Case_participant::where('case_id', $request->case_id)
-      ->update(['ownership' => 4]); 
+      ->update(['ownership' => 4,'is_read' => 1]); 
       $update_res = Case_participant::where('case_id', $request->case_id)
       ->where('user_id', Auth::user()->id )
       ->update(['ownership' => 2]);
@@ -156,8 +202,8 @@ class NewCaseController extends Controller
 
           foreach($participants as $row)
           {
-               $user = User::find($row->user_id);
-               $user->notify(new CaseNotification($arr)); // Notify participant
+             $user = User::find($row->user_id);
+             $user->notify(new CaseNotification($arr)); // Notify participant
           }
       /** End notifcation **/
 
@@ -470,6 +516,15 @@ class NewCaseController extends Controller
         "message"=>$validator->errors()
       ));
     }
+
+    if( Auth::user()->role_id == 4){
+      return json_encode(array( 
+        "status"=>1,
+        "response"=>"success",
+        "message"=>"Account admin test."
+      ));
+    }
+    
     // compare the participants and recipients if existing update the ownership if not insert to participants 
     // $participants_id = Case_participant::where("case_id",$request->case_id)
     // ->select('user_id')
@@ -501,9 +556,9 @@ class NewCaseController extends Controller
       if (in_array($row, $participants)){ 
         Case_participant::where('case_id', $request->case_id)
         ->where('user_id', $row )
-        ->update(['ownership' => 1]); 
+        ->update(['ownership' => 1, 'is_read' => 0]); 
       }else{ 
-        Case_participant::create( ["case_id" => $request->case_id,"user_id" => $row, 'ownership' => 1 ] ); 
+        Case_participant::create( ["case_id" => $request->case_id,"user_id" => $row, 'ownership' => 1, 'is_read' => 0 ] ); 
         $user = User::find($row);
 
         $arr['forward_to'] = $user->fname . ' ' . $user->lname;
@@ -589,5 +644,12 @@ class NewCaseController extends Controller
     //   "response"=>"error",
     //   "message"=> count($request->recipient)
     // ));
+  }
+
+  public function pdfCase($case)
+  {
+    $pdf = PDF::loadView('components.pdf.case',array('case' => $case))->setPaper('legal', 'portrait');
+    return $pdf->stream();  
+ 
   }
 }

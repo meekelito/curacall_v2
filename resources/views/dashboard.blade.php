@@ -35,8 +35,12 @@
 
             <div class="tabbable nav-tabs-vertical nav-tabs-left">
                 <ul class="nav nav-tabs nav-tabs-highlight" style="width: 200px;">
-                    <li class="active"><a data-toggle="tab" onclick="reportAccount(0)"><i class="icon-office position-left"></i> Accounts </a></li>
+                  @if( Auth::user()->role_id != 6 && Auth::user()->role_id != 7 && Auth::user()->role_id != 8 )
+                    <li class="active" id="accounts-tab"><a data-toggle="tab" onclick="reportAccount(0)"><i class="icon-office position-left"></i> Accounts </a></li>
                     <li><a data-toggle="tab" onclick="reportOncall('all','{{ date ( "m/01/Y" ) }} - {{ date ( "m/d/Y" ) }}')"><i class="icon-headset position-left"></i> On call</a></li>
+                  @else
+                    <li class="active" ><a data-toggle="tab" onclick="reportOncall('all','{{ date ( "m/01/Y" ) }} - {{ date ( "m/d/Y" ) }}')"><i class="icon-headset position-left"></i> On call</a></li>
+                  @endif
                 </ul>
 
                 <div class="tab-content">
@@ -59,7 +63,14 @@
         applyClass: 'bg-slate-600',
         cancelClass: 'btn-default'
     });
-    reportAccount();
+
+    
+    var myElement = document.getElementById("accounts-tab");
+    if(myElement){
+      reportAccount();
+    }else{
+      reportOncall('all','{{ date ( "m/01/Y" ) }} - {{ date ( "m/d/Y" ) }}');
+    }
   }); 
 
   function reportOncall(id,drange){

@@ -1,4 +1,11 @@
 @extends('layouts.app')
+@section('css')
+<style>
+  .show{
+    display: block;
+  }
+</style>
+@endsection
 @section('content')
 <div class="page-header page-header-default">
     <div class="page-header-content">
@@ -9,8 +16,8 @@
     </div>
     <div class="breadcrumb-line">
         <ul class="breadcrumb">
-            <li><a href="#l"><i class="icon-home2 position-left"></i> Home</a></li>
-            <li><a href="#">Messages</a></li>
+            <li><a href="{{ url('/') }}"><i class="icon-home2 position-left"></i> Home</a></li>
+            <li><a href="{{ url('new-message') }}">Messages</a></li>
             <li class="active">Conversation</li>
         </ul>
     </div>
@@ -26,7 +33,7 @@
           <chat-messages :messages="messages" :user="{{ Auth::user()->id }}" :room_id="{{ $room_id }}"></chat-messages>
           </div>
           <div style="height: 20px;">
-          <span v-if="typing && room == {{$room_id}}" class="help-block" style="font-style: italic;">
+          <span  class="help-block" v-bind:class="[ typing && room == {{$room_id}} ? 'show': '']" style="font-style: italic;display:none">
               @{{ user.fname }} is typing...
           </span> 
           </div>
@@ -79,7 +86,18 @@
   $(".menu-curacall li").removeClass("active");
   $(".menu-messages").addClass('active');
   $(".submenu-curacall li").removeClass("active");
+
+  $.getScripts({
+  urls: ["{{ asset('js/app.js') }}"],
+  cache: true,  // Default
+  async: false, // Default
+  success: function(response) {
+      
+
+  }
+});
 </script>
 
-<script  src="{{ asset('js/app.js') }}" type="text/javascript" defer></script> 
+
+
 @endsection

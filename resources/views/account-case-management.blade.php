@@ -280,15 +280,11 @@
   </div>
 </div>
 @endsection  
-
 @section('script')
 <script type="text/javascript">
   $(document).ready(function () {
-    $(".menu-curacall li").removeClass("active");
-    $(".menu-cases").addClass('active');
-    $(".submenu-curacall li").removeClass("active");
-    $(".submenu-cases-all-cases").addClass('active');
+	 	$(".menu-curacall li").removeClass("active");
+    $(".menu-account-case-management").addClass('active');
   });
 </script>
-
 @endsection 

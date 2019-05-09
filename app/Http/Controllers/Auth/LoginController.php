@@ -10,6 +10,8 @@ use App\User;
 use Auth;
 use Validator;
 use Session;
+use Illuminate\Support\Facades\Cache;
+use Carbon\Carbon;
 
 class LoginController extends Controller
 {
@@ -25,6 +27,7 @@ class LoginController extends Controller
     */
 
     use AuthenticatesUsers;
+    private $quota_limit = 5;
 
     /**
      * Where to redirect users after login.
@@ -53,7 +56,13 @@ class LoginController extends Controller
     {
 
       if (Session::has('login_email')) {
-        return view('auth.login-password');
+         $ip_address = $this->getUserIP();
+          $re_captcha = false;    
+            if(Cache::has($ip_address)){
+              if(intval(Cache::get($ip_address)) <= 0)
+                $re_captcha = true;
+            }
+        return view('auth.login-password',['re_captcha'=>$re_captcha]);
       }else{
         return redirect('/login');
       } 
@@ -88,12 +97,27 @@ class LoginController extends Controller
     {
       $email = Session::get('login_email');
       $password = $request->input('password');
+      $ip_address =$this->getUserIP();
 
       $request->validate([
         'password' => 'required'
       ]);
 
+      $available = $this->quotaPerDay($ip_address);
+
+      if(!$available){
+             $validator = \Validator::make($request->all(), [
+                  'g-recaptcha-response' => 'required|captcha'
+              ],[
+                  'g-recaptcha-response.required'=>'Please check the Captcha.'
+              ]);
+
+           if($validator->fails())
+                 return back()->withErrors($validator)->withInput()->with('warning', 'Please check the Captcha');
+        }
+
       if (Session::has('login_email') && Auth::attempt(['email' => $email, 'password' => $password, 'status' => 'active'])) {
+        Cache::forget($ip_address);
         return redirect()->intended('/dashboard');
       }else{
         return back()->withInput()->with('warning', 'You have entered an invalid password');
@@ -108,4 +132,42 @@ class LoginController extends Controller
       Session::flush();
       return redirect('/');
     }
+
+    function quotaPerDay($ip)
+    {
+        if(!$this->quota_limit)
+          return true;
+
+        if(Cache::has($ip)){
+           if(intval(Cache::get($ip)) <= 0)
+              return false;
+           Cache::decrement($ip);
+        }
+        else
+           Cache::put($ip,$this->quota_limit, Carbon::now()->addDay());
+               
+        
+        return Cache::get($ip);
+    }
+
+     function getUserIP() {
+        $ipaddress = '';
+        if (isset($_SERVER['HTTP_CLIENT_IP']))
+            $ipaddress = $_SERVER['HTTP_CLIENT_IP'];
+        else if(isset($_SERVER['HTTP_X_FORWARDED_FOR']))
+            $ipaddress = $_SERVER['HTTP_X_FORWARDED_FOR'];
+        else if(isset($_SERVER['HTTP_X_FORWARDED']))
+            $ipaddress = $_SERVER['HTTP_X_FORWARDED'];
+        else if(isset($_SERVER['HTTP_X_CLUSTER_CLIENT_IP']))
+            $ipaddress = $_SERVER['HTTP_X_CLUSTER_CLIENT_IP'];
+        else if(isset($_SERVER['HTTP_FORWARDED_FOR']))
+            $ipaddress = $_SERVER['HTTP_FORWARDED_FOR'];
+        else if(isset($_SERVER['HTTP_FORWARDED']))
+            $ipaddress = $_SERVER['HTTP_FORWARDED'];
+        else if(isset($_SERVER['REMOTE_ADDR']))
+            $ipaddress = $_SERVER['REMOTE_ADDR'];
+        else
+            $ipaddress = 'UNKNOWN';
+        return $ipaddress;
+    } 
 }

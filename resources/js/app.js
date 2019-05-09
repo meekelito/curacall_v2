@@ -26,11 +26,15 @@ const app = new Vue({
       
       Echo.private('chat')
 		  .listen('MessageSent', (e) => {
-		    this.messages.push({
-		      message: e.message.message,
-		      user: e.user,
-          created_at: e.message.created_at
-		    });
+        var current_chat_room_id = $('#room').val();
+
+        if(e.message.room_id == current_chat_room_id){
+            this.messages.push({
+              message: e.message.message,
+              user: e.user,
+              created_at: e.message.created_at
+            });
+        }
 		  });
 
       let _this = this;

@@ -64,6 +64,7 @@
             $owner = ""; 
             $recipient = ""; 
             $recipient_name = "";
+            $is_read = 0;
             @endphp
 
             @foreach($case['participants'] as $participant)
@@ -84,6 +85,12 @@
               @php
                 $recipient_name .= $participant['fname'].' '.$participant['lname'].',';
               @endphp
+
+              @if($participant['user_id'] == Auth::user()->id && $participant['is_read'] == 1)
+                @php
+                $is_read = 1;
+                @endphp
+              @endif 
             
             @endforeach
             <tr>
@@ -98,7 +105,7 @@
               <td>
                 <div class="media-body">
                   <a href="{{ url('/cases/case_id',$case['id']) }}" class="display-inline-block text-default text-semibold letter-icon-title">{{ $owner }}</a>
-                  <div class="text-muted text-size-small"><span class="status-mark border-warning position-left"></span> Pending</div>
+                  <div class="text-muted text-size-small"><span class="status-mark border-warning position-left @if(!$is_read) bg-warning @endif"></span> Pending</div>
                 </div>
               </td>
               <td>

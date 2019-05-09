@@ -25,9 +25,8 @@
   </div>
   <div class="breadcrumb-line">
     <ul class="breadcrumb">
-      <li><a href="#l"><i class="icon-home2 position-left"></i> Home</a></li>
-      <li><a href="#">Message</a></li>
-      <li class="active">New</li>
+      <li><a href="{{ url('/') }}"><i class="icon-home2 position-left"></i> Home</a></li>
+      <li class="active">Messages</li>
     </ul>
   </div>
 </div>
