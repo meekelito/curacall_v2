@@ -5,6 +5,9 @@ namespace App\Http\Controllers\API;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Room;
+use App\User;
+use App\MobMessage;
+use App\Message;
 
 class MessageController extends Controller
 {
@@ -15,7 +18,33 @@ class MessageController extends Controller
      */
     public function index(Request $request)
     {
-        return Room::where('name', 'like', '%'.$request->user_id.'%')->get();
+        $u = auth('api')->user();
+        $rooms = Room::where('name', 'like', '%'.$u->id.'%')
+                ->latest()
+                ->get();
+
+        $formatted_rooms = [];
+        foreach ($rooms as $room) {
+            $users = explode('-',$room->name);
+            $contacts = [];
+            $contact_name = '';
+            foreach($users as $user) {
+                if ($u->id != $user){
+                    $userInfo = User::find($user);
+                    $contacts[] = $userInfo;
+                    if (!$contact_name) {
+                        $contact_name = $userInfo->fname;
+                    } else {
+                        $contact_name .= ', '.$userInfo->fname;
+                    }
+                }
+            }
+            $room->contact_name = $contact_name; 
+            $room->contacts = $contacts;
+            $room->last_convo = Message::find($room->last_message);
+            $formatted_rooms[] = $room;
+        }
+        return ['rooms'=>$formatted_rooms, 'user'=>$u];
     }
 
     /**
@@ -37,7 +66,28 @@ class MessageController extends Controller
      */
     public function show($id)
     {
-        //
+        $u = auth('api')->user();
+
+        $room = Room::find($id);
+        $users = explode('-',$room->name);
+        $contacts = [];
+        $contact_name = '';
+        foreach($users as $user) {
+            if ($u->id != $user){
+                $userInfo = User::find($user);
+                $contacts[] = $userInfo;
+                if (!$contact_name) {
+                    $contact_name = $userInfo->fname;
+                } else {
+                    $contact_name .= ', '.$userInfo->fname;
+                }
+            }
+        }
+        $room->contact_name = $contact_name; 
+        $room->contacts = $contacts;
+        $room->conversations = MobMessage::where('room_id', $room->id)->get();
+        return ['room'=>$room, 'user'=>$u];
+
     }
 
     /**
