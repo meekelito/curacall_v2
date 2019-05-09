@@ -9,13 +9,14 @@
         </li>
       </ul>
       <div class="navbar-collapse collapse">
-        @if( ($case_info[0]->status == 1 && $participation[0]->ownership == 1) || ($case_info[0]->status == 2 &&  $participation[0]->ownership == 1) )  
+        @if( ($case_info[0]->status == 1 && $participation[0]->ownership == 1) || ($case_info[0]->status == 2 &&  $participation[0]->ownership == 1) 
+        || ($case_info[0]->status == 1 && Auth::user()->role_id == 4))  
         <div class="btn-group navbar-btn">
           <a class="btn btn-primary btn-accept"><i class="icon-thumbs-up3"></i> <span class="hidden-xs position-right">Accept</span></a>
           <!-- <a class="btn btn-warning btn-decline"><i class="icon-thumbs-down3"></i> <span class="hidden-xs position-right">Decline</span></a> -->
         </div>
         @endif
-        @if( $case_info[0]->status == 2 && ($participation[0]->ownership == 2 || $participation[0]->ownership == 5 ) )
+        @if( $case_info[0]->status == 2 && ($participation[0]->ownership == 2 || $participation[0]->ownership == 5 ) || ($case_info[0]->status == 2 && Auth::user()->role_id == 4 ) )
         <div class="btn-group navbar-btn">
           <a class="btn btn-default btn-forward"><i class="icon-forward"></i> <span class="hidden-xs position-right">Forward</span></a>
           <a class="btn btn-default btn-close"><i class="icon-checkmark4"></i> <span class="hidden-xs position-right">Close</span></a>
@@ -38,18 +39,17 @@
         
         <div class="pull-right-lg">
           <p class="navbar-text">
-
             {{  date_format($case_info[0]->created_at,"M d,Y  h:i a") }}
-           
           </p>
           <div class="btn-group navbar-btn">
-            <a class="btn btn-default"><i class="icon-printer"></i> <span class="hidden-xs position-right">PDF</span></a>
+            <a class="btn btn-default btn-pdf"><i class="icon-printer"></i> <span class="hidden-xs position-right">PDF</span></a>
           </div>
         </div>
       </div>
     </div>
   </div>
   <div style="height: 600px !important; overflow-y: scroll;">
+
   <table class="table"> 
     <tr class="active"><td colspan="2">Caller Information</td></tr>
     <tr><td width="200">First Name:</td><td>Tara</td></tr>
@@ -294,6 +294,10 @@
         });
       }
     });
+  }); 
+
+  $(".btn-pdf").click(function(){
+    window.open("{{ url('pdf-case/'.$case_id) }}", '_blank'); 
   }); 
 
 </script>

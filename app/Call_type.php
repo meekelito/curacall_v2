@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class CallType extends Model
+class Call_type extends Model
 {
     protected $table = 'call_type';
 

@@ -56,6 +56,7 @@ Route::group(['middleware' => array('auth','nocache')], function () {
     Route::get('silent-cases','Cases\SilentCasesController@index'); 
 
     Route::post('count-case','Cases\NewCaseController@countCase');
+    Route::get('pdf-case/{id}','Cases\NewCaseController@pdfCase');
 
     Route::post('fetch-case','Cases\NewCaseController@fetchCase');
 
@@ -156,6 +157,13 @@ Route::group(['middleware' => array('auth','nocache')], function () {
         Route::post('admin/update-group-account','Admin\AdminAccountsController@updateGroupAccount');
         Route::post('admin/update-account','Admin\AdminAccountsController@updateAccount');
         //admin console - accounts END.
+
+        //Admin Console - Accounts
+        //index
+        Route::get('admin-console/billing','Admin\AdminBillingController@index');
+
+
+        //admin console - accounts END.
     });
     
     Route::group(['middleware' => array('App\Http\Middleware\AccountAdminMiddleware')], function () {
@@ -170,13 +178,17 @@ Route::group(['middleware' => array('auth','nocache')], function () {
 		Route::post('update-role-md','Account\AccountRolesController@getModalUpdateRole');
 		Route::post('account/update-role','Account\AccountRolesController@updateRole'); 
 		//account general info END
+
+        //Case Management
+        Route::get('account/case-management','Account\AccountCaseManagementController@index'); 
+        //case management END
 	}); 
 
 	Route::get('directory','Directory\DirectoryController@index');
 	Route::get('broadcast','Broadcast\BroadcastController@index');
 
-	Route::get('archived-messages','Messages\ArchivedMessagesController@index');
-	Route::get('archived-messages/all','Messages\ArchivedMessagesController@fetchArchiveMessages');  
+	Route::get('archived-cases','Cases\ArchivedCasesController@index');
+	Route::get('archived-cases/all','Cases\ArchivedCasesController@fetchArchiveMessages');  
     
     
 

@@ -22,8 +22,6 @@ class AllCasesController extends Controller
 
     $cases_in = Cases::Join('case_participants AS b','cases.id','=','b.case_id')
              ->where('b.user_id',Auth::user()->id)
-
-             
              ->select('cases.id')
              ->get();
 
