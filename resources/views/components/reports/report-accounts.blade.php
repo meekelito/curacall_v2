@@ -51,12 +51,23 @@
             applyClass: 'bg-slate-600',
             cancelClass: 'btn-default'
         });
+
         select_account_report();
     }); 
+       var accounts = new Array();
+        
+         @foreach($account as $row)
+          var account = {};
+            account.id = "{{ $row->id }}";
+            account.name = unescapeHTML("{{ $row->account_name }}");
+            accounts.push(account)
+         @endforeach
 
       $( ".date-range-val" ).change(function() {
         select_account_report();
       });
+
+  
 
       function get_subcalltype()
       {
@@ -88,4 +99,139 @@
                 });
 
       }
+
+    function select_account_report(){ 
+    var account_id = $('#report_account_id').val();
+     $.ajax({ 
+        type: "GET", 
+        url: "{{ route('dashboard.cases.count') }}", 
+        data: {  
+          range: $('.date-range-val').val(),
+          account_id: account_id,
+          call_type: $('#report_account_calltype').val(),
+          subcall_type: $('#report_account_subcalltype').val()
+        },
+        success: function (data) {  
+          //$(".content-case").html( data );
+          var chart_data = $.parseJSON(data);
+          if(chart_data.length > 0)
+          {
+            var total_result = 0;
+            $.each( chart_data, function( key, value ) {
+              total_result += value.value;
+            });
+
+            $.each( chart_data, function( key, value ) {
+              var percentage = (value.value/total_result) * 100;
+              value.name = value.name + " (" + percentage.toPrecision(3) +"%) : " + value.value;
+            });
+
+         //console.log($('.date-range-val').val());
+             // Set paths
+            // ------------------------------
+            require.config({
+                paths: {
+                    echarts: "{{ asset('assets/js/plugins/visualization/echarts') }}"
+                } 
+            });
+            // Configuration
+            // ------------------------------
+            require(
+                [
+                    'echarts',
+                    'echarts/theme/limitless',
+                    'echarts/chart/pie',
+                    'echarts/chart/funnel'
+                ],
+                // Charts setup
+                function (ec, limitless) {
+                    // Initialize charts
+                    // ------------------------------
+                    var rose_diagram_visible = ec.init(document.getElementById('rose_diagram_visible'), limitless);
+
+                    rose_diagram_visible_options = {
+                        // Add title
+                        title: {
+                            text: 'Total Cases: ' + ' (' + total_result.toLocaleString() + ')',
+                            subtext: $('.date-range-val').val(),
+                            x: 'center'
+                        },
+                        // Add tooltip
+                        tooltip: {
+                            trigger: 'item',
+                            formatter: "{a} <br/>{b}"
+                            // formatter: "{a} <br/>{b}: {c} ({d}%)"
+                        },
+                        // Add series
+                        series: [
+                            {
+                                name: 'Cases',
+                                type: 'pie',
+                                radius: ['15%', '73%'],
+                                center: ['50%', '57%'],
+                                roseType: 'area',
+
+                                data: chart_data
+                            }
+                        ]
+                    };
+                    rose_diagram_visible.hideLoading();
+                    rose_diagram_visible.setOption(rose_diagram_visible_options);
+                    rose_diagram_visible.on('click', function (params) {
+                      var obj_name = params.name.replace(/ *\([^)]*\) */g, ""); // remove (30%)
+                     
+                      var parameter_Start_index= obj_name.indexOf(':');
+                      var obj_name = obj_name.substring(0, parameter_Start_index); // remove : 31
+                       @if( Auth::user()->role_id == 1 )
+                            if($('#report_account_id').val() == "all"){
+
+                              var acct = accounts.find(account => account.name === unescapeHTML(obj_name));
+                             
+                              $('#report_account_id').val(acct.id).trigger('change');
+                            
+                            }
+                       @endif
+
+                      if($('#report_account_calltype').val() == "all"){
+                            if($('#report_account_calltype option').filter(function(){ return $(this).val() == obj_name; }).length){
+                                 $('#report_account_calltype').val(obj_name).trigger('change');
+                                
+                            }
+                      }
+
+                      if($('#report_account_subcalltype').val() == "all"){
+                            if($('#report_account_subcalltype option').filter(function(){ return $(this).val() == obj_name; }).length){
+                                 $('#report_account_subcalltype').val(obj_name).trigger('change');
+                                
+                            }
+                      }
+
+                    });
+                    // Resize charts
+                    // ------------------------------
+
+                    // window.onresize = function () {
+                    //     setTimeout(function (){
+                    //       rose_diagram_visible.resize();
+                    //     }, 200);
+                    // }
+                }
+            );
+          }else{
+            $('#rose_diagram_visible').html('No result');
+          }
+        },
+        error: function (data){
+          swal({
+            title: "Oops..!",
+            text: "No connection could be made because the target machine actively refused it. Please refresh the browser and try again.",
+            confirmButtonColor: "#EF5350",
+            type: "error"
+          });
+        }
+      });
+
+  
+   
+}
 </script>

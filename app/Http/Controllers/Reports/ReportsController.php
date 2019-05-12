@@ -12,9 +12,13 @@ use App\Call_type;
 use App\Subcall_type;
 class ReportsController extends Controller
 {
-  function getAverageTime($status,$from,$to,$user_id = 'all')
+  function getAverageTime($status,$from,$to,$action_note = '', $user_id = 'all')
   {
     /** Function to get the average time base on case_history table **/
+      $action_note_condition = '';
+      if($action_note != '')
+        $action_note_condition = " AND action_note = '$action_note'";
+
       if($user_id == 'all')
         $case_participants = "SELECT case_id FROM case_participants WHERE  ownership != 4";
       else
@@ -104,7 +108,7 @@ class ReportsController extends Controller
     $closedAverage = '';
 
     if($request->account_id == 'all'){
-      
+      $readAverage = $this->getAverageTime(1,$from,$to,'Case Read');
       $acceptedAverage = $this->getAverageTime(2,$from,$to);
       $closedAverage = $this->getAverageTime(3,$from,$to);
 
@@ -122,8 +126,9 @@ class ReportsController extends Controller
                       ->get();  
     }else{
       if( Auth::user()->role_id != 7){
-        $acceptedAverage = $this->getAverageTime(2,$from,$to,$request->account_id);
-        $closedAverage = $this->getAverageTime(3,$from,$to,$request->account_id);
+        $readAverage = $this->getAverageTime(1,$from,$to,'Case Read',$request->account_id);
+        $acceptedAverage = $this->getAverageTime(2,$from,$to,'',$request->account_id);
+        $closedAverage = $this->getAverageTime(3,$from,$to,'',$request->account_id);
       }
       
       $active_count = Cases::Join('case_participants AS b','cases.id','=','b.case_id')
@@ -148,6 +153,7 @@ class ReportsController extends Controller
     }
 
     if( Auth::user()->role_id == 7  ){
+      $readAverage = $this->getAverageTime(1,$from,$to,'Case Read');
       $acceptedAverage = $this->getAverageTime(2,$from,$to);
       $closedAverage = $this->getAverageTime(3,$from,$to);
 
@@ -174,11 +180,7 @@ class ReportsController extends Controller
     
     $total_cases = $active_count[0]->total + $pending_count[0]->total + $closed_count[0]->total;
 
-    $closed_percentage = 0;
-    if($total_cases > 0)
-      $closed_percentage = ($closed_count[0]->total / $total_cases) * 100;
-
-    return view( 'components.reports.report-oncall',['users'=>$users,'active_count'=>$active_count[0],'pending_count'=>$pending_count[0],'closed_count'=>$closed_count[0],'account_id'=>$request->account_id,'range'=>$request->range,'acceptedAverage'=>$acceptedAverage,'closedAverage'=>$closedAverage,'closed_percentage'=>round($closed_percentage,2)]);
+    return view( 'components.reports.report-oncall',['users'=>$users,'active_count'=>$active_count[0],'pending_count'=>$pending_count[0],'closed_count'=>$closed_count[0],'account_id'=>$request->account_id,'range'=>$request->range,'readAverage'=>$readAverage,'acceptedAverage'=>$acceptedAverage,'closedAverage'=>$closedAverage]);
   }
 
 
@@ -257,7 +259,7 @@ class ReportsController extends Controller
               ->get();
     }
 
-    return view('components.reports.report-pending-case-list',['cases' => $cases]);
+    return view('components.reports.report-closed-case-list',['cases' => $cases]);
   }
 
 }
