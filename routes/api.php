@@ -27,6 +27,7 @@ Route::group([
     Route::post('logout', 'Api\AuthController@logout');
     Route::post('refresh', 'Api\AuthController@refresh');
     Route::post('me', 'Api\AuthController@me');
+    Route::put('contact/password/{id}', 'Api\UserController@password_update');
 
     Route::apiResources([
         'case' => 'Api\CaseController',

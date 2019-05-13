@@ -15,7 +15,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        return User::all();
+        return User::orderBy('lname')->get();
     }
 
     /**
@@ -48,6 +48,19 @@ class UserController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
+    {
+        User::find($id)->update($request->input());
+        return $request->input();
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function password_update(Request $request, $id)
     {
         return User::find($id)->update($request->input());
     }
