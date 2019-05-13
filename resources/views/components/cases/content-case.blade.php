@@ -9,25 +9,34 @@
         </li>
       </ul>
       <div class="navbar-collapse collapse">
-        @if( ($case_info[0]->status == 1 && $participation[0]->ownership == 1) || ($case_info[0]->status == 2 &&  $participation[0]->ownership == 1) 
-        || ($case_info[0]->status == 1 && Auth::user()->role_id == 4))  
+        @if( isset($participation[0]->ownership) )
+          @php $ownership = $participation[0]->ownership; @endphp
+        @else
+          @php $ownership = 0; @endphp
+        @endif
+
+        @if($ownership == 0 && Auth::user()->role_id == 4 )
         <div class="btn-group navbar-btn">
-          <a class="btn btn-primary btn-accept"><i class="icon-thumbs-up3"></i> <span class="hidden-xs position-right">Accept</span></a>
-          <!-- <a class="btn btn-warning btn-decline"><i class="icon-thumbs-down3"></i> <span class="hidden-xs position-right">Decline</span></a> -->
+          <a class="btn btn-primary btn-pull"><i class="icon-file-download"></i> <span class="hidden-xs position-right">Pull case</span></a>
         </div>
         @endif
-        @if( $case_info[0]->status == 2 && ($participation[0]->ownership == 2 || $participation[0]->ownership == 5 ) || ($case_info[0]->status == 2 && Auth::user()->role_id == 4 ) )
+        @if( ($case_info[0]->status == 1 && $ownership == 1) || ($case_info[0]->status == 2 &&  $ownership == 1) )  
+        <div class="btn-group navbar-btn">
+          <a class="btn btn-primary btn-accept"><i class="icon-thumbs-up3"></i> <span class="hidden-xs position-right">Accept</span></a>
+        </div>
+        @endif
+        @if( $case_info[0]->status == 2 && ($ownership == 2 || $ownership == 5 ) )
         <div class="btn-group navbar-btn">
           <a class="btn btn-default btn-forward"><i class="icon-forward"></i> <span class="hidden-xs position-right">Forward</span></a>
           <a class="btn btn-default btn-close"><i class="icon-checkmark4"></i> <span class="hidden-xs position-right">Close</span></a>
         </div>
         @endif
-        @if( $case_info[0]->status == 3 && ($participation[0]->ownership == 2 || $participation[0]->ownership == 5 ) )
+        @if( $case_info[0]->status == 3 && ($ownership == 2 || $ownership == 5 ) )
         <div class="btn-group navbar-btn">
           <a class="btn btn-default btn-reopen"><i class="icon-checkmark4"></i> <span class="hidden-xs position-right">Re-Open</span></a>
         </div>
         @endif
-        @if( $case_info[0]->status == 2 && ($participation[0]->ownership == 3 || $participation[0]->ownership == 4 ) ) 
+        @if( $case_info[0]->status == 2 && ($ownership == 4 ) ) 
         <div class="btn-group navbar-btn">
           @foreach($participants as $row)
             @if( $row->ownership == 2 )
@@ -299,5 +308,63 @@
   $(".btn-pdf").click(function(){
     window.open("{{ url('pdf-case/'.$case_id) }}", '_blank'); 
   }); 
+
+  $(".btn-pull").click(function(){
+    $.ajax({ 
+      type: "POST", 
+      url: "{{ url('account/pull-case') }}", 
+      data: { 
+        _token : '{{ csrf_token() }}',
+        case_id : '{{ $case_id }}'
+      },
+      beforeSend: function(){
+          $('body').addClass('wait-pointer');
+        },
+        complete: function(){
+          $('body').removeClass('wait-pointer');
+        },
+      success: function (data) {  
+        var res = $.parseJSON(data);
+        if( res.status == 1 ){
+          swal({
+            title: "Good job!",
+            text: res.message,
+            confirmButtonColor: "#66BB6A",
+            type: "success"
+          });  
+          dt_participants.search('').draw();
+          dt.search('').draw();
+          count_case();
+          fetchCase();
+        }else if( res.status == 2 ){
+          swal({
+            title: "Notice!",
+            text: res.message,
+            confirmButtonColor: "#EF5350",
+            type: "warning"
+          }); 
+          dt_participants.search('').draw();
+          dt.search('').draw();
+          count_case();
+          fetchCase();
+        }else{
+          swal({
+            title: "Oops..!",
+            text: res.message,
+            confirmButtonColor: "#EF5350",
+            type: "error"
+          }); 
+        }
+      },
+      error: function (data){
+        swal({
+          title: "Oops..!",
+          text: "No connection could be made because the target machine actively refused it. Please refresh the browser and try again.",
+          confirmButtonColor: "#EF5350",
+          type: "error"
+        });
+      }
+    });
+  });
 
 </script>

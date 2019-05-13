@@ -56,7 +56,7 @@ class UserAccountSettingsController extends Controller
 
       if( $request->file('image')->isValid() ){
         $res = User::find( Auth::user()->id )->update($request->all()+['prof_img' => $filename ]+['updated_by' => Auth::user()->id ]);
-        unlink('storage/uploads/users/'.Auth::user()->prof_img);
+        // unlink('storage/uploads/users/'.Auth::user()->prof_img);
       }
       else{ 
         return json_encode(array(

@@ -119,8 +119,8 @@
 <script type="text/javascript">
   var dt,dt_participants;
   $(document).ready(function () {
-    $(".menu-curacall li").removeClass("active");
-    $(".menu-cases").addClass('active'); 
+    // $(".menu-curacall li").removeClass("active");
+    // $(".menu-cases").addClass('active'); 
     fetchCase();
     dt = $('#tbl-notes').DataTable({
       responsive: true,
@@ -230,7 +230,6 @@
       }
     });
   });
-
 </script>
 
 @endsection 

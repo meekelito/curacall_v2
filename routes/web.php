@@ -181,6 +181,7 @@ Route::group(['middleware' => array('auth','nocache')], function () {
 
         //Case Management
         Route::get('account/case-management','Account\AccountCaseManagementController@index'); 
+        Route::post('account/pull-case','Account\AccountCaseManagementController@pullCase'); 
         //case management END
 	}); 
 

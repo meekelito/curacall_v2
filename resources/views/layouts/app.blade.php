@@ -318,7 +318,6 @@
       $(document).on('pjax:popstate', function() {
         location.reload();
       }); 
-
       $(document).pjax('a', '#content');
       
       $(document).on('pjax:timeout', function(event) {
