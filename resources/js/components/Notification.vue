@@ -45,7 +45,8 @@
                     id: notification.id
                 };
                 axios.post('/notification/read', data).then(response => {
-                    window.location.href = notification.data.action_url;
+                    //window.location.href = notification.data.action_url;
+                    $.pjax.reload('#content',{ url: notification.data.action_url });
                 });
             },
              MarkAllNotificationRead: function() {
