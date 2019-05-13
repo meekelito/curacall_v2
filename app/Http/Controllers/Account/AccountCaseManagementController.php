@@ -127,7 +127,7 @@ class AccountCaseManagementController extends Controller
       /** Notify case participants that the case was accepted **/
       $participants = Case_participant::where("case_id",$request->case_id)->where('user_id','!=',Auth::user()->id)->get();
 
-      $message = str_replace("[from_name]",Auth::user()->fname . ' ' . Auth::user()->lname,__('notification.accept_case'));
+      $message = str_replace("[from_name]",Auth::user()->fname . ' ' . Auth::user()->lname,__('notification.pull_case'));
       $message = str_replace("[case_id]",$request->case_id,$message);
       $arr = array(
           'from_id'     => Auth::user()->id,
@@ -135,7 +135,7 @@ class AccountCaseManagementController extends Controller
           'from_image'  => Auth::user()->prof_img,
           'case_id'     => $request->case_id,
           'message'     =>    $message,
-          'type'        =>  'accept_case',
+          'type'        =>  'pull_case',
           'action_url'  => route('case',[$request->case_id])
       );
 
