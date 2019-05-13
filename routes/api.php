@@ -59,6 +59,7 @@ Route::post('/case-close', 'Api\ApiController@closeCase' );
 
 Route::post('/case-test', 'Api\ApiController@testCase' );  
 
+Route::get('/report/average','Api\ApiController@getReportAverageTime');
 // Route::fallback(function(){
 //     return response()->json([
 //         'message' => 'Page Not Found. If error persists, contact info@website.com'], 404);
