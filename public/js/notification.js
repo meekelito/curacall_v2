@@ -42999,7 +42999,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 id: notification.id
             };
             axios.post('/notification/read', data).then(function (response) {
-                window.location.href = notification.data.action_url;
+                //window.location.href = notification.data.action_url;
+                $.pjax.reload('#content', { url: notification.data.action_url });
             });
         },
         MarkAllNotificationRead: function MarkAllNotificationRead() {
@@ -43246,7 +43247,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 id: notification.id
             };
             axios.post('/notification/chat/read', data).then(function (response) {
-                window.location.href = notification.data.action_url;
+                //window.location.href = notification.data.action_url;
+                $.pjax.reload('#content', { url: notification.data.action_url });
             });
         },
         MarkAllMessageRead: function MarkAllMessageRead() {
