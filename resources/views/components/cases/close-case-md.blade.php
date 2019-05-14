@@ -5,7 +5,6 @@
 <form class="form-horizontal" id="form-add-close-note">
 	{{ csrf_field() }}
 	<input type="hidden" name="case_id" value="{{ $case_id }}" required>
-	<input type="hidden" name="case_form" value="close" required>
 	<div class="modal-body">
     <fieldset class="content-group">
       <div class="form-group">

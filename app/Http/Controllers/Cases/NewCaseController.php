@@ -361,11 +361,11 @@ class NewCaseController extends Controller
         "message"=>$validator->errors()
       ));
     }
-    if( $request->case_form == "close" ){
-      $res = Cases::find($request->case_id);
-      $res->status = 3;
-      $res->save();
-    }
+    
+    $res = Cases::find($request->case_id);
+    $res->status = 3;
+    $res->save();
+    
     //add here update all participants if the participant ownership is still 5 and not 2
     $res = Case_history::create( $request->all()+["status" => 3,"is_visible" => 1,"action_note" => "Case Closed", 'created_by' => Auth::user()->id ] ); 
     if($res){
@@ -395,12 +395,13 @@ class NewCaseController extends Controller
         "message"=>$validator->errors()
       ));
     }
-    if( $request->case_form == "close" ){
-      $res = Cases::find($request->case_id);
-      $res->status = 2;
-      $res->save();
-    }
-    $res = Case_history::create( $request->all()+["status" => 2,"action_note" => "Case Re-Opened", 'created_by' => Auth::user()->id ] ); 
+
+    $res = Cases::find($request->case_id);
+    $res->status = 2;
+    $res->save(); 
+
+    $res = Case_history::create( $request->all()+["is_visible" => 1,"status" => 2,"action_note" => "Case Re-Opened", 'created_by' => Auth::user()->id ] ); 
+
     if($res){
       return json_encode(array(
         "status"=>1,

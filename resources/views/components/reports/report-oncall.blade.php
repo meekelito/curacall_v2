@@ -2,7 +2,7 @@
     <div class="row">
         @if( Auth::user()->role_id != 7 )
         <div class="form-group form-group-xs col-sm-3">
-            <select class="form-control oncall-user">
+            <select class="select-search oncall-user" style="width: 100% !important;">
                 <option value="all">Select On call</option>
                 @foreach($users as $row) 
                 <option @if($account_id == $row->id) selected  @endif value="{{$row->id}}">{{ $row->fname.' '.$row->lname  }}</option>
@@ -84,6 +84,7 @@
         applyClass: 'bg-slate-600',
         cancelClass: 'btn-default'
     });
+    $('.select-search').select2();
   }); 
 
   function report_case_list(status)

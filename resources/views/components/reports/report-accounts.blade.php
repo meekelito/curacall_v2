@@ -2,7 +2,8 @@
     <div class="row">
         @if( Auth::user()->role_id == 1 )
         <div class="form-group form-group-xs col-sm-3">
-            <select id="report_account_id" class="form-control" onchange="select_account_report()">
+            <!-- <select id="report_account_id" class="form-control" onchange="select_account_report()"> -->
+            <select class="select-search" id="report_account_id" onchange="select_account_report()" style="width: 100% !important;">
                 <option value="all">Select All Account</option>
                 @foreach($account as $row)
                 <option value="{{ $row->id }}">{{ $row->account_name }}</option>
@@ -53,6 +54,7 @@
         });
 
         select_account_report();
+        $('.select-search').select2();
     }); 
        var accounts = new Array();
         
