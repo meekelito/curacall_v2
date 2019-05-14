@@ -25,6 +25,7 @@ class ReportsController extends Controller
         $case_participants = "SELECT case_id FROM case_participants WHERE  ownership != 4 AND user_id = ".$user_id;
 
       $data = DB::select("SELECT a.*,b.created_at as date_created,TIMESTAMPDIFF(MINUTE,b.created_at,a.created_at) as time_diff FROM case_history a 
+
        LEFT JOIN cases b ON a.case_id = b.id 
        WHERE a.status = ?
        AND a.case_id IN(".$case_participants.")

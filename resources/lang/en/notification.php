@@ -18,5 +18,6 @@ return [
     'forward_case_participant' => '[from_name] forwarded case #[case_id] to [to_name]',
     'reminder_case' => 'Case [case_id] is waiting for your response',
     'new_note'  =>  '[from_name] added note on case #[case_id]',
-    'accept_case'   => '[from_name] accepted case #[case_id]'
+    'accept_case'   => '[from_name] accepted case #[case_id]',
+    'pull_case'   => '[from_name] pulled case #[case_id]' 
 ];

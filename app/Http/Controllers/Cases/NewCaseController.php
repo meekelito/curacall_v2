@@ -19,31 +19,23 @@ class NewCaseController extends Controller
 {
   public function index($case_id) 
   { 
-    if( Auth::user()->role_id == 4 ){
-      $case_info = Cases::where('id',$case_id)
-                  ->where('account_id',Auth::user()->account_id)
-                  ->get();
-
-      if( $case_info[0]->status == 1 ){
-        Case_history::updateOrCreate( ["is_visible"=>1,"status"=>1,"case_id" => $case_id,"action_note" => "Case Read", 'created_by' => Auth::user()->id ] ); 
-      }
-      // Case_participant::where('case_id', $case_id)->where('user_id', Auth::user()->id)->update(['is_read' => 1]); 
-      return view( 'cases', [ 'case_id' => $case_id ] );
-    }
-
-
     $participation = Case_participant::where('case_id',$case_id)
                     ->where('user_id',Auth::user()->id)
                     ->get();
-    if( $participation->isEmpty() ){
+
+    if( $participation->isEmpty() && (Auth::user()->role_id != 4 ) ){
       abort(404);
     }
 
     $case_info = Cases::where('id',$case_id)->get();
-    if( $case_info[0]->status == 1 ){
+
+    if( !$participation->isEmpty() && $case_info[0]->status == 1 ){
       Case_history::updateOrCreate( ["is_visible"=>1,"status"=>1,"case_id" => $case_id,"action_note" => "Case Read", 'created_by' => Auth::user()->id ] ); 
     }
-    Case_participant::where('case_id', $case_id)->where('user_id', Auth::user()->id)->update(['is_read' => 1]); 
+
+    if( !$participation->isEmpty() ){
+      Case_participant::where('case_id', $case_id)->where('user_id', Auth::user()->id)->update(['is_read' => 1]); 
+    }
 
     return view( 'cases', [ 'case_id' => $case_id ] );
 
@@ -52,26 +44,13 @@ class NewCaseController extends Controller
   public function fetchCase(Request $request) 
   { 
     $case_id = $request->input('case_id');  
-    if( Auth::user()->role_id == 4 ){
-      $participation = Cases::where('account_id',Auth::user()->account_id)->get();
-      if( $participation->isEmpty()){
-        abort(404);
-      }
-
-      $case_info = Cases::where('id',$case_id)->get();
-      $participants = Case_participant::leftJoin('users AS b','case_participants.user_id','=','b.id')
-      ->where('case_participants.case_id',$case_id)
-      ->orderBy('case_participants.ownership')
-      ->get();
-      return view( 'components.cases.content-case', [ 'case_id' => $case_id,'case_info' => $case_info,'participation'=>$participation,'participants'=>$participants ] );
-    }
-
     $participation = Case_participant::where('case_id',$case_id)
                     ->where('user_id',Auth::user()->id)
                     ->get();
-    if( $participation->isEmpty()){
+
+    if( $participation->isEmpty() && (Auth::user()->role_id != 4) ){
       abort(404);
-    }
+    } 
 
     $case_info = Cases::where('id',$case_id)->get();
     $participants = Case_participant::leftJoin('users AS b','case_participants.user_id','=','b.id')
@@ -148,24 +127,13 @@ class NewCaseController extends Controller
         "message"=>$validator->errors()
       ));
     }
-
-
-    if( Auth::user()->role_id == 4){
-      return json_encode(array( 
-        "status"=>1,
-        "response"=>"success",
-        "message"=>"Account admin test."
-      ));
-    }
-
-    $res = Cases::find($request->case_id);
-    $res->status = 2;
-    $res->save();
+    
     $state = Case_participant::leftJoin('users AS b','case_participants.user_id','=','b.id')
     ->where("case_participants.case_id",$request->case_id)
     ->where('case_participants.ownership',2)
     ->select('b.fname','b.lname')
     ->get(); 
+    
     if(!$state->isEmpty()){
       $name = $state[0]->fname.' '.$state[0]->lname;
       return json_encode(array(
@@ -174,15 +142,18 @@ class NewCaseController extends Controller
         "message"=>"This case is already taken by ".$name
       ));
     }
-    // $count = Case_participant::where("case_id",$request->case_id)->get();
-    // if( $count->count() > 1 ){
+
+    $res = Cases::find($request->case_id);
+    $res->status = 2;
+    $res->save();
+
       
-      $update_res = Case_participant::where('case_id', $request->case_id)
-      ->update(['ownership' => 4,'is_read' => 1]); 
-      $update_res = Case_participant::where('case_id', $request->case_id)
-      ->where('user_id', Auth::user()->id )
-      ->update(['ownership' => 2]);
-    // }
+    $update_res = Case_participant::where('case_id', $request->case_id)
+    ->update(['ownership' => 4,'is_read' => 1]); 
+    $update_res = Case_participant::where('case_id', $request->case_id)
+    ->where('user_id', Auth::user()->id )
+    ->update(['ownership' => 2]);
+
     $res = Case_history::create( ["is_visible"=>1,"status"=>2,"case_id" => $request->case_id,"action_note" => "Case Accepted", 'created_by' => Auth::user()->id ] ); 
     if($res){
        /** Notify case participants that the case was accepted **/
@@ -279,10 +250,6 @@ class NewCaseController extends Controller
   public function getModalForwardCase(Request $request) 
   {       
     $case_id = $request->case_id; 
-    // $users = User::where('id','!=',Auth::user()->id)
-    //             ->where('status','active')
-    //             ->orderBy('fname') 
-    //             ->get();   
     if( Auth::user()->is_curacall ){
       $users = User::where('id','!=',Auth::user()->id)
                 ->where('status','active')
@@ -399,6 +366,7 @@ class NewCaseController extends Controller
       $res->status = 3;
       $res->save();
     }
+    //add here update all participants if the participant ownership is still 5 and not 2
     $res = Case_history::create( $request->all()+["status" => 3,"is_visible" => 1,"action_note" => "Case Closed", 'created_by' => Auth::user()->id ] ); 
     if($res){
       return json_encode(array(
@@ -517,13 +485,21 @@ class NewCaseController extends Controller
       ));
     }
 
-    if( Auth::user()->role_id == 4){
-      return json_encode(array( 
-        "status"=>1,
-        "response"=>"success",
-        "message"=>"Account admin test."
+    //checking if the user is still the owner of the case
+    $participation = Case_participant::where('case_id',$request->case_id)
+                    ->where('user_id',Auth::user()->id)
+                    ->get();
+
+    if( $participation[0]->ownership == 2 || $participation[0]->ownership == 5 ){
+
+    }else{
+      return json_encode(array(
+        "status"=>2,
+        "response"=>"warning",
+        "message"=>"Error while updating please refresh the page."
       ));
     }
+
     
     // compare the participants and recipients if existing update the ownership if not insert to participants 
     // $participants_id = Case_participant::where("case_id",$request->case_id)
@@ -650,6 +626,5 @@ class NewCaseController extends Controller
   {
     $pdf = PDF::loadView('components.pdf.case',array('case' => $case))->setPaper('legal', 'portrait');
     return $pdf->stream();  
- 
   }
 }
