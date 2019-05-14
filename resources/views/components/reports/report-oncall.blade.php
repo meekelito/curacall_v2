@@ -226,17 +226,17 @@
                 "status": "Active",
                 "icon": "<i class='status-mark border-blue-300 position-left'></i>",
                 "value": {{ $active_count->total }},
-                "color": "#29B6F6"
+                "color": "#03A9F4"
             }, {
                 "status": "Pending",
                 "icon": "<i class='status-mark border-success-300 position-left'></i>",
                 "value": {{ $pending_count->total }},
-                "color": "#66BB6A"
+                "color": "#F44336"
             }, {
                 "status": "Closed",
                 "icon": "<i class='status-mark border-danger-300 position-left'></i>",
                 "value": {{ $closed_count->total }},
-                "color": "#EF5350"
+                "color": "#4CAF50"
             }
         ];
 
