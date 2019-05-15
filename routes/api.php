@@ -28,6 +28,7 @@ Route::group([
     Route::post('refresh', 'Api\AuthController@refresh');
     Route::post('me', 'Api\AuthController@me');
     Route::put('contact/password/{id}', 'Api\UserController@password_update');
+    Route::put('contact/pin/{id}', 'Api\UserController@pin_update');
 
     Route::apiResources([
         'case' => 'Api\CaseController',

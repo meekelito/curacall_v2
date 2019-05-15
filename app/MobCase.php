@@ -5,7 +5,7 @@ use Illuminate\Database\Eloquent\Model;
 use Auth;
 use App\MobCaseParticipant;
 
-class MobCases extends Model
+class MobCase extends Model
 
 {
 	protected $table = 'cases';

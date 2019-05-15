@@ -4,7 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\MobCases;
+use App\MobCase;
+use App\MobNote;
 
 class CaseController extends Controller
 {
@@ -21,7 +22,7 @@ class CaseController extends Controller
         $limit = $request->has('limit') ? $request->input('limit') : 20;
 
         if ($status) {
-            $cases = MobCases::Join('case_participants AS b','cases.id','=','b.case_id')
+            $cases = MobCase::Join('case_participants AS b','cases.id','=','b.case_id')
             ->where('b.user_id', $user_id)
             ->where('cases.status', $status)
             ->select('*')
@@ -30,7 +31,7 @@ class CaseController extends Controller
             ->get();
         }
         else {
-            $cases = MobCases::Join('case_participants AS b','cases.id','=','b.case_id')
+            $cases = MobCase::Join('case_participants AS b','cases.id','=','b.case_id')
             ->where('b.user_id', $user_id)
             ->where('cases.status', '!=', 4)
             ->select('*')
@@ -68,11 +69,14 @@ class CaseController extends Controller
     public function show($id, Request $request)
     {
         $user_id = $request->input('user_id');
-        $cases = MobCases::Join('case_participants AS b','cases.id','=','b.case_id')
+        $cases = MobCase::Join('case_participants AS b','cases.id','=','b.case_id')
         ->where('b.user_id', $user_id)
         ->where('cases.id', $id)
         ->select('*')
         ->first();
+        if ($cases) {
+            $cases->notes = MobNote::where('case_id', $cases->id)->get();
+        }
         return response()->json($cases);
     }
 
