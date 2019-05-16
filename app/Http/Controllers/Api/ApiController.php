@@ -21,21 +21,22 @@ class ApiController extends Controller
     $validator = Validator::make($request->all(),[ 
       'case_id' => 'bail|required|unique:cases,case_id', 
       'account_id' => 'bail|required|exists:accounts,account_id',
-      'call_type' => 'bail|required|exists:call_type,id',
-      'subcall_type' => 'bail|required|exists:subcall_type,id',
+      'call_type' => 'bail|required',
+      'subcall_type' => 'bail|required',
       'case_message' => 'bail|required',
       'api_key' => 'bail|required',
       'recipients' => 'required|array',
       'recipients.*'=> 'distinct|exists:users,id',
     ],[
+      'account_id.exist' => 'The account ID invalid ',
       'recipient.distinct'=>'Recipient must contain unique Curacall ID.',
-      'recipient.*.exists'=>'Recipient does not exist in the database.',
+      'recipient.*.exists'=>'Recipient does not exist.',
     ]);
 
     if( $validator->fails() ){
       return response()->json([ 
-        "status"=>200,
-        "response"=>"error", 
+        "status"=> 400,
+        "response"=>"bad request", 
         "message"=>$validator->errors()
       ]);
     }
@@ -46,7 +47,7 @@ class ApiController extends Controller
     if ( $key_status->isEmpty() ){
       return response()->json([ 
         "status" => 401,
-        "response" => "error", 
+        "response" => "Unauthorized", 
         "message" => "API keys is not valid."
       ]);
     }
@@ -75,16 +76,16 @@ class ApiController extends Controller
       
       DB::commit();
       return response()->json([
-        "status" => 1,
+        "status" => 200,
         "response" => "success", 
         "message" => "Successfully sent."
       ]);
     } catch (Exeption $e){
       DB::rollback();
       return response()->json([
-        "status" => 0,
-        "response" => "failed", 
-        "message" => "Error in connection."
+        "status" => 500,
+        "response" => "Internal Server Error", 
+        "message" => "An internal server error occurred while processing the request."
       ]);
     } 
     
