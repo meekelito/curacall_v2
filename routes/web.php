@@ -34,7 +34,6 @@ Route::group(['middleware' => array('auth','nocache')], function () {
     Route::post('/notification/count', 'NotificationController@count');
 
 	Route::get('dashboard','Dashboard\DashboardController@index');
-    Route::get('dashboard/cases/count','Dashboard\DashboardController@casescount')->name('dashboard.cases.count');
     Route::get('dashboard/checkauth','Dashboard\DashboardController@checkuser')->name('checkuser');
 
 	Route::get('new-message','Messages\NewMessageController@index');
@@ -90,10 +89,13 @@ Route::group(['middleware' => array('auth','nocache')], function () {
     Route::post('report-account','Reports\ReportsController@getReportAccount');
     Route::post('report-oncall','Reports\ReportsController@getReportOncall');
     Route::get('report-account/subcalltypes','Reports\ReportsController@getSubcalltypes')->name('reports.subcalltypes');
+    Route::get('report-account/chart/overall','Reports\ReportsController@chartoverall')->name('report.chart.overall');
+    Route::get('report-account/chart/trend','Reports\ReportsController@charttrend')->name('report.chart.trend');
 
     Route::post('report-active-case-list','Reports\ReportsController@getReportActiveCase'); 
     Route::post('report-pending-case-list','Reports\ReportsController@getReportPendingCase'); 
     Route::post('report-closed-case-list','Reports\ReportsController@getReportClosedCase');
+    Route::post('report-by-calltypes','Reports\ReportsController@getReportByCalltypes');
 
 	//Accounts Settings
 	Route::get('user-account-settings','UserAccountSettings\UserAccountSettingsController@index');

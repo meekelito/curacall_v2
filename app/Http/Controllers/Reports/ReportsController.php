@@ -12,6 +12,127 @@ use App\Call_type;
 use App\Subcall_type;
 class ReportsController extends Controller
 {
+  public function charttrend(Request $request)
+  {
+      
+
+      if($request->account_id == "all")
+      {
+        $cases = Cases::leftJoin('accounts as b','b.id','=','cases.account_id')
+              ->select('cases.account_id','b.account_name',DB::raw('count(0) as total'),DB::raw('MONTH(cases.created_at) as month'),DB::raw("CONCAT(MONTHNAME(cases.created_at),' ',YEAR(cases.created_at)) as month_year"))
+              ->groupBy('cases.account_id',DB::raw('EXTRACT(YEAR_MONTH FROM cases.created_at)'))
+              ->calltype($request->call_type)
+              ->subcalltype($request->subcall_type)
+              ->whereYear('cases.created_at',$request->year)
+              ->get();
+
+      }else if($request->call_type == "all")
+      {
+             $cases = Cases::leftJoin('accounts as b','b.id','=','cases.account_id')
+              ->select('cases.account_id','b.account_name',DB::raw('count(0) as total'),DB::raw('MONTH(cases.created_at) as month'),DB::raw("CONCAT(MONTHNAME(cases.created_at),' ',YEAR(cases.created_at)) as month_year"))
+              ->groupBy('cases.call_type',DB::raw('EXTRACT(YEAR_MONTH FROM cases.created_at)'))
+              ->calltype($request->call_type)
+              ->subcalltype($request->subcall_type)
+              ->whereYear('cases.created_at',$request->year)
+              ->account($request->account_id)
+              ->get();
+      }else{
+            $cases = Cases::leftJoin('accounts as b','b.id','=','cases.account_id')
+              ->select('cases.account_id','b.account_name',DB::raw('count(0) as total'),DB::raw('MONTH(cases.created_at) as month'),DB::raw("CONCAT(MONTHNAME(cases.created_at),' ',YEAR(cases.created_at)) as month_year"))
+              ->groupBy('cases.subcall_type',DB::raw('EXTRACT(YEAR_MONTH FROM cases.created_at)'))
+              ->calltype($request->call_type)
+              ->subcalltype($request->subcall_type)
+              ->whereYear('cases.created_at',$request->year)
+              ->account($request->account_id)
+              ->get();
+      }
+
+            if($cases)
+            {
+              $cases_arr = array();
+           
+              foreach($cases as $case)
+              {
+                  $cases_arr[$case->account_name][$case->month] = $case->total;
+              }
+
+              $final = array();
+              $accounts = array();
+              foreach($cases_arr as $key => $value)
+              {
+                $accounts[] = $key;
+                $total_per_month = array('-','-','-','-','-','-','-','-','-','-','-','-');
+                  foreach($value as $month => $total)
+                  {
+                       
+                        for($x=0;$x<=11;$x++)
+                        {
+                          if($x == ($month-1)){
+                            $total_per_month[$x] = $total;
+                            break;
+                          }
+                        }
+                        
+                  }
+                  $final[] = array(
+                                  "name"  =>  $key,
+                                  "type"  =>  "line",
+                                  "stack" =>  "Total",
+                                  "data"  =>  $total_per_month
+                             );
+                 
+                    
+              }
+
+               return json_encode(array("accounts"=>$accounts,"data"=>$final));
+            }else
+             return json_encode([]);
+
+
+           
+    
+  }
+
+  public function chartoverall(Request $request)
+  {
+      $r1 = explode("-", $request->range);
+      $date=date_create($r1[0]);
+      $from = date_format($date,"Y-m-d H:i:s");
+      $date=date_create($r1[1]);
+      $to = date_format($date,"Y-m-d H:i:s");
+
+      if($request->account_id == "all")
+      {
+       $cases = Cases::leftJoin('accounts as b','b.id','=','cases.account_id')->whereBetween('cases.created_at',[$from,$to])
+              ->select(DB::raw('count(0) as value'),'b.account_name as name')->groupBy('cases.account_id')
+              ->calltype($request->call_type)
+              ->subcalltype($request->subcall_type)
+              ->get();
+
+            return json_encode($cases);
+      }else if($request->call_type == "all")
+      {
+        $cases = Cases::whereBetween('cases.created_at',[$from,$to])
+              ->account($request->account_id)
+              ->select('cases.call_type as name',DB::raw('count(0) as value'))->groupBy('cases.call_type')
+              ->calltype($request->call_type)
+              ->subcalltype($request->subcall_type)
+              ->get();
+
+            return json_encode($cases);
+      }else
+      {
+        $cases = Cases::whereBetween('cases.created_at',[$from,$to])
+              ->account($request->account_id)
+              ->select('cases.subcall_type as name',DB::raw('count(0) as value'))->groupBy('cases.subcall_type')
+              ->calltype($request->call_type)
+              ->subcalltype($request->subcall_type)
+              ->get();
+
+        return json_encode($cases);
+      }
+  }
+
   function getAverageTime($status,$from,$to,$action_note = '', $user_id = 'all')
   {
     /** Function to get the average time base on case_history table **/
@@ -261,6 +382,24 @@ class ReportsController extends Controller
     }
 
     return view('components.reports.report-closed-case-list',['cases' => $cases]);
+  }
+
+  public function getReportByCalltypes(Request $request)
+  {
+      $r1 = explode("-", $request->range);
+      $date1=date_create($r1[0]);
+      $from = date_format($date1,"Y-m-d H:i:s");
+      $date2=date_create($r1[1]);
+      $to = date_format($date2,"Y-m-d H:i:s"); 
+
+      $cases = Cases::whereBetween('cases.created_at', array($from, $to))
+        ->account($request->account_id)
+        ->calltype($request->call_type)
+        ->subcalltype($request->subcall_type)
+        ->orderBy('id','DESC')
+        ->get();
+
+      return view('components.reports.report-by-calltypes',['cases' => $cases]);
   }
 
 }
