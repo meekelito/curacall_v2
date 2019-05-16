@@ -63,6 +63,7 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'sanitize' => \App\Http\Middleware\FilterInput::class,
         'nocache' => \App\Http\Middleware\NoHttpCache::class,
+        'jwt.verify' => \App\Http\Middleware\JwtMiddleware::class,
     ];
 
     /**

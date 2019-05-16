@@ -29,6 +29,15 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
+    public function getJWTCustomClaims()
+    {
+        return [];
+    }
+
     public function messages()
     {
       return $this->hasMany(Message::class);
