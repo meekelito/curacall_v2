@@ -34,7 +34,7 @@ class ApiController extends Controller
 
     if( $validator->fails() ){
       return response()->json([ 
-        "status"=>0,
+        "status"=>200,
         "response"=>"error", 
         "message"=>$validator->errors()
       ]);
@@ -42,11 +42,11 @@ class ApiController extends Controller
     $key_status = Api_keys::where('api_key',$request->api_key)
                 ->where('status','active')
                 ->get();
-
+    //Unauthorized
     if ( $key_status->isEmpty() ){
       return response()->json([ 
-        "status" => 0,
-        "response" => "failed", 
+        "status" => 401,
+        "response" => "error", 
         "message" => "API keys is not valid."
       ]);
     }
@@ -73,7 +73,6 @@ class ApiController extends Controller
 
       Case_participant::insert($participants);
       
-
       DB::commit();
       return response()->json([
         "status" => 1,
