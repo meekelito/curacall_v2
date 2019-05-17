@@ -54,6 +54,15 @@ class UserController extends Controller
         return $request->input();
     }
 
+    public function update_alert(Request $request, $id)
+    {
+        $user = User::find($id);
+        $user->alert_tone = $request->alert_tone;
+        $user->alert_vibrate = $request->alert_vibrate;
+        $user->save();
+        return $user;
+    }
+
     /**
      * Update the specified resource in storage.
      *

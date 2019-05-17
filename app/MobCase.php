@@ -13,19 +13,20 @@ class MobCase extends Model
 
   
   protected $appends = [
+    'case_code',
     'status_text',
     'status_color',
     'ownership_text',
     'ownership_color',
     'participants',
-    'is_read'
+    'owner',
+    'forwarded',
+    'accepted',
   ];
     
-  public function getIsReadAttribute()
+  public function getCaseCodeAttribute()
   {
-    $status = $this->attributes['status'];
-
-    return $this->attributes['status'] === '3';
+    return $this->attributes['case_id'];
   }
   
   public function getStatusTextAttribute()
@@ -71,8 +72,11 @@ class MobCase extends Model
     $ownership = $this->attributes['ownership'];
     $text = ($status === '1') ? 'secondary' : 'success';
     if ($status !== '3') {
-      if ($ownership === '2' || $ownership === '5'){
+      if ($ownership === '5'){
         $text = 'warning';
+      }
+      if($ownership === '2') {
+        $text = 'primary';
       }
     }
     return $text;
@@ -80,6 +84,28 @@ class MobCase extends Model
 
   public function getParticipantsAttribute()
 	{
-	  return MobCaseParticipant::where('case_id', $this->attributes['id'])->orderBy('ownership')->get();
+    return MobCaseParticipant::where('case_id', $this->attributes['id'])
+    ->orderBy('ownership')->get();
+	}
+
+  public function getOwnerAttribute()
+	{
+    return MobCaseParticipant::where('case_id', $this->attributes['id'])
+    ->where('ownership', 5)
+    ->orderBy('ownership')->get();
+	}
+
+  public function getForwardedAttribute()
+	{
+    return MobCaseParticipant::where('case_id', $this->attributes['id'])
+    ->where('ownership', 1)
+    ->orderBy('ownership')->get();
+	}
+
+  public function getAcceptedAttribute()
+	{
+    return MobCaseParticipant::where('case_id', $this->attributes['id'])
+    ->where('ownership', 2)
+    ->orderBy('ownership')->get();
 	}
 } 

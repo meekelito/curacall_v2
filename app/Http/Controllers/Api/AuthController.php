@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
+use Carbon\Carbon;
 use App\User;
+use JWTAuth;
 
 class AuthController extends Controller
 {
@@ -19,20 +21,50 @@ class AuthController extends Controller
         $this->middleware('jwt.auth', ['except' => ['login', 'check_email']]);
     }
 
+    public function timeInMinutes($user) {
+        if (!$user) {
+            return Carbon::now()->addMinutes(15)->timestamp;
+        }
+        if ($user->logoff_time == 15 ) {
+            return Carbon::now()->addMinutes(15)->timestamp;
+        }
+        if (!$user->logoff_time) {
+            return Carbon::now()->addDays(30)->timestamp;
+        }
+        $days = $user->logoff_time;
+        if ($user->logoff_time == 24 ){
+            $days = 1;
+        }
+        
+        if ($days == 1 || $days == 7 ) {
+            return Carbon::now()->addDays($days)->timestamp;
+        }
+
+
+    }
+
     /**
      * Get a JWT via given credentials.
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function login()
-    {
-        $credentials = request(['email', 'password']);
+    public function login(Request $request)
+    {   
+        $userInfo = User::where('email', $request->email)->first();
+        $time = $this->timeInMinutes($userInfo);
+        if ($request->mobile_pin) {
+            $user = User::where('email', $request->email)->where('mobile_pin',$request->mobile_pin)->first();
+            $token = JWTAuth::fromUser($user, ['exp' => $time]);
+        } else {
+            $credentials = request(['email', 'password']);
+            $token = auth('api')->attempt($credentials, ['exp' => $time]);
+        }
 
-        if (! $token = auth('api')->attempt($credentials)) {
+        if (!$token) {
             return response()->json(['error' => 'Password did not match']);
         }
 
-        return $this->respondWithToken($token);
+        return $this->respondWithToken($token, $time, $userInfo);
     }
 
     /**
@@ -63,7 +95,7 @@ class AuthController extends Controller
      */
     public function logout()
     {
-        auth('api')->logout();
+        if (auth('api')) auth('api')->logout();
 
         return response()->json(['message' => 'Successfully logged out']);
     }
@@ -85,13 +117,21 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    protected function respondWithToken($token)
+    protected function respondWithToken($token, $time = '', $user = '')
     {
+        if (auth('api')->user()) {
+            $theUser = auth('api')->user();
+        } else {
+            $theUser = $user;
+        }
+
         return response()->json([
             'token' => $token,
+            'logoff_time' => $time,
+            'logoff_date' => date('Y-m-d H:i:s', $time),
             'token_type' => 'bearer',
             'expires_in' => auth('api')->factory()->getTTL() * 60,
-            'user'=>auth('api')->user()
+            'user'=>$theUser
         ]);
     }
 }
