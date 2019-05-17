@@ -27,7 +27,7 @@ class ApiController extends Controller
       'recipients' => 'required|array',
       'recipients.*'=> 'distinct|exists:users,id',
     ],[
-      'account_id.exist' => 'The account ID invalid ',
+      'account_id.exists' => 'The account ID invalid ',
       'recipient.distinct'=>'Recipient must contain unique Curacall ID.',
       'recipient.*.exists'=>'Recipient does not exist.',
     ]);
