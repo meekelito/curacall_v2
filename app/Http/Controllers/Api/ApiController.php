@@ -37,20 +37,8 @@ class ApiController extends Controller
         "status"=> 400,
         "response"=>"bad request", 
         "message"=>$validator->errors()
-      ]);
+      ],400);
     }
-    // $key_status = Api_keys::where('api_key',$request->api_key)
-    //             ->where('status','active')
-    //             ->get();
-    //Unauthorized
-    // if ( $key_status->isEmpty() ){
-    //   return response()->json([ 
-    //     "status" => 401,
-    //     "response" => "Unauthorized", 
-    //     "message" => "API keys is not valid."
-    //   ]);
-    // }
-
     
     DB::beginTransaction();
     try{
@@ -78,14 +66,14 @@ class ApiController extends Controller
         "status" => 200,
         "response" => "success", 
         "message" => "Successfully sent."
-      ]);
+      ],200);
     } catch (Exeption $e){
       DB::rollback();
       return response()->json([
         "status" => 500,
         "response" => "Internal Server Error", 
         "message" => "An internal server error occurred while processing the request."
-      ]);
+      ],500);
     } 
     
 
