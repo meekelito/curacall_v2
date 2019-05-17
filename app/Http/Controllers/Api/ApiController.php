@@ -24,7 +24,6 @@ class ApiController extends Controller
       'call_type' => 'bail|required',
       'subcall_type' => 'bail|required',
       'case_message' => 'bail|required',
-      'api_key' => 'bail|required',
       'recipients' => 'required|array',
       'recipients.*'=> 'distinct|exists:users,id',
     ],[
@@ -40,17 +39,17 @@ class ApiController extends Controller
         "message"=>$validator->errors()
       ]);
     }
-    $key_status = Api_keys::where('api_key',$request->api_key)
-                ->where('status','active')
-                ->get();
+    // $key_status = Api_keys::where('api_key',$request->api_key)
+    //             ->where('status','active')
+    //             ->get();
     //Unauthorized
-    if ( $key_status->isEmpty() ){
-      return response()->json([ 
-        "status" => 401,
-        "response" => "Unauthorized", 
-        "message" => "API keys is not valid."
-      ]);
-    }
+    // if ( $key_status->isEmpty() ){
+    //   return response()->json([ 
+    //     "status" => 401,
+    //     "response" => "Unauthorized", 
+    //     "message" => "API keys is not valid."
+    //   ]);
+    // }
 
     
     DB::beginTransaction();
