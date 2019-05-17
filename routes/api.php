@@ -12,15 +12,11 @@ use Illuminate\Http\Request;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-Route::post('login', 'Api\AuthController@login');
+  Route::post('login', 'Api\UserController@login');
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
 
-Route::group([
-    'middleware' => 'jwt.auth',
-], function ($router) {
+ Route::group(['middleware' => ['jwt.verify']], function() {
+
 	Route::get('/cases/{status?}/{user_id}', 'Api\ApiController@getCases' ); 
 
 	Route::get('/case-preview', 'Api\ApiController@getCaseSpecific' ); 
@@ -44,9 +40,6 @@ Route::group([
 //         'message' => 'Page Not Found. If error persists, contact info@curacall.com'], 404);
 // });
 
-// Route::middleware('auth:api')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
 
 
 
