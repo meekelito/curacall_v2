@@ -37,7 +37,7 @@ class ApiController extends Controller
         "status"=> 400,
         "response"=>"bad request", 
         "message"=>$validator->errors()
-      ],400);
+      ]);
     }
     
     DB::beginTransaction();
@@ -66,14 +66,14 @@ class ApiController extends Controller
         "status" => 200,
         "response" => "success", 
         "message" => "Successfully sent."
-      ],200);
+      ]);
     } catch (Exeption $e){
       DB::rollback();
       return response()->json([
         "status" => 500,
         "response" => "Internal Server Error", 
         "message" => "An internal server error occurred while processing the request."
-      ],500);
+      ]);
     } 
     
 
