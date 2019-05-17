@@ -14,26 +14,35 @@ use Illuminate\Http\Request;
 */
   Route::post('login', 'Api\UserController@login');
 
+	Route::group([
+	    'middleware' => 'jwt.auth',
+	], function ($router) {
+	    
+		Route::get('/cases/{status?}/{user_id}', 'Api\ApiController@getCases' ); 
 
- Route::group(['middleware' => ['jwt.verify']], function() {
+		Route::get('/case-preview', 'Api\ApiController@getCaseSpecific' ); 
 
-	Route::get('/cases/{status?}/{user_id}', 'Api\ApiController@getCases' ); 
+		Route::get('/case-participants', 'Api\ApiController@getParticipants' ); 
 
-	Route::get('/case-preview', 'Api\ApiController@getCaseSpecific' ); 
+		Route::get('/case-count', 'Api\ApiController@getCaseCount' ); 
 
-	Route::get('/case-participants', 'Api\ApiController@getParticipants' ); 
+		Route::post('/case-accept', 'Api\ApiController@acceptCase' );  
 
-	Route::get('/case-count', 'Api\ApiController@getCaseCount' ); 
+		Route::post('/case-close', 'Api\ApiController@closeCase' ); 
 
-	Route::post('/case-accept', 'Api\ApiController@acceptCase' );  
+		Route::post('/case-new', 'Api\ApiController@newCase' );  
 
-	Route::post('/case-close', 'Api\ApiController@closeCase' ); 
+		Route::post('/case-test', 'Api\ApiController@testCase' ); 
 
-	Route::post('/case-new', 'Api\ApiController@newCase' );  
+	});
 
-	Route::post('/case-test', 'Api\ApiController@testCase' ); 
-
+Route::middleware('jwt.auth')->get('users', function () {
+    return auth('api')->user();
 });
+
+
+
+
 
 // Route::fallback(function(){
 //     return response()->json([
