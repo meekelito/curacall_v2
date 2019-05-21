@@ -18,9 +18,16 @@ class ReportsController extends Controller
 
       if($request->account_id == "all")
       {
-        $cases = Cases::leftJoin('accounts as b','b.id','=','cases.account_id')
-              ->select('cases.account_id','b.account_name',DB::raw('count(0) as total'),DB::raw('MONTH(cases.created_at) as month'),DB::raw("CONCAT(MONTHNAME(cases.created_at),' ',YEAR(cases.created_at)) as month_year"))
-              ->groupBy('cases.account_id',DB::raw('EXTRACT(YEAR_MONTH FROM cases.created_at)'))
+        // $cases = Cases::leftJoin('accounts as b','b.id','=','cases.account_id')
+        //       ->select('cases.account_id','b.account_name',DB::raw('count(0) as total'),DB::raw('MONTH(cases.created_at) as month'),DB::raw("CONCAT(MONTHNAME(cases.created_at),' ',YEAR(cases.created_at)) as month_year"))
+        //       ->groupBy('cases.account_id',DB::raw('EXTRACT(YEAR_MONTH FROM cases.created_at)'))
+        //       ->calltype($request->call_type)
+        //       ->subcalltype($request->subcall_type)
+        //       ->whereYear('cases.created_at',$request->year)
+        //       ->get();
+
+         $cases = Cases::select(DB::raw("'All Accounts' as account_name"),DB::raw('count(0) as total'),DB::raw('MONTH(cases.created_at) as month'),DB::raw("CONCAT(MONTHNAME(cases.created_at),' ',YEAR(cases.created_at)) as month_year"))
+              ->groupBy(DB::raw('EXTRACT(YEAR_MONTH FROM cases.created_at)'))
               ->calltype($request->call_type)
               ->subcalltype($request->subcall_type)
               ->whereYear('cases.created_at',$request->year)
@@ -315,21 +322,53 @@ class ReportsController extends Controller
     $to = date_format($date2,"Y-m-d H:i:s"); 
 
     if($request->user_id == "all"){
-      $cases = Cases::whereBetween('cases.created_at', array($from, $to))
-              ->where('status',1)
+      $cases = Cases::with('participants')
+              ->whereBetween('cases.created_at', array($from, $to))
+              ->where('status',2)
               ->orderBy('id','DESC')
               ->get();
     }else{
-      $cases = Cases::Join('case_participants AS b','cases.id','=','b.case_id')
-              ->where('b.user_id',$request->user_id)
-              ->whereBetween('cases.created_at', array($from, $to))
-              ->where('cases.status',1)
-              ->orderBy('cases.id','DESC')
-              ->select('cases.id','cases.case_id','cases.sender_fullname','cases.status','cases.created_at')
-              ->get();
+      $cases = Cases::with('participants')
+            ->Join('case_participants AS b','cases.id','=','b.case_id')
+            ->where('b.user_id',$request->user_id)
+            ->whereBetween('cases.created_at', array($from, $to))
+            ->where('cases.status',2)
+            ->orderBy('cases.id','DESC')
+            ->select('cases.id','cases.case_id','cases.sender_fullname','cases.status','cases.created_at')
+            ->get();
     }
 
-    return view('components.reports.report-active-case-list',['cases' => $cases]);
+    $cases_arr = array();
+    foreach($cases as $case)
+    {
+      $participants_arr = array();
+      foreach($case->participants as $participant)
+      {
+        array_push($participants_arr, 
+          array( 
+            'user_id'=>$participant->user_id,
+            'is_read'=>$participant->is_read,
+            'ownership'=>$participant->ownership,
+            'fname'=>$participant->user->fname,
+            'lname'=>$participant->user->lname,
+          )
+        );
+      }
+
+      $cases_arr[] = array(
+        "id"=>$case->id,
+        "case_id" => $case->case_id,
+        "call_type" => $case->call_type,
+        "subcall_type"=> $case->subcall_type,
+        "case_message" => $case->case_message,
+        "status" => $case->status,
+        "created_at" => $case->created_at,
+        "updated_at" => $case->updated_at,
+        "participants"=> $participants_arr
+      );
+    }
+
+    return view('components.reports.report-active-case-list',['cases' => $cases_arr]);
   }
 
   public function getReportPendingCase(Request $request)
@@ -341,21 +380,53 @@ class ReportsController extends Controller
     $to = date_format($date2,"Y-m-d H:i:s"); 
 
     if($request->user_id == "all"){
-      $cases = Cases::whereBetween('cases.created_at', array($from, $to))
+      $cases = Cases::with('participants')
+              ->whereBetween('cases.created_at', array($from, $to))
               ->where('status',2)
               ->orderBy('id','DESC')
               ->get();
     }else{
-      $cases = Cases::Join('case_participants AS b','cases.id','=','b.case_id')
-              ->where('b.user_id',$request->user_id)
-              ->whereBetween('cases.created_at', array($from, $to))
-              ->where('cases.status',2)
-              ->orderBy('cases.id','DESC')
-              ->select('cases.id','cases.case_id','cases.sender_fullname','cases.status','cases.created_at')
-              ->get();
+      $cases = Cases::with('participants')
+            ->Join('case_participants AS b','cases.id','=','b.case_id')
+            ->where('b.user_id',$request->user_id)
+            ->whereBetween('cases.created_at', array($from, $to))
+            ->where('cases.status',2)
+            ->orderBy('cases.id','DESC')
+            ->select('cases.id','cases.case_id','cases.sender_fullname','cases.status','cases.created_at')
+            ->get();
     }
 
-    return view('components.reports.report-pending-case-list',['cases' => $cases]);
+    $cases_arr = array();
+    foreach($cases as $case)
+    {
+      $participants_arr = array();
+      foreach($case->participants as $participant)
+      {
+        array_push($participants_arr, 
+          array( 
+            'user_id'=>$participant->user_id,
+            'is_read'=>$participant->is_read,
+            'ownership'=>$participant->ownership,
+            'fname'=>$participant->user->fname,
+            'lname'=>$participant->user->lname,
+          )
+        );
+      }
+
+      $cases_arr[] = array(
+        "id"=>$case->id,
+        "case_id" => $case->case_id,
+        "call_type" => $case->call_type,
+        "subcall_type"=> $case->subcall_type,
+        "case_message" => $case->case_message,
+        "status" => $case->status,
+        "created_at" => $case->created_at,
+        "updated_at" => $case->updated_at,
+        "participants"=> $participants_arr
+      );
+    }
+
+    return view('components.reports.report-pending-case-list',['cases' => $cases_arr]);
   }
 
   public function getReportClosedCase(Request $request)
@@ -367,21 +438,54 @@ class ReportsController extends Controller
     $to = date_format($date2,"Y-m-d H:i:s"); 
 
     if($request->user_id == "all"){
-      $cases = Cases::whereBetween('cases.created_at', array($from, $to))
+      $cases = Cases::with('participants')
+              ->whereBetween('cases.created_at', array($from, $to))
               ->where('status',3)
               ->orderBy('id','DESC')
               ->get();
     }else{
-      $cases = Cases::Join('case_participants AS b','cases.id','=','b.case_id')
-              ->where('b.user_id',$request->user_id)
-              ->whereBetween('cases.created_at', array($from, $to))
-              ->where('cases.status',3)
-              ->orderBy('cases.id','DESC')
-              ->select('cases.id','cases.case_id','cases.sender_fullname','cases.status','cases.created_at')
-              ->get();
+      $cases = Cases::with('participants')
+            ->Join('case_participants AS b','cases.id','=','b.case_id')
+            ->where('b.user_id',$request->user_id)
+            ->whereBetween('cases.created_at', array($from, $to))
+            ->where('cases.status',3)
+            ->orderBy('cases.id','DESC')
+            ->select('cases.id','cases.case_id','cases.sender_fullname','cases.status','cases.created_at')
+            ->get();
     }
 
-    return view('components.reports.report-closed-case-list',['cases' => $cases]);
+
+
+    $cases_arr = array();
+    foreach($cases as $case)
+    {
+      $participants_arr = array();
+      foreach($case->participants as $participant)
+      {
+        array_push($participants_arr, 
+          array( 
+            'user_id'=>$participant->user_id,
+            'is_read'=>$participant->is_read,
+            'ownership'=>$participant->ownership,
+            'fname'=>$participant->user->fname,
+            'lname'=>$participant->user->lname,
+          )
+        );
+      }
+
+      $cases_arr[] = array(
+        "id"=>$case->id,
+        "case_id" => $case->case_id,
+        "call_type" => $case->call_type,
+        "subcall_type"=> $case->subcall_type,
+        "case_message" => $case->case_message,
+        "status" => $case->status,
+        "created_at" => $case->created_at,
+        "updated_at" => $case->updated_at,
+        "participants"=> $participants_arr
+      );
+    }
+    return view( 'components.reports.report-closed-case-list',[ 'cases' => $cases_arr ] );
   }
 
   public function getReportByCalltypes(Request $request)
@@ -392,14 +496,87 @@ class ReportsController extends Controller
       $date2=date_create($r1[1]);
       $to = date_format($date2,"Y-m-d H:i:s"); 
 
-      $cases = Cases::whereBetween('cases.created_at', array($from, $to))
-        ->account($request->account_id)
-        ->calltype($request->call_type)
-        ->subcalltype($request->subcall_type)
-        ->orderBy('id','DESC')
-        ->get();
+      // $cases = Cases::whereBetween('cases.created_at', array($from, $to))
+      //   ->account($request->account_id)
+      //   ->calltype($request->call_type)
+      //   ->subcalltype($request->subcall_type)
+      //   ->orderBy('id','DESC')
+      //   ->get();
 
-      return view('components.reports.report-by-calltypes',['cases' => $cases]);
+      // return view('components.reports.report-by-calltypes',['cases' => $cases]);
+
+
+
+
+
+    $cases = Cases::with('participants')
+              ->whereBetween('cases.created_at', array($from, $to))
+              ->account($request->account_id)
+              ->calltype($request->call_type)
+              ->subcalltype($request->subcall_type)
+              ->orderBy('cases.status')
+              ->orderBy('cases.id','DESC')
+              ->get();
+
+    $cases_arr = array();
+    foreach($cases as $case)
+    {
+      $participants_arr = array();
+      foreach($case->participants as $participant)
+      {
+        array_push($participants_arr, 
+          array( 
+            'user_id'=>$participant->user_id,
+            'is_read'=>$participant->is_read,
+            'ownership'=>$participant->ownership,
+            'fname'=>$participant->user->fname,
+            'lname'=>$participant->user->lname,
+          )
+        );
+      }
+
+      $cases_arr[] = array(
+        "id"=>$case->id,
+        "case_id" => $case->case_id,
+        "call_type" => $case->call_type,
+        "subcall_type"=> $case->subcall_type,
+        "case_message" => $case->case_message,
+        "status" => $case->status,
+        "created_at" => $case->created_at,
+        "updated_at" => $case->updated_at,
+        "participants"=> $participants_arr
+      );
+      
+    }
+
+
+    $active_count = Cases::whereBetween('cases.created_at', array($from, $to))
+                    ->account($request->account_id)
+                    ->calltype($request->call_type)
+                    ->subcalltype($request->subcall_type)
+                    ->where('cases.status',1)
+                    ->select(DB::raw('count(cases.id) as total'))
+                    ->get();
+
+    $pending_count = Cases::whereBetween('cases.created_at', array($from, $to))
+                      ->account($request->account_id)
+                      ->calltype($request->call_type)
+                      ->subcalltype($request->subcall_type)
+                      ->where('status',2)
+                      ->select(DB::raw('count(*) as total'))
+                      ->get();
+    $closed_count = Cases::whereBetween('cases.created_at', array($from, $to))
+                      ->account($request->account_id)
+                      ->calltype($request->call_type)
+                      ->subcalltype($request->subcall_type)
+                      ->where('status',3)
+                      ->select(DB::raw('count(*) as total'))
+                      ->get();  
+
+ 
+                     
+
+    return view('components.reports.report-by-calltypes',[ 'cases' => $cases_arr,'active_count' => $active_count[0],'pending_count' => $pending_count[0],'closed_count' => $closed_count[0] ] );
   }
 
 }

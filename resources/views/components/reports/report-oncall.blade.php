@@ -19,61 +19,80 @@
         </div>
     </div>
 
-    <div class="row text-center">
-        <div class="col-sm-3 active-case-report" style="border: 5px solid #f5f5f5; padding: 10px;text-align:center;background-color:#0F56A3;color:#ffffff">
-            <div class="text-semibold" style="margin: 10px; font-size: 30px;background-color:#1F2D40">{{ $readAverage }}</div>
-            <div class="text-semibold" style="margin: 10px; font-size: 15px;">
-             Case Average Time Read
-            </div>
-        </div>
-         <div class="col-sm-3 pending-case-report" style="border: 5px solid #f5f5f5; padding: 10px;text-align:center;background-color:#E66E2B;color:#ffffff">
-            <div class="text-semibold" style="margin: 10px; font-size: 30px;background-color:#4B332A">{{ $acceptedAverage }}</div>
-            <div class="text-semibold" style="margin: 10px; font-size: 15px;">
-             Case Average Time Accepted
-            </div>
-        </div>
-        <div class="col-sm-3 pending-case-report" style="border: 5px solid #f5f5f5; padding: 10px;text-align:center;background-color:#04A9F4;color:#ffffff">
-            <div class="text-semibold" style="margin: 10px; font-size: 30px;background-color:#1E3E52">{{ $closedAverage }}</div>
-            <div class="text-semibold" style="margin: 10px; font-size: 15px;">
-             Case Average Time Closed
-            </div>
-        </div>
-    </div>
-    <br>
-   <!--  <div class="row">
-        <div class="col-sm-3 active-case-report" style="border: 5px solid #03a9f4; padding: 10px">
-            <span class="text-semibold" style="margin: 10px; font-size: 15px;">Active</span><br>
-            <span class="text-semibold" style="margin: 10px; font-size: 30px;">
-              @isset($active_count)
-                <a class="btn-active-case">{{$active_count->total}}</a>
-              @endisset 
-            </span>
-        </div>
-        <div class="col-sm-3 pending-case-report" style="border: 5px solid #f44336; padding: 10px">
-            <span class="text-semibold" style="margin: 10px; font-size: 15px;">Pending</span><br>
-            <span class="text-semibold" style="margin: 10px; font-size: 30px;">
-              @isset($pending_count)
-                <a class="btn-pending-case">{{$pending_count->total}}</a>
-              @endisset 
-            </span>
-        </div>
-        <div class="col-sm-3 closed-case-report" style="border: 5px solid #4caf50; padding: 10px">
-            <span class="text-semibold" style="margin: 10px; font-size: 15px;">Closed</span><br>
-            <span class="text-semibold" style="margin: 10px; font-size: 30px;">
-              @isset($closed_count)
-                <a class="btn-closed-case">{{$closed_count->total}}</a>
-              @endisset 
-            </span>
-        </div>
-    </div> -->
-    <div class="row text-center">
-      <div class="col-sm-9">
-        <h6 class="text-semibold no-margin-bottom mt-5">Total Cases</h6>
-        <div id="lblTotalCaseRange" class="text-size-small text-muted content-group-sm"></div>
+    <div class="row">
+     <div class="tabbable">
+          <ul class="nav nav-tabs nav-tabs-highlight">
+            <li id="tab-overall" class="active"><a href="#highlighted-justified-tab1" data-toggle="tab">Overall</a></li>
+            <li id="tab-trend"><a href="#highlighted-justified-tab2" data-toggle="tab">Trend</a></li>
+          </ul>
 
-        <div class="svg-center" id="donut_basic_details"></div>
-      </div>
+          <div class="tab-content">
+            <div class="tab-pane active" id="highlighted-justified-tab1">        
+                      <div class="row text-center">
+                        <div class="col-sm-3 active-case-report" style="border: 5px solid #f5f5f5; padding: 10px;text-align:center;background-color:#03A9F4;color:#ffffff">
+                            <div class="text-semibold" style="margin: 10px; font-size: 30px;background-color:#1F2D40">{{ $readAverage }}</div>
+                            <div class="text-semibold" style="margin: 10px; font-size: 15px;">
+                             Case Average Time Read
+                            </div>
+                        </div>
+                         <div class="col-sm-3 pending-case-report" style="border: 5px solid #f5f5f5; padding: 10px;text-align:center;background-color:#F44336;color:#ffffff">
+                            <div class="text-semibold" style="margin: 10px; font-size: 30px;background-color:#4B332A">{{ $acceptedAverage }}</div>
+                            <div class="text-semibold" style="margin: 10px; font-size: 15px;">
+                             Case Average Time Accepted
+                            </div>
+                        </div>
+                        <div class="col-sm-3 pending-case-report" style="border: 5px solid #f5f5f5; padding: 10px;text-align:center;background-color:#4CAF50;color:#ffffff">
+                            <div class="text-semibold" style="margin: 10px; font-size: 30px;background-color:#1E3E52">{{ $closedAverage }}</div>
+                            <div class="text-semibold" style="margin: 10px; font-size: 15px;">
+                             Case Average Time Closed
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row text-center">
+                      <div class="col-sm-9">
+                        <h6 class="text-semibold no-margin-bottom mt-5">Total Cases</h6>
+                        <div id="lblTotalCaseRange" class="text-size-small text-muted content-group-sm"></div>
+
+                        <div class="svg-center" id="donut_basic_details"></div>
+                      </div>
+                    </div>
+            </div>
+            <div class="tab-pane" id="highlighted-justified-tab2">
+                <!-- <div style="display:block;width:150px;margin: 0 auto;">
+                  <span>Year</span>
+       
+                    <select class="form-control input-xs">
+                      <option>2019</option>
+                      <option>2018</option>
+                      <option>2017</option>
+                    </select>
+              
+                </div> -->
+                <div class="form-inline" style="width:150px;margin: 0 auto;">
+                <div class="form-group">
+                  <label class="" for="email">Year:</label>
+                  <select onchange="account_trend_report()" id="trend_year" class="form-control input-xs">
+                      <?php $year = date('Y'); ?>
+                      @for($x=0;$x < 5;$x++)
+                          <option>{{ $year - $x }}</option>
+                      @endfor
+                   <!--    <option>2019</option>
+                      <option>2018</option>
+                      <option>2017</option> -->
+                    </select>
+                </div></div>
+                <div class="chart-container">
+                  <div class="chart has-fixed-height" id="stacked_lines" style="width: 100% !important; min-height: 400px"></div>
+                </div>
+            </div>
+          </div>
+        </div>
     </div>
+
+
+
+
     <div class="row content-list-table">
       
     </div>
