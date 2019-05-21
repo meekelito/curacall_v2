@@ -55,14 +55,19 @@ class MobCase extends Model
   {
     $status = $this->attributes['status'];
     $ownership = $this->attributes['ownership'];
-    $text = ($status === '1') ? 'Active' : 'Closed';
-    if ($status !== '3') {
-      if ($ownership === '2'){
-        $text = 'Accepted';
-      }
-      else if ($ownership === '5'){
+    if ($status === '1') {
+      $text = 'Active';
+    }
+    else if ($status !== '3') {
+      if ($ownership === '5'){
         $text = 'Forwarded';
       }
+      else{
+        $text = 'Accepted';
+      }
+    } 
+    else if ($status === '3') {
+      $text = 'Closed';
     }
     return $text;
   }
@@ -70,14 +75,19 @@ class MobCase extends Model
   {
     $status = $this->attributes['status'];
     $ownership = $this->attributes['ownership'];
-    $text = ($status === '1') ? 'secondary' : 'success';
-    if ($status !== '3') {
+    if ($status === '1') {
+      $text = 'secondary';
+    }
+    else if ($status !== '3') {
       if ($ownership === '5'){
         $text = 'warning';
       }
-      if($ownership === '2') {
+      else{
         $text = 'primary';
       }
+    } 
+    else if ($status === '3') {
+      $text = 'success';
     }
     return $text;
   }
@@ -85,27 +95,27 @@ class MobCase extends Model
   public function getParticipantsAttribute()
 	{
     return MobCaseParticipant::where('case_id', $this->attributes['id'])
-    ->orderBy('ownership')->get();
+    ->orderBy('ownership', 'DESC')->get();
 	}
 
   public function getOwnerAttribute()
 	{
     return MobCaseParticipant::where('case_id', $this->attributes['id'])
     ->where('ownership', 5)
-    ->orderBy('ownership')->get();
+    ->orderBy('ownership', 'DESC')->get();
 	}
 
   public function getForwardedAttribute()
 	{
     return MobCaseParticipant::where('case_id', $this->attributes['id'])
     ->where('ownership', 1)
-    ->orderBy('ownership')->get();
+    ->orderBy('ownership', 'DESC')->get();
 	}
 
   public function getAcceptedAttribute()
 	{
     return MobCaseParticipant::where('case_id', $this->attributes['id'])
     ->where('ownership', 2)
-    ->orderBy('ownership')->get();
+    ->orderBy('ownership', 'DESC')->get();
 	}
 } 
