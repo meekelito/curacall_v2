@@ -348,7 +348,7 @@ class ReportsController extends Controller
     if($request->user_id == "all"){
       $cases = Cases::with('participants')
               ->whereBetween('cases.created_at', array($from, $to))
-              ->where('status',2)
+              ->where('status',1)
               ->orderBy('id','DESC')
               ->get();
     }else{
@@ -356,7 +356,7 @@ class ReportsController extends Controller
             ->Join('case_participants AS b','cases.id','=','b.case_id')
             ->where('b.user_id',$request->user_id)
             ->whereBetween('cases.created_at', array($from, $to))
-            ->where('cases.status',2)
+            ->where('cases.status',1)
             ->orderBy('cases.id','DESC')
             ->select('cases.id','cases.case_id','cases.sender_fullname','cases.status','cases.created_at')
             ->get();
