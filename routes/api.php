@@ -30,8 +30,8 @@ Route::group([
     Route::put('contact/password/{id}', 'Api\UserController@password_update');
     Route::put('contact/pin/{id}', 'Api\UserController@pin_update');
     Route::put('contact/alert/{id}', 'Api\UserController@update_alert');
-    Route::put('case-reopen', 'Api\CaseController@reopen_case');
-    Route::put('case-read/{id}', 'Api\CaseController@read_case');
+    Route::post('case-reopen', 'Api\CaseController@reopen_case');
+    Route::post('case-read/{id}', 'Api\CaseController@read_case');
 
     Route::apiResources([
         'case' => 'Api\CaseController',

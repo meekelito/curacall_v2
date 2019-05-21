@@ -8,6 +8,7 @@ use App\MobCase;
 use App\MobNote;
 use App\Case_history;
 use App\Case_participant;
+use Validator;
 
 class CaseController extends Controller
 {
