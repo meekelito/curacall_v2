@@ -11676,7 +11676,7 @@ var app = new __WEBPACK_IMPORTED_MODULE_0_vue___default.a({
                 _this2.messages.push({
                     message: e.message.message,
                     user: e.user,
-                    created_at: e.message.created_at
+                    created_at: e.message.created_at.date
                 });
             }
         });
@@ -11831,6 +11831,8 @@ module.exports = Component.exports
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 //
 //
 //
@@ -11864,15 +11866,17 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['messages', 'user'],
+  props: ['messages', 'user'],
 
-    methods: {
-        formatTime: function formatTime(time) {
-            var previousTime = moment(time, 'YYYY-MM-DD HH:mm:ss').format('x');
-            var timeDifference = moment(previousTime, 'x').fromNow();
-            return timeDifference;
-        }
+  methods: {
+    formatTime: function formatTime(time) {
+      if ((typeof time === 'undefined' ? 'undefined' : _typeof(time)) == 'object') time = time.date;
+
+      var previousTime = moment(time, 'YYYY-MM-DD HH:mm:ss').format('x');
+      var timeDifference = moment(previousTime, 'x').fromNow();
+      return timeDifference;
     }
+  }
 });
 
 /***/ }),

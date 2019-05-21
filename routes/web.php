@@ -89,6 +89,8 @@ Route::group(['middleware' => array('auth','nocache')], function () {
     //Reports
     Route::post('report-account','Reports\ReportsController@getReportAccount');
     Route::post('report-oncall','Reports\ReportsController@getReportOncall');
+    Route::post('report-oncall/overall-average','Reports\ReportsController@getOverallAverage')->name('report.overall-average');
+    Route::post('report-oncall/overall-case-status','Reports\ReportsController@getOverallCaseStatus')->name('report.overall-case-status');
     Route::get('report-account/subcalltypes','Reports\ReportsController@getSubcalltypes')->name('reports.subcalltypes');
     Route::get('report-account/chart/overall','Reports\ReportsController@chartoverall')->name('report.chart.overall');
     Route::get('report-account/chart/trend','Reports\ReportsController@charttrend')->name('report.chart.trend');

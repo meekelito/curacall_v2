@@ -17,11 +17,11 @@ class Message extends Model
 
 	public function getCreatedAtAttribute()
     {
-     	return Carbon::parse($this->attributes['created_at'])->timezone(Auth::user()->timezone)->toDateTimeString();
+     	return Carbon::parse($this->attributes['created_at'])->timezone(Auth::user()->timezone);
     }
 
     public function setCreatedAtAttribute($value)
     {
-    	$this->attributes['created_at'] = Carbon::parse($value)->timezone('UTC')->toDateTimeString();
+    	$this->attributes['created_at'] = Carbon::parse($value)->timezone('UTC');
     }
 }
