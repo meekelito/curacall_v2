@@ -35,6 +35,9 @@
 
     methods:{
         formatTime (time) {
+        if(typeof time =='object')
+          time = time.date;
+       
             let previousTime = moment(time,'YYYY-MM-DD HH:mm:ss').format('x');
             let timeDifference = moment(previousTime,'x').fromNow();
             return timeDifference;

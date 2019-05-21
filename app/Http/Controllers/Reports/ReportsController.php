@@ -228,90 +228,114 @@ class ReportsController extends Controller
       $users = User::where('account_id',Auth::user()->account_id)->get();
     }
 
+   
+    
+    return view( 'components.reports.report-oncall',['users'=>$users,'account_id'=>$request->account_id,'range'=>$request->range]);
+  }
+
+  public function getOverallCaseStatus(Request $request)
+  {
     $r1 = explode("-", $request->range);
     $date=date_create($r1[0]);
     $from = date_format($date,"Y-m-d H:i:s");
     $date=date_create($r1[1]);
     $to = date_format($date,"Y-m-d H:i:s");
-    $acceptedAverage = '';
-    $closedAverage = '';
 
     if($request->account_id == 'all'){
-      $readAverage = $this->getAverageTime(1,$from,$to,'Case Read');
-      $acceptedAverage = $this->getAverageTime(2,$from,$to);
-      $closedAverage = $this->getAverageTime(3,$from,$to);
+
 
       $active_count = Cases::where('status',1)
                       ->select(DB::raw('count(cases.id) as total'))
                       ->whereBetween('created_at', array($from, $to))
-                      ->get();
+                      ->first();
       $pending_count = Cases::where('status',2)
                       ->select(DB::raw('count(*) as total'))
                       ->whereBetween('created_at', array($from, $to))
-                      ->get();
+                      ->first();
       $closed_count = Cases::where('status',3)
                       ->select(DB::raw('count(*) as total'))
                       ->whereBetween('created_at', array($from, $to))
-                      ->get();  
-    }else{
-      if( Auth::user()->role_id != 7){
-        $readAverage = $this->getAverageTime(1,$from,$to,'Case Read',$request->account_id);
-        $acceptedAverage = $this->getAverageTime(2,$from,$to,'',$request->account_id);
-        $closedAverage = $this->getAverageTime(3,$from,$to,'',$request->account_id);
-      }
-      
+                      ->first();  
+    }else{     
       $active_count = Cases::Join('case_participants AS b','cases.id','=','b.case_id')
                       ->where('b.user_id',$request->account_id)
                       ->whereBetween('cases.created_at', array($from, $to))
                       ->where('cases.status',1)
                       ->select(DB::raw('count(cases.id) as total'))
-                      ->get();
+                      ->first();
 
       $pending_count = Cases::Join('case_participants AS b','cases.id','=','b.case_id')
                       ->where('b.user_id',$request->account_id)
                       ->whereBetween('cases.created_at', array($from, $to))
                       ->where('cases.status',2)
                       ->select(DB::raw('count(*) as total'))
-                      ->get();
+                      ->first();
       $closed_count = Cases::Join('case_participants AS b','cases.id','=','b.case_id')
                       ->where('b.user_id',$request->account_id)
                       ->whereBetween('cases.created_at', array($from, $to))
                       ->where('cases.status',3)
                       ->select(DB::raw('count(*) as total'))
-                      ->get();  
+                      ->first();  
+    }
+
+    if( Auth::user()->role_id == 7  ){
+      $active_count = Cases::Join('case_participants AS b','cases.id','=','b.case_id')
+                      ->where('b.user_id',Auth::user()->id)
+                      ->whereBetween('cases.created_at', array($from, $to))
+                      ->where('cases.status',1)
+                      ->select(DB::raw('count(cases.id) as total'))
+                      ->first();
+
+      $pending_count = Cases::Join('case_participants AS b','cases.id','=','b.case_id')
+                      ->where('b.user_id',Auth::user()->id)
+                      ->whereBetween('cases.created_at', array($from, $to))
+                      ->where('cases.status',2)
+                      ->select(DB::raw('count(*) as total'))
+                      ->first();
+      $closed_count = Cases::Join('case_participants AS b','cases.id','=','b.case_id')
+                      ->where('b.user_id',Auth::user()->id)
+                      ->whereBetween('cases.created_at', array($from, $to))
+                      ->where('cases.status',3)
+                      ->select(DB::raw('count(*) as total'))
+                      ->first();  
+    }
+
+    return json_encode(array('active'=>$active_count->total,'pending'=>$pending_count->total,'closed'=>$closed_count->total));
+  }
+
+ public function getOverallAverage(Request $request)
+  {
+      $r1 = explode("-", $request->range);
+      $date=date_create($r1[0]);
+      $from = date_format($date,"Y-m-d H:i:s");
+      $date=date_create($r1[1]);
+      $to = date_format($date,"Y-m-d H:i:s");
+
+      $readAverage = 0;
+      $acceptedAverage = 0;
+      $closedAverage = 0;
+
+    if($request->account_id == 'all'){
+      $readAverage = $this->getAverageTime(1,$from,$to,'Case Read');
+      $acceptedAverage = $this->getAverageTime(2,$from,$to);
+      $closedAverage = $this->getAverageTime(3,$from,$to);
+    }else
+    {
+        if( Auth::user()->role_id != 7){
+          $readAverage = $this->getAverageTime(1,$from,$to,'Case Read',$request->account_id);
+          $acceptedAverage = $this->getAverageTime(2,$from,$to,'',$request->account_id);
+          $closedAverage = $this->getAverageTime(3,$from,$to,'',$request->account_id);
+        }
     }
 
     if( Auth::user()->role_id == 7  ){
       $readAverage = $this->getAverageTime(1,$from,$to,'Case Read');
       $acceptedAverage = $this->getAverageTime(2,$from,$to);
       $closedAverage = $this->getAverageTime(3,$from,$to);
-
-      $active_count = Cases::Join('case_participants AS b','cases.id','=','b.case_id')
-                      ->where('b.user_id',Auth::user()->id)
-                      ->whereBetween('cases.created_at', array($from, $to))
-                      ->where('cases.status',1)
-                      ->select(DB::raw('count(cases.id) as total'))
-                      ->get();
-
-      $pending_count = Cases::Join('case_participants AS b','cases.id','=','b.case_id')
-                      ->where('b.user_id',Auth::user()->id)
-                      ->whereBetween('cases.created_at', array($from, $to))
-                      ->where('cases.status',2)
-                      ->select(DB::raw('count(*) as total'))
-                      ->get();
-      $closed_count = Cases::Join('case_participants AS b','cases.id','=','b.case_id')
-                      ->where('b.user_id',Auth::user()->id)
-                      ->whereBetween('cases.created_at', array($from, $to))
-                      ->where('cases.status',3)
-                      ->select(DB::raw('count(*) as total'))
-                      ->get();  
     }
-    
-    $total_cases = $active_count[0]->total + $pending_count[0]->total + $closed_count[0]->total;
 
-    return view( 'components.reports.report-oncall',['users'=>$users,'active_count'=>$active_count[0],'pending_count'=>$pending_count[0],'closed_count'=>$closed_count[0],'account_id'=>$request->account_id,'range'=>$request->range,'readAverage'=>$readAverage,'acceptedAverage'=>$acceptedAverage,'closedAverage'=>$closedAverage]);
+    return json_encode(array('read'=>$readAverage,'accepted'=>$acceptedAverage,'closed'=>$closedAverage));
   }
-
 
   public function getReportActiveCase(Request $request)
   {
