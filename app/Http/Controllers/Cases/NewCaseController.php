@@ -37,12 +37,13 @@ class NewCaseController extends Controller
       Case_participant::where('case_id', $case_id)->where('user_id', Auth::user()->id)->update(['is_read' => 1]); 
     }
 
-    return view( 'cases', [ 'case_id' => $case_id ] );
+    return view( 'cases', [ 'case_id' => $case_id,'is_reviewed' => 0 ] );
 
   }
 
   public function fetchCase(Request $request) 
   { 
+    $is_reviewed = $request->input('is_reviewed');  
     $case_id = $request->input('case_id');  
     $participation = Case_participant::where('case_id',$case_id)
                     ->where('user_id',Auth::user()->id)
@@ -57,7 +58,7 @@ class NewCaseController extends Controller
     ->where('case_participants.case_id',$case_id)
     ->orderBy('case_participants.ownership')
     ->get();
-    return view( 'components.cases.content-case', [ 'case_id' => $case_id,'case_info' => $case_info,'participation'=>$participation,'participants'=>$participants ] );
+    return view( 'components.cases.content-case', [ 'case_id' => $case_id,'case_info' => $case_info,'participation'=>$participation,'participants'=>$participants,'is_reviewed'=>$is_reviewed ] );
   }
 
   public function fetchParticipants($case_id) 

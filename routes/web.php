@@ -54,6 +54,7 @@ Route::group(['middleware' => array('auth','nocache')], function () {
 	Route::get('deleted-cases','Cases\DeletedCasesController@index');
     Route::get('silent-cases','Cases\SilentCasesController@index'); 
 
+
     Route::post('count-case','Cases\NewCaseController@countCase');
     Route::get('pdf-case/{id}','Cases\NewCaseController@pdfCase');
 
@@ -165,9 +166,13 @@ Route::group(['middleware' => array('auth','nocache')], function () {
         //Admin Console - Accounts
         //index
         Route::get('admin-console/billing','Admin\AdminBillingController@index');
-
-
         //admin console - accounts END.
+
+        Route::get('forreview-cases','Cases\ForReviewCasesController@index'); 
+        Route::get('reviewed-cases','Cases\ReviewedCasesController@index'); 
+
+        Route::get('review-case/case_id/{id}','Cases\ForReviewCasesController@review_index');
+        Route::post('review-case','Cases\ForReviewCasesController@reviewCase');
     });
     
     Route::group(['middleware' => array('App\Http\Middleware\AccountAdminMiddleware')], function () {

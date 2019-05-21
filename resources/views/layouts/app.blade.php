@@ -235,7 +235,10 @@
                   <!-- <li class="menu-directory"><a href="{{ url('/directory') }}"><i class="icon-book3"></i> <span>Directory</span></a></li> -->
                   <li class="menu-user-account-settings"><a href="{{ url('/user-account-settings') }}"><i class="icon-gear"></i> <span>Settings</span></a></li>
                   <li class="menu-archive-cases"><a href="{{ url('/archived-cases') }}"><i class="icon-bin"></i> <span>Archive Closed Cases</span></a></li>
+
                   @if( Auth::user()->role_id == 1 )
+                    <li class="menu-forreview-cases"><a href="{{ url('/forreview-cases') }}"><i class="icon-file-minus2"></i> <span>Case Repository</span></a></li>
+                    <li class="menu-reviewed-cases"><a href="{{ url('/reviewed-cases') }}"><i class="icon-file-check2"></i> <span>Reviewed</span></a></li>
                     <li class="navigation-header"><span>Admin Console</span> <i class="icon-menu" title="Admin Console"></i></li>
                     <li class="menu-admin-console-general"><a href="{{ url('/admin-console/general') }}"><i class="icon-hammer-wrench"></i> <span>General Information</span></a></li>
                     <li class="menu-admin-console-roles"><a href="{{ url('/admin-console/roles') }}"><i class="icon-share3"></i> <span>Roles</span></a></li>
