@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Controller;
 use App\User;
 
@@ -53,6 +54,15 @@ class UserController extends Controller
         return $request->input();
     }
 
+    public function update_alert(Request $request, $id)
+    {
+        $user = User::find($id);
+        $user->alert_tone = $request->alert_tone;
+        $user->alert_vibrate = $request->alert_vibrate;
+        $user->save();
+        return $user;
+    }
+
     /**
      * Update the specified resource in storage.
      *
@@ -62,7 +72,32 @@ class UserController extends Controller
      */
     public function password_update(Request $request, $id)
     {
-        return User::find($id)->update($request->input());
+        $user = User::find($id);
+        $isMatch = Hash::check($request->current, $user->password);
+        if($isMatch) {
+            $user->password = Hash::make($request->new);
+        }
+        if ($request->mobile_pin == $user->mobile_pin) {
+            $user->logoff_time = $request->logoff_time;
+        }
+
+        $user->save();
+        return $user;
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function pin_update(Request $request, $id)
+    {
+        $user = User::find($id);
+        $user->mobile_pin = $request->input('mobile_pin');
+        $user->save();
+        return $user;
     }
 
     /**

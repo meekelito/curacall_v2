@@ -20,14 +20,18 @@ use Illuminate\Http\Request;
 
 Route::post('login', 'Api\AuthController@login');
 Route::post('check_email', 'Api\AuthController@check_email');
+Route::post('logout', 'Api\AuthController@logout');
 
 Route::group([
     'middleware' => 'jwt.auth',
 ], function ($router) {
-    Route::post('logout', 'Api\AuthController@logout');
     Route::post('refresh', 'Api\AuthController@refresh');
     Route::post('me', 'Api\AuthController@me');
     Route::put('contact/password/{id}', 'Api\UserController@password_update');
+    Route::put('contact/pin/{id}', 'Api\UserController@pin_update');
+    Route::put('contact/alert/{id}', 'Api\UserController@update_alert');
+    Route::post('case-reopen', 'Api\CaseController@reopen_case');
+    Route::post('case-read/{id}', 'Api\CaseController@read_case');
 
     Route::apiResources([
         'case' => 'Api\CaseController',
@@ -37,9 +41,9 @@ Route::group([
 
 });
 
-Route::middleware('jwt.auth')->get('users', function () {
-    return auth('api')->user();
-});
+// Route::middleware('jwt.auth')->get('users', function () {
+//     return auth('api')->user();
+// });
 
 
 Route::get('/cases/{status?}/{user_id}', 'Api\ApiController@getCases' ); 
