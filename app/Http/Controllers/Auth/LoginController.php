@@ -117,6 +117,9 @@ class LoginController extends Controller
         }
 
       if (Session::has('login_email') && Auth::attempt(['email' => $email, 'password' => $password, 'status' => 'active'])) {
+        $user = User::find(Auth::user()->id);
+        $user->timezone = $request->tz;
+        $user->save();
         Cache::forget($ip_address);
         return redirect()->intended('/dashboard');
       }else{

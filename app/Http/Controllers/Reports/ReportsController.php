@@ -18,9 +18,16 @@ class ReportsController extends Controller
 
       if($request->account_id == "all")
       {
-        $cases = Cases::leftJoin('accounts as b','b.id','=','cases.account_id')
-              ->select('cases.account_id','b.account_name',DB::raw('count(0) as total'),DB::raw('MONTH(cases.created_at) as month'),DB::raw("CONCAT(MONTHNAME(cases.created_at),' ',YEAR(cases.created_at)) as month_year"))
-              ->groupBy('cases.account_id',DB::raw('EXTRACT(YEAR_MONTH FROM cases.created_at)'))
+        // $cases = Cases::leftJoin('accounts as b','b.id','=','cases.account_id')
+        //       ->select('cases.account_id','b.account_name',DB::raw('count(0) as total'),DB::raw('MONTH(cases.created_at) as month'),DB::raw("CONCAT(MONTHNAME(cases.created_at),' ',YEAR(cases.created_at)) as month_year"))
+        //       ->groupBy('cases.account_id',DB::raw('EXTRACT(YEAR_MONTH FROM cases.created_at)'))
+        //       ->calltype($request->call_type)
+        //       ->subcalltype($request->subcall_type)
+        //       ->whereYear('cases.created_at',$request->year)
+        //       ->get();
+
+         $cases = Cases::select(DB::raw("'All Accounts' as account_name"),DB::raw('count(0) as total'),DB::raw('MONTH(cases.created_at) as month'),DB::raw("CONCAT(MONTHNAME(cases.created_at),' ',YEAR(cases.created_at)) as month_year"))
+              ->groupBy(DB::raw('EXTRACT(YEAR_MONTH FROM cases.created_at)'))
               ->calltype($request->call_type)
               ->subcalltype($request->subcall_type)
               ->whereYear('cases.created_at',$request->year)

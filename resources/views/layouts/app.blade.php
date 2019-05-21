@@ -310,7 +310,6 @@
 	</div>
 	<!-- /page container -->
 </body>
-<script src="{{ asset('js/moment.min.js') }}"></script>
 
   <script type="text/javascript">
     $(function() {
