@@ -32,6 +32,7 @@ Route::group([
     Route::put('contact/alert/{id}', 'Api\UserController@update_alert');
     Route::post('case-reopen', 'Api\CaseController@reopen_case');
     Route::post('case-read/{id}', 'Api\CaseController@read_case');
+    Route::post('/report/average','Api\ApiController@getReportAverageTime');
 
     Route::apiResources([
         'case' => 'Api\CaseController',
@@ -63,7 +64,7 @@ Route::post('/case-close', 'Api\ApiController@closeCase' );
 
 Route::post('/case-test', 'Api\ApiController@testCase' );  
 
-Route::get('/report/average','Api\ApiController@getReportAverageTime');
+
 // Route::fallback(function(){
 //     return response()->json([
 //         'message' => 'Page Not Found. If error persists, contact info@website.com'], 404);

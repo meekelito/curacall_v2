@@ -453,6 +453,7 @@ class ApiController extends Controller
   {
     $validator = Validator::make($request->all(),[ 
       'type' => 'required|in:read,accepted,closed', 
+      'user_id' => 'required',
       'from'  => 'required|date',
       'to'    =>  'required|date'
     ]); 
@@ -466,11 +467,11 @@ class ApiController extends Controller
     }
 
     if($request->type == 'read')
-      return  $this->getAverageTime(1,$request->from,$request->to,'Case Read');
+      return  $this->getAverageTime(1,$request->from,$request->to,'Case Read',$request->user_id);
     else if($request->type == 'accepted')
-      return $this->getAverageTime(2,$request->from,$request->to);
+      return $this->getAverageTime(2,$request->from,$request->to,$request->user_id);
     else if($request->type == 'closed')
-      return $this->getAverageTime(3,$request->from,$request->to);
+      return $this->getAverageTime(3,$request->from,$request->to,$request->user_id);
   }
 
 }
