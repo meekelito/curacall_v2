@@ -89,7 +89,7 @@
             cancelClass: 'btn-default'
         });
 
-        //select_account_report();
+        select_account_report();
         $('.select-search').select2();
     }); 
      var stacked_lines;

@@ -3,13 +3,24 @@
 namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Auth;
-
+use  Carbon\Carbon;
 
 class Cases extends Model
-
 {
+
 	protected $table = 'cases';
   protected $fillable = ['case_id','account_id','call_type','subcall_type','case_message','status','is_reviewed'];
+
+  public function getCreatedAtAttribute()
+  {
+     return Carbon::parse($this->attributes['created_at'])->timezone(Auth::user()->timezone);
+  }
+
+  public function setCreatedAtAttribute($value)
+  {
+    $this->attributes['created_at'] = Carbon::parse($value)->timezone('UTC');
+  }
+
 
   public function participants()
 	{
