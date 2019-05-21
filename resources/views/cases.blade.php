@@ -157,7 +157,8 @@
       url: "{{ url('fetch-case') }}", 
       data: {  
         _token : '{{ csrf_token() }}',
-        case_id : '{{ $case_id }}' 
+        case_id : '{{ $case_id }}',
+        is_reviewed : '{{ $is_reviewed }}' 
       },
       success: function (data) {  
         $("#content-case").html( data );
