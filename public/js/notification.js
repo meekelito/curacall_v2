@@ -43074,8 +43074,7 @@ var render = function() {
                   staticClass: "img-circle",
                   attrs: {
                     width: "30",
-                    src:
-                      "/storage/uploads/users/" + notification.data.from_image,
+                    src: "/storage/uploads/users/" + notification.prof_img,
                     alt: ""
                   }
                 })

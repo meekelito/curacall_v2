@@ -34,7 +34,6 @@ Route::group(['middleware' => array('auth','nocache')], function () {
     Route::post('/notification/count', 'NotificationController@count');
 
 	Route::get('dashboard','Dashboard\DashboardController@index');
-    Route::get('dashboard/cases/count','Dashboard\DashboardController@casescount')->name('dashboard.cases.count');
     Route::get('dashboard/checkauth','Dashboard\DashboardController@checkuser')->name('checkuser');
 
 	Route::get('new-message','Messages\NewMessageController@index');
@@ -54,6 +53,7 @@ Route::group(['middleware' => array('auth','nocache')], function () {
 	Route::get('closed-cases','Cases\ClosedCasesController@index');
 	Route::get('deleted-cases','Cases\DeletedCasesController@index');
     Route::get('silent-cases','Cases\SilentCasesController@index'); 
+
 
     Route::post('count-case','Cases\NewCaseController@countCase');
     Route::get('pdf-case/{id}','Cases\NewCaseController@pdfCase');
@@ -89,11 +89,16 @@ Route::group(['middleware' => array('auth','nocache')], function () {
     //Reports
     Route::post('report-account','Reports\ReportsController@getReportAccount');
     Route::post('report-oncall','Reports\ReportsController@getReportOncall');
+    Route::post('report-oncall/overall-average','Reports\ReportsController@getOverallAverage')->name('report.overall-average');
+    Route::post('report-oncall/overall-case-status','Reports\ReportsController@getOverallCaseStatus')->name('report.overall-case-status');
     Route::get('report-account/subcalltypes','Reports\ReportsController@getSubcalltypes')->name('reports.subcalltypes');
+    Route::get('report-account/chart/overall','Reports\ReportsController@chartoverall')->name('report.chart.overall');
+    Route::get('report-account/chart/trend','Reports\ReportsController@charttrend')->name('report.chart.trend');
 
     Route::post('report-active-case-list','Reports\ReportsController@getReportActiveCase'); 
     Route::post('report-pending-case-list','Reports\ReportsController@getReportPendingCase'); 
     Route::post('report-closed-case-list','Reports\ReportsController@getReportClosedCase');
+    Route::post('report-by-calltypes','Reports\ReportsController@getReportByCalltypes');
 
 	//Accounts Settings
 	Route::get('user-account-settings','UserAccountSettings\UserAccountSettingsController@index');
@@ -161,9 +166,13 @@ Route::group(['middleware' => array('auth','nocache')], function () {
         //Admin Console - Accounts
         //index
         Route::get('admin-console/billing','Admin\AdminBillingController@index');
-
-
         //admin console - accounts END.
+
+        Route::get('forreview-cases','Cases\ForReviewCasesController@index'); 
+        Route::get('reviewed-cases','Cases\ReviewedCasesController@index'); 
+
+        Route::get('review-case/case_id/{id}','Cases\ForReviewCasesController@review_index');
+        Route::post('review-case','Cases\ForReviewCasesController@reviewCase');
     });
     
     Route::group(['middleware' => array('App\Http\Middleware\AccountAdminMiddleware')], function () {

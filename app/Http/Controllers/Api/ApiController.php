@@ -4,65 +4,79 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\User;
 use App\Cases;
+use App\Account;
+use App\Api_keys; 
 use App\Case_participant;
 use App\Case_history;
-use DataTables;
 use DB;
 use Cache;
 use Auth;
 use Validator;
+use Carbon\Carbon;
 
 class ApiController extends Controller
 {
   public function newCase(Request $request)
   {
     $validator = Validator::make($request->all(),[ 
-      'case_id' => 'required|unique:cases,case_id', 
-      'account_id' => 'required',
-      'call_type' => 'required',
-      'subcall_type' => 'required',
-      'case_message' => 'required',
-      'sender_id' => 'required',
-      'sender_fullname' => 'required',
-      'api_key' => 'required'
-    ]); 
+      'case_id' => 'bail|required|unique:cases,case_id', 
+      'account_id' => 'bail|required|exists:accounts,account_id',
+      'call_type' => 'bail|required',
+      'subcall_type' => 'bail|required',
+      'case_message' => 'bail|required',
+      'recipients' => 'required|array',
+      'recipients.*'=> 'distinct|exists:users,id',
+    ],[
+      'account_id.exists' => 'The account ID invalid ',
+      'recipient.distinct'=>'Recipient must contain unique Curacall ID.',
+      'recipient.*.exists'=>'Recipient does not exist.',
+    ]);
 
     if( $validator->fails() ){
-      return json_encode(array( 
-        "status"=>0,
-        "response"=>"error", 
+      return response()->json([ 
+        "status"=> 400,
+        "response"=>"bad request", 
         "message"=>$validator->errors()
-      ));
+      ]);
     }
+    
+    DB::beginTransaction();
+    try{
+      $res = Account::where('account_id', $request->account_id)->firstOrFail();
+      $request->merge(array('account_id' => $res->id));
+      $case = Cases::create($request->all());
 
-    $key_status = Keys::where('api_key',$request->api_key)
-                ->where('status','active')
-                ->get();
+      $now = Carbon::now()->toDateTimeString();
+      $participants = array();
+      foreach ($request->recipients as $recipient) {
+        $participants[] = array(
+          'case_id'=>$case->id,
+          'user_id'=>$recipient,
+          'ownership'=>1,
+          'is_silent'=>0,
+          'created_at'=>$now,
+          'updated_at'=>$now
+        );
+      }
 
-    if ( $key_status->isEmpty() ){
-      return json_encode(array(
-        "status" => 0,
-        "response" => "failed", 
-        "message" => "Error in connection."
-      ));
-    }
+      Case_participant::insert($participants);
       
-
-    $res = Cases::create($request->all());
-
-    if($res){
-      return json_encode(array(
-        "status" => 1,
+      DB::commit();
+      return response()->json([
+        "status" => 200,
         "response" => "success", 
         "message" => "Successfully sent."
-      ));
-    }else{
-      return json_encode(array(
-        "status" => 0,
-        "response" => "failed", 
-        "message" => "Error in connection."
-      ));
-    }
+      ]);
+    } catch (Exeption $e){
+      DB::rollback();
+      return response()->json([
+        "status" => 500,
+        "response" => "Internal Server Error", 
+        "message" => "An internal server error occurred while processing the request."
+      ]);
+    } 
+    
+
   }
 
   public function getCases($status = 'all',$user_id)

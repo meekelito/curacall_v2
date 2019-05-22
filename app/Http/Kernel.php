@@ -20,6 +20,7 @@ class Kernel extends HttpKernel
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
         \App\Http\Middleware\TrustProxies::class,
         \Spatie\Pjax\Middleware\FilterIfPjax::class,
+        \Barryvdh\Cors\HandleCors::class,
     ];
 
     /**
@@ -63,6 +64,7 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'sanitize' => \App\Http\Middleware\FilterInput::class,
         'nocache' => \App\Http\Middleware\NoHttpCache::class,
+        'jwt.verify' => \App\Http\Middleware\JwtMiddleware::class,
     ];
 
     /**

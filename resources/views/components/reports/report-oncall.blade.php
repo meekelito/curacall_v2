@@ -2,7 +2,7 @@
     <div class="row">
         @if( Auth::user()->role_id != 7 )
         <div class="form-group form-group-xs col-sm-3">
-            <select class="form-control oncall-user">
+            <select class="select-search oncall-user" style="width: 100% !important;">
                 <option value="all">Select On call</option>
                 @foreach($users as $row) 
                 <option @if($account_id == $row->id) selected  @endif value="{{$row->id}}">{{ $row->fname.' '.$row->lname  }}</option>
@@ -19,61 +19,80 @@
         </div>
     </div>
 
-    <div class="row text-center">
-        <div class="col-sm-3 active-case-report" style="border: 5px solid #f5f5f5; padding: 10px;text-align:center;background-color:#0F56A3;color:#ffffff">
-            <div class="text-semibold" style="margin: 10px; font-size: 30px;background-color:#1F2D40">{{ $readAverage }}</div>
-            <div class="text-semibold" style="margin: 10px; font-size: 15px;">
-             Case Average Time Read
-            </div>
-        </div>
-         <div class="col-sm-3 pending-case-report" style="border: 5px solid #f5f5f5; padding: 10px;text-align:center;background-color:#E66E2B;color:#ffffff">
-            <div class="text-semibold" style="margin: 10px; font-size: 30px;background-color:#4B332A">{{ $acceptedAverage }}</div>
-            <div class="text-semibold" style="margin: 10px; font-size: 15px;">
-             Case Average Time Accepted
-            </div>
-        </div>
-        <div class="col-sm-3 pending-case-report" style="border: 5px solid #f5f5f5; padding: 10px;text-align:center;background-color:#04A9F4;color:#ffffff">
-            <div class="text-semibold" style="margin: 10px; font-size: 30px;background-color:#1E3E52">{{ $closedAverage }}</div>
-            <div class="text-semibold" style="margin: 10px; font-size: 15px;">
-             Case Average Time Closed
-            </div>
-        </div>
-    </div>
-    <br>
-   <!--  <div class="row">
-        <div class="col-sm-3 active-case-report" style="border: 5px solid #03a9f4; padding: 10px">
-            <span class="text-semibold" style="margin: 10px; font-size: 15px;">Active</span><br>
-            <span class="text-semibold" style="margin: 10px; font-size: 30px;">
-              @isset($active_count)
-                <a class="btn-active-case">{{$active_count->total}}</a>
-              @endisset 
-            </span>
-        </div>
-        <div class="col-sm-3 pending-case-report" style="border: 5px solid #f44336; padding: 10px">
-            <span class="text-semibold" style="margin: 10px; font-size: 15px;">Pending</span><br>
-            <span class="text-semibold" style="margin: 10px; font-size: 30px;">
-              @isset($pending_count)
-                <a class="btn-pending-case">{{$pending_count->total}}</a>
-              @endisset 
-            </span>
-        </div>
-        <div class="col-sm-3 closed-case-report" style="border: 5px solid #4caf50; padding: 10px">
-            <span class="text-semibold" style="margin: 10px; font-size: 15px;">Closed</span><br>
-            <span class="text-semibold" style="margin: 10px; font-size: 30px;">
-              @isset($closed_count)
-                <a class="btn-closed-case">{{$closed_count->total}}</a>
-              @endisset 
-            </span>
-        </div>
-    </div> -->
-    <div class="row text-center">
-      <div class="col-sm-9">
-        <h6 class="text-semibold no-margin-bottom mt-5">Total Cases</h6>
-        <div id="lblTotalCaseRange" class="text-size-small text-muted content-group-sm"></div>
+    <div class="row">
+     <div class="tabbable">
+          <ul class="nav nav-tabs nav-tabs-highlight">
+            <li id="tab-overall" class="active"><a href="#highlighted-justified-tab1" data-toggle="tab">Overall</a></li>
+            <li id="tab-trend"><a href="#highlighted-justified-tab2" data-toggle="tab">Trend</a></li>
+          </ul>
 
-        <div class="svg-center" id="donut_basic_details"></div>
-      </div>
+          <div class="tab-content">
+            <div class="tab-pane active" id="highlighted-justified-tab1">        
+                    <div class="row text-center">
+                        <div class="col-sm-3 active-case-report" style="border: 5px solid #f5f5f5; padding: 10px;text-align:center;background-color:#03A9F4;color:#ffffff">
+                            <div id="readAverage" class="text-semibold" style="margin: 10px; font-size: 30px;background-color:#1F2D40"></div>
+                            <div class="text-semibold" style="margin: 10px; font-size: 15px;">
+                             Case Average Time Read
+                            </div>
+                        </div>
+                         <div class="col-sm-3 pending-case-report" style="border: 5px solid #f5f5f5; padding: 10px;text-align:center;background-color:#F44336;color:#ffffff">
+                            <div id="acceptedAverage" class="text-semibold" style="margin: 10px; font-size: 30px;background-color:#4B332A"></div>
+                            <div class="text-semibold" style="margin: 10px; font-size: 15px;">
+                             Case Average Time Accepted
+                            </div>
+                        </div>
+                        <div class="col-sm-3 pending-case-report" style="border: 5px solid #f5f5f5; padding: 10px;text-align:center;background-color:#4CAF50;color:#ffffff">
+                            <div id="closedAverage" class="text-semibold" style="margin: 10px; font-size: 30px;background-color:#1E3E52"></div>
+                            <div class="text-semibold" style="margin: 10px; font-size: 15px;">
+                             Case Average Time Closed
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row text-center">
+                      <div class="col-sm-9">
+                        <h6 class="text-semibold no-margin-bottom mt-5">Total Cases</h6>
+                        <div id="lblTotalCaseRange" class="text-size-small text-muted content-group-sm"></div>
+
+                        <div class="svg-center" id="donut_basic_details"></div>
+                      </div>
+                    </div>
+            </div>
+            <div class="tab-pane" id="highlighted-justified-tab2">
+                <!-- <div style="display:block;width:150px;margin: 0 auto;">
+                  <span>Year</span>
+       
+                    <select class="form-control input-xs">
+                      <option>2019</option>
+                      <option>2018</option>
+                      <option>2017</option>
+                    </select>
+              
+                </div> -->
+                <div class="form-inline" style="width:150px;margin: 0 auto;">
+                <div class="form-group">
+                  <label class="" for="email">Year:</label>
+                  <select onchange="oncall_trend_report()" id="trend_year" class="form-control input-xs">
+                      <?php $year = date('Y'); ?>
+                      @for($x=0;$x < 5;$x++)
+                          <option>{{ $year - $x }}</option>
+                      @endfor
+                   <!--    <option>2019</option>
+                      <option>2018</option>
+                      <option>2017</option> -->
+                    </select>
+                </div></div>
+                <div class="chart-container">
+                  <div class="chart has-fixed-height" id="stacked_lines" style="width: 100% !important; min-height: 400px"></div>
+                </div>
+            </div>
+          </div>
+        </div>
     </div>
+
+
+
+
     <div class="row content-list-table">
       
     </div>
@@ -84,7 +103,15 @@
         applyClass: 'bg-slate-600',
         cancelClass: 'btn-default'
     });
+
+    getOverallAverage();
+    getOverallCaseStatus();
+    oncall_trend_report();
+    $('.select-search').select2();
   }); 
+
+  var stacked_lines;
+  var stacked_lines_options;
 
   function report_case_list(status)
   {
@@ -198,22 +225,81 @@
   });
 
   $( ".date-range-val" ).change(function() {
-    reportOncall($(".oncall-user" ).val(),$( ".date-range-val" ).val());
+    getOverallAverage();
+    getOverallCaseStatus();
+    //reportOncall($(".oncall-user" ).val(),$( ".date-range-val" ).val());
   });
   $( ".oncall-user" ).change(function() {
-    reportOncall($(this).find(":selected").val(),$( ".date-range-val" ).val());
+    getOverallAverage();
+    getOverallCaseStatus();
+    //reportOncall($(this).find(":selected").val(),$( ".date-range-val" ).val());
   });
 
+  function getOverallAverage()
+  {
+     $.ajax({  
+      type: "POST", 
+      url: "{{ route('report.overall-average') }}", 
+      data: {   
+        _token : '{{ csrf_token() }}',
+        account_id : $(".oncall-user").val(),
+        range : $(".date-range-val").val()
+      },
+      success: function (data) {  
+        var result = $.parseJSON(data);
+        $('#readAverage').html(result.read);
+        $('#acceptedAverage').html(result.accepted);
+        $('#closedAverage').html(result.closed);
+      },
+      error: function (data){
+        swal({
+          title: "Oops..!",
+          text: "No connection could be made because the target machine actively refused it. Please refresh the browser and try again.",
+          confirmButtonColor: "#EF5350",
+          type: "error"
+        });
+      }
+    });
+  }
+
+  function getOverallCaseStatus()
+  {
+     $.ajax({  
+      type: "POST", 
+      url: "{{ route('report.overall-case-status') }}", 
+      data: {   
+        _token : '{{ csrf_token() }}',
+        account_id : $(".oncall-user").val(),
+        range : $(".date-range-val").val()
+      },
+      success: function (data) {  
+        var result = $.parseJSON(data);
+        // $('#readAverage').html(result.read);
+        // $('#acceptedAverage').html(result.accepted);
+        // $('#closedAverage').html(result.closed);
+          $('#donut_basic_details').html('');
+             donutWithDetails("#donut_basic_details", 250,result);
+      },
+      error: function (data){
+        swal({
+          title: "Oops..!",
+          text: "No connection could be made because the target machine actively refused it. Please refresh the browser and try again.",
+          confirmButtonColor: "#EF5350",
+          type: "error"
+        });
+      }
+    });
+  }
 
 
       $('#lblTotalCaseRange').html($('.date-range-val').val());
-      donutWithDetails("#donut_basic_details", 250);
+ 
 
       // Initialize chart
 
 
     // Chart setup
-    function donutWithDetails(element, size) {
+    function donutWithDetails(element, size,count) {
 
 
         // Basic setup
@@ -224,17 +310,17 @@
             {
                 "status": "Active",
                 "icon": "<i class='status-mark border-blue-300 position-left'></i>",
-                "value": {{ $active_count->total }},
+                "value": count.active,
                 "color": "#03A9F4"
             }, {
                 "status": "Pending",
                 "icon": "<i class='status-mark border-success-300 position-left'></i>",
-                "value": {{ $pending_count->total }},
+                "value": count.pending,
                 "color": "#F44336"
             }, {
                 "status": "Closed",
                 "icon": "<i class='status-mark border-danger-300 position-left'></i>",
-                "value": {{ $closed_count->total }},
+                "value": count.closed,
                 "color": "#4CAF50"
             }
         ];
@@ -445,5 +531,128 @@
             .text(function(d, i) {
                 return d.data.value;
             });
+    }
+
+    $( "#tab-trend a" ).on( "click", function() {
+
+      if(stacked_lines == undefined)
+        return;
+
+       setTimeout(function () {
+          stacked_lines.resize();
+          load_line_chart();
+        }, 10);
+    });
+
+    function oncall_trend_report()
+    {
+        $.ajax({ 
+        type: "GET", 
+        url: "{{ route('report.chart.trend') }}", 
+        data: {  
+          year: $('#trend_year').val(),
+          account_id: $('#report_account_id').val(),
+          call_type: $('#report_account_calltype').val(),
+          subcall_type: $('#report_account_subcalltype').val()
+        },
+        success: function (data) {  
+          //$(".content-case").html( data );
+          var chart_data = $.parseJSON(data);
+          if(chart_data.data.length > 0)
+         {
+  
+
+            require.config({
+                paths: {
+                    echarts: "{{ asset('assets/js/plugins/visualization/echarts') }}"
+                } 
+            });
+            // Configuration
+            // ------------------------------
+            require(
+                [
+                    'echarts',
+                    'echarts/theme/limitless',
+                    'echarts/chart/line'
+                ],
+                // Charts setup
+                function (ec, limitless) {
+
+
+                    // line chart
+                   stacked_lines  = ec.init(document.getElementById('stacked_lines'), limitless);
+
+                        stacked_lines_options = {
+
+                            // Setup grid
+                            grid: {
+                                x: 40,
+                                x2: 20,
+                                y: 135,
+                                y2: 25
+                            },
+
+                            // Add tooltip
+                            tooltip: {
+                                trigger: 'item'
+                            },
+
+                            // Add legend
+                            legend: {
+                                data: chart_data.accounts,
+                               
+                            },
+
+                            // Enable drag recalculate
+                            //calculable: true,
+
+                            // Hirozontal axis
+                            xAxis: [{
+                                type: 'category',
+                                boundaryGap: false,
+                                data: [
+                                    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul','Aug','Sep','Oct','Nov','Dec'
+                                ]
+                            }],
+
+                            // Vertical axis
+                            yAxis: [{
+                                type: 'value'
+                            }],
+
+                            // Add series
+                            series: chart_data.data
+                        };
+
+                         setTimeout(function () {
+                            load_line_chart();
+                        }, 200);
+
+                             window.onresize = function () {
+                              setTimeout(function () {
+                                  stacked_lines.resize();
+                              }, 200);
+                          }                      
+                      
+                }
+            );
+          }else{
+            $('#stacked_lines').html('No result');
+          }
+        },
+        error: function (data){
+          swal({
+            title: "Oops..!",
+            text: "No connection could be made because the target machine actively refused it. Please refresh the browser and try again.",
+            confirmButtonColor: "#EF5350",
+            type: "error"
+          });
+        }
+      });  
+    }
+
+    function load_line_chart()
+    {
+         stacked_lines.setOption(stacked_lines_options);
     }
 </script>

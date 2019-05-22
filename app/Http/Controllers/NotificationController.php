@@ -32,9 +32,10 @@ class NotificationController extends Controller
     public function get() {
 
         //$notification = Auth::user()->unreadNotifications;
-        $notification = Notification::select('data','created_at',DB::raw("(CASE WHEN ISNULL(read_at) THEN 0 ELSE 1 END) as is_read"))
-        					->where('notifiable_id',Auth::user()->id)
-        					->where('type','App\Notifications\CaseNotification')
+        $notification = Notification::select('b.prof_img','notifications.data','notifications.created_at',DB::raw("(CASE WHEN ISNULL(notifications.read_at) THEN 0 ELSE 1 END) as is_read"))
+                            ->leftJoin('users as b','notifications.notified_by','=','b.id')
+        					->where('notifications.notifiable_id',Auth::user()->id)
+        					->where('notifications.type','App\Notifications\CaseNotification')
         					->latest()
         					->take(10)
         					->get()->toJson(JSON_PRETTY_PRINT);
