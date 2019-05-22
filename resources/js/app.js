@@ -32,7 +32,7 @@ const app = new Vue({
             this.messages.push({
               message: e.message.message,
               user: e.user,
-              created_at: e.message.created_at.date
+              created_at: e.message.created_at
             });
         }
 		  });

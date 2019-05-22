@@ -37,8 +37,7 @@
               this.$emit('messagesent', {
                   user: this.user,
                   room_id: this.room_id,
-                  message: this.newMessage,
-                  created_at: time
+                  message: this.newMessage
               });
 
               this.newMessage = '';
