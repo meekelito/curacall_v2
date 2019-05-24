@@ -48,7 +48,9 @@ class PermissionTableSeeder extends Seeder
               ['name'  => 'edit-company-information',           'description'  =>  'Edit Company Information', 'module' => 'general information'],
               ['name'  => 'edit-support-contact-information',   'description'  =>  'Edit Support Contact Information', 'module' => 'general information'],
               //Case Management
-              
+              ['name'  => 'manage-case',                        'description'  =>  'Manage Case', 'module' => 'case management'],
+              //Billing
+              ['name'  => 'view-billing-report',                'description'  =>  'View Billing Report', 'module' => 'billing'],
           ];
 
 
