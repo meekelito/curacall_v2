@@ -473,7 +473,7 @@ class ApiController extends Controller
   
       $closed = $this->getAverageTime(3,$request->from,$request->to,$request->user_id);
 
-      return json_encode(array("read"=> $read,"accepted" =>$accepted,"closed"=>$closed));
+      return ["read"=> $read,"accepted" =>$accepted,"closed"=>$closed];
   }
 
 }

@@ -32,6 +32,7 @@ Route::group([
     Route::put('contact/alert/{id}', 'Api\UserController@update_alert');
     Route::post('case-reopen', 'Api\CaseController@reopen_case');
     Route::post('case-read/{id}', 'Api\CaseController@read_case');
+    Route::post('case-note/{id}', 'Api\CaseController@add_note');
     Route::post('/report/average','Api\ApiController@getReportAverageTime');
 
     Route::apiResources([

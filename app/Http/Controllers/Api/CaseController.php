@@ -247,6 +247,19 @@ class CaseController extends Controller
         return response()->json($formattedCase);
     }
 
+    public function add_note(Request $request, $id)
+    {
+        $user_id = $request->input('created_by');
+        $note = MobNote::create(
+            [
+                'note' =>$request->note,
+                'case_id' =>$id,
+                'created_by' =>$user_id
+            ]
+        );
+        return $note;
+    }
+
     /**
      * Update the specified resource in storage.
      *
