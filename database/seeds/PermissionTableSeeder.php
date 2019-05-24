@@ -51,6 +51,12 @@ class PermissionTableSeeder extends Seeder
               ['name'  => 'manage-case',                        'description'  =>  'Manage Case', 'module' => 'case management'],
               //Billing
               ['name'  => 'view-billing-report',                'description'  =>  'View Billing Report', 'module' => 'billing'],
+              //Curacall Admin Console
+              ['name'  => 'manage-general-info',                'description'  =>  'Manage General Information', 'module' => 'admin console'],
+              ['name'  => 'manage-roles',                       'description'  =>  'Manage Roles', 'module' => 'admin console'],
+              ['name'  => 'manage-users',                       'description'  =>  'Manage Users', 'module' => 'admin console'],
+              ['name'  => 'manage-accounts',                    'description'  =>  'Manage Accounts', 'module' => 'admin console'],
+              ['name'  => 'manage-billing',                     'description'  =>  'Manage Billing', 'module' => 'admin console'],
           ];
 
 
