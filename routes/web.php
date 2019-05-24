@@ -170,11 +170,8 @@ Route::group(['middleware' => array('auth','nocache')], function () {
         Route::get('admin-console/billing','Admin\AdminBillingController@index');
         //admin console - accounts END.
 
-        Route::get('forreview-cases','Cases\ForReviewCasesController@index'); 
-        Route::get('reviewed-cases','Cases\ReviewedCasesController@index'); 
-
-        Route::get('review-case/case_id/{id}','Cases\ForReviewCasesController@review_index');
-        Route::post('review-case','Cases\ForReviewCasesController@reviewCase');
+        Route::get('repository-cases','Cases\RepositoryCasesController@index'); 
+        Route::get('review-case/case_id/{id}','Cases\RepositoryCasesController@review_index');
     });
     
     Route::group(['middleware' => array('App\Http\Middleware\AccountAdminMiddleware')], function () {
