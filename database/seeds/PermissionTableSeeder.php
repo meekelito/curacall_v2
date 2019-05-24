@@ -13,18 +13,47 @@ class PermissionTableSeeder extends Seeder
     public function run()
     {
         $permissions = [
-              ['name'  => 'never-send-message-unless-message-received', 'description'  =>  'Can never send a message unless a message was received'],
-              ['name'  => 'send-message-to-caregiver',                  'description'  =>  'Can send a message to caregiver'],
-              ['name'  => 'send-message-to-nursing',                    'description'  =>  'Can send a message to nursing'],
-              ['name'  => 'send-message-to-coordinator',                'description'  =>  'Can send a message to coordinator'],
-              ['name'  => 'send-message-to-management',                 'description'  =>  'Can send a message to management'],
-              ['name'  => 'send-message-to-account-admin',              'description'  =>  'Can send a message to account admin'],
-              ['name'  => 'send-message-to-anyone',                     'description'  =>  'Can send a message to anyone'],
+              // Dashboard
+              ['name'  => 'view-account-reports',               'description'  =>  'Can View Dashboard account reports', 'module' => 'dashboard'],
+              ['name'  => 'view-oncall-reports',                'description'  =>  'Can View Dashboard on-call reports', 'module' => 'dashboard'],
+              // Cases
+              ['name'  => 'view-all-cases',                     'description'  =>  'Can View All cases', 'module' => 'cases'],
+              ['name'  => 'view-active-cases',                  'description'  =>  'Can View Active cases', 'module' => 'cases'],
+              ['name'  => 'view-pending-cases',                 'description'  =>  'Can View Pending cases', 'module' => 'cases'],
+              ['name'  => 'view-closed-cases',                  'description'  =>  'Can View Closed cases', 'module' => 'cases'],
+              ['name'  => 'view-silent-cases',                  'description'  =>  'Can View Silent cases', 'module' => 'cases'],
+              ['name'  => 'forward-case',                       'description'  =>  'Forward case', 'module' => 'cases'],
+              ['name'  => 'accept-case',                        'description'  =>  'Accept case', 'module' => 'cases'],
+              ['name'  => 'close-case',                         'description'  =>  'Forward case', 'module' => 'cases'],
+              ['name'  => 'pull-case',                          'description'  =>  'Pull case', 'module' => 'cases'],
+              ['name'  => 'add-note',                           'description'  =>  'Add note', 'module' => 'cases'],
+              ['name'  => 'export-pdf',                         'description'  =>  'Export PDF', 'module' => 'cases'],
+              ['name'  => 'add-case-participant',               'description'  =>  'Add case participant', 'module' => 'cases'],
+              // Messages
+              ['name'  => 'never-send-message-unless-message-received', 'description'  =>  'Can never send a message unless a message was received', 'module' => 'messages'],
+              ['name'  => 'send-message-to-caregiver',                  'description'  =>  'Can send a message to caregiver', 'module' => 'messages'],
+              ['name'  => 'send-message-to-nursing',                    'description'  =>  'Can send a message to nursing', 'module' => 'messages'],
+              ['name'  => 'send-message-to-coordinator',                'description'  =>  'Can send a message to coordinator', 'module' => 'messages'],
+              ['name'  => 'send-message-to-management',                 'description'  =>  'Can send a message to management', 'module' => 'messages'],
+              ['name'  => 'send-message-to-account-admin',              'description'  =>  'Can send a message to account admin', 'module' => 'messages'],
+              ['name'  => 'send-message-to-anyone',                     'description'  =>  'Can send a message to anyone', 'module' => 'messages'],
+              // Contacts
+              ['name'  => 'view-contacts',                      'description'  =>  'View Contacts', 'module' => 'contacts'],
+              // Settings
+              ['name'  => 'profile-setting',                    'description'  =>  'Profile Settings', 'module' => 'settings'],
+              ['name'  => 'security-login',                     'description'  =>  'Security and Login', 'module' => 'settings'],
+              ['name'  => 'message-setting',                    'description'  =>  'Message Settings', 'module' => 'settings'],
+              ['name'  => 'notification-setting',               'description'  =>  'Notification Settings', 'module' => 'settings'],
+              // Generate Information
+              ['name'  => 'edit-company-information',           'description'  =>  'Edit Company Information', 'module' => 'general information'],
+              ['name'  => 'edit-support-contact-information',   'description'  =>  'Edit Support Contact Information', 'module' => 'general information'],
+              //Case Management
+              
           ];
 
 
         foreach ($permissions as $permission) {
-             Permission::create(['name'=>$permission['name'],'description'=>$permission['description']]);
+             Permission::create(['name'=>$permission['name'],'description'=>$permission['description'],'module'=>$permission['module']]);
         }
     }
 }
