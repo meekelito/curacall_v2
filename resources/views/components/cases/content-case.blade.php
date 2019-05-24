@@ -421,8 +421,6 @@
           });  
           count_case();
           fetchCase();
-          $(".menu-curacall li").removeClass("active");
-          $(".menu-reviewed-cases").addClass('active');
         }else if( res.status == 2 ){
           swal({
             title: "Notice!",

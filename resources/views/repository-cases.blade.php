@@ -113,7 +113,7 @@
 @section('script')
 <script type="text/javascript">
   $(".menu-curacall li").removeClass("active");
-  $(".menu-forreview-cases").addClass('active');
+  $(".menu-repository-cases").addClass('active');
 </script>
 
 @endsection 

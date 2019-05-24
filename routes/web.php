@@ -91,6 +91,8 @@ Route::group(['middleware' => array('auth','nocache')], function () {
     Route::post('report-oncall','Reports\ReportsController@getReportOncall');
     Route::post('report-oncall/overall-average','Reports\ReportsController@getOverallAverage')->name('report.overall-average');
     Route::post('report-oncall/overall-case-status','Reports\ReportsController@getOverallCaseStatus')->name('report.overall-case-status');
+    Route::get('report-oncall/chart/trend','Reports\ReportsController@oncallcharttrend')->name('report.oncall.chart.trend');
+
     Route::get('report-account/subcalltypes','Reports\ReportsController@getSubcalltypes')->name('reports.subcalltypes');
     Route::get('report-account/chart/overall','Reports\ReportsController@chartoverall')->name('report.chart.overall');
     Route::get('report-account/chart/trend','Reports\ReportsController@charttrend')->name('report.chart.trend');
@@ -168,11 +170,8 @@ Route::group(['middleware' => array('auth','nocache')], function () {
         Route::get('admin-console/billing','Admin\AdminBillingController@index');
         //admin console - accounts END.
 
-        Route::get('forreview-cases','Cases\ForReviewCasesController@index'); 
-        Route::get('reviewed-cases','Cases\ReviewedCasesController@index'); 
-
-        Route::get('review-case/case_id/{id}','Cases\ForReviewCasesController@review_index');
-        Route::post('review-case','Cases\ForReviewCasesController@reviewCase');
+        Route::get('repository-cases','Cases\RepositoryCasesController@index'); 
+        Route::get('review-case/case_id/{id}','Cases\RepositoryCasesController@review_index');
     });
     
     Route::group(['middleware' => array('App\Http\Middleware\AccountAdminMiddleware')], function () {

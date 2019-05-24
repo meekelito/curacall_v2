@@ -59,29 +59,32 @@
                     </div>
             </div>
             <div class="tab-pane" id="highlighted-justified-tab2">
-                <!-- <div style="display:block;width:150px;margin: 0 auto;">
-                  <span>Year</span>
-       
-                    <select class="form-control input-xs">
-                      <option>2019</option>
-                      <option>2018</option>
-                      <option>2017</option>
-                    </select>
-              
-                </div> -->
-                <div class="form-inline" style="width:150px;margin: 0 auto;">
-                <div class="form-group">
-                  <label class="" for="email">Year:</label>
-                  <select onchange="oncall_trend_report()" id="trend_year" class="form-control input-xs">
-                      <?php $year = date('Y'); ?>
-                      @for($x=0;$x < 5;$x++)
-                          <option>{{ $year - $x }}</option>
-                      @endfor
-                   <!--    <option>2019</option>
-                      <option>2018</option>
-                      <option>2017</option> -->
-                    </select>
-                </div></div>
+              <div class="row form-inline text-center">
+
+                  <div class="form-group" style="width:150px;margin: 0 auto;">
+                    <label class="" for="email">Chart:</label>
+                    <select onchange="oncall_trend_report()" id="chart_type" class="form-control input-xs">
+                      
+                        <option>line</option>
+                        <option>bar</option>
+
+                      </select>
+                  </div>
+           
+                  <div class="form-group" style="width:150px;margin: 0 auto;">
+                    <label class="" for="email">Year:</label>
+                    <select onchange="oncall_trend_report()" id="trend_year" class="form-control input-xs">
+                        <?php $year = date('Y'); ?>
+                        @for($x=0;$x < 5;$x++)
+                            <option>{{ $year - $x }}</option>
+                        @endfor
+                     <!--    <option>2019</option>
+                        <option>2018</option>
+                        <option>2017</option> -->
+                      </select>
+                  </div>
+               
+              </div>
                 <div class="chart-container">
                   <div class="chart has-fixed-height" id="stacked_lines" style="width: 100% !important; min-height: 400px"></div>
                 </div>
@@ -232,6 +235,7 @@
   $( ".oncall-user" ).change(function() {
     getOverallAverage();
     getOverallCaseStatus();
+    oncall_trend_report();
     //reportOncall($(this).find(":selected").val(),$( ".date-range-val" ).val());
   });
 
@@ -548,12 +552,11 @@
     {
         $.ajax({ 
         type: "GET", 
-        url: "{{ route('report.chart.trend') }}", 
+        url: "{{ route('report.oncall.chart.trend') }}", 
         data: {  
           year: $('#trend_year').val(),
-          account_id: $('#report_account_id').val(),
-          call_type: $('#report_account_calltype').val(),
-          subcall_type: $('#report_account_subcalltype').val()
+          user_id : $(".oncall-user").val(),
+          chart: $('#chart_type').val()
         },
         success: function (data) {  
           //$(".content-case").html( data );
@@ -573,6 +576,7 @@
                 [
                     'echarts',
                     'echarts/theme/limitless',
+                    'echarts/chart/bar',
                     'echarts/chart/line'
                 ],
                 // Charts setup
@@ -583,7 +587,7 @@
                    stacked_lines  = ec.init(document.getElementById('stacked_lines'), limitless);
 
                         stacked_lines_options = {
-
+                            color:chart_data.accounts.color,
                             // Setup grid
                             grid: {
                                 x: 40,
@@ -599,7 +603,7 @@
 
                             // Add legend
                             legend: {
-                                data: chart_data.accounts,
+                                data: chart_data.accounts.name,
                                
                             },
 
