@@ -13,7 +13,7 @@ class RoleTableSeeder extends Seeder
     public function run()
     {
         $roles = [
-              ['name'   => 'curacall-admin', 		'role_title' => 'CuraCall Admin',   'description'  =>  'Curacall Admin', 'is_curacall' => 1],
+              ['name'   => 'curacall-admin', 		    'role_title' => 'CuraCall Admin',   'description'  =>  'Curacall Admin', 'is_curacall' => 1],
               ['name'   => 'curacall-management', 	'role_title' => 'CuraCall Management',	'description'  =>  'Curacall Management', 'is_curacall' => 1],
               ['name'   => 'curacall-user',       	'role_title' => 'CuraCall User',	'description'  =>  'Curacall User', 'is_curacall' => 1],
               ['name'   => 'account-admin',       	'role_title' => 'Account Admin',	'description'  =>  'Account Admin', 'is_curacall' => 0],

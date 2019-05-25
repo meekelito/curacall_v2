@@ -172,6 +172,12 @@ Route::group(['middleware' => array('auth','nocache')], function () {
 
         Route::get('repository-cases','Cases\RepositoryCasesController@index'); 
         Route::get('review-case/case_id/{id}','Cases\RepositoryCasesController@review_index');
+
+        // new admin role management
+        Route::get('admin/roles','Admin\RoleManagementController@index');
+        Route::get('admin/roles/all','Admin\RoleManagementController@fetchRoles')->name('admin.roles.fetch');
+         Route::get('admin/roles/test','Admin\RoleManagementController@test');
+          Route::get('admin/roles/testblade','Admin\RoleManagementController@testblade');
     });
     
     Route::group(['middleware' => array('App\Http\Middleware\AccountAdminMiddleware')], function () {

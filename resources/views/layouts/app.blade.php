@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="en">
 <head>
 
@@ -48,6 +48,7 @@
 
   <script type="text/javascript" src="{{ asset('assets/js/plugins/forms/styling/switch.min.js') }}" ></script> 
   <script type="text/javascript" src="{{ asset('assets/js/plugins/visualization/echarts/echarts.js') }}"></script>
+  
 	<script type="text/javascript" src="{{ asset('assets/js/core/app.js') }}"></script> 
   <script src="{{ asset('js/jquery.getscripts.min.js') }}"></script>
 	<!-- /theme JS files -->
@@ -239,7 +240,8 @@
                     <li class="menu-archive-cases"><a href="{{ url('/archived-cases') }}"><i class="icon-bin"></i> <span>Archive Closed Cases</span></a></li>
                     <li class="navigation-header"><span>Admin Console</span> <i class="icon-menu" title="Admin Console"></i></li>
                     <li class="menu-admin-console-general"><a href="{{ url('/admin-console/general') }}"><i class="icon-hammer-wrench"></i> <span>General Information</span></a></li>
-                    <li class="menu-admin-console-roles"><a href="{{ url('/admin-console/roles') }}"><i class="icon-share3"></i> <span>Roles</span></a></li>
+                <!--     <li class="menu-admin-console-roles"><a href="{{ url('/admin-console/roles') }}"><i class="icon-share3"></i> <span>Roles</span></a></li> -->
+                    <li class="menu-admin-console-roles"><a href="{{ url('/admin/roles') }}"><i class="icon-key"></i> <span>Access Control List</span></a></li>
                     <li class="menu-admin-console-users"><a href="{{ url('/admin-console/users') }}"><i class="icon-users"></i> <span>Users</span></a></li>
                     <li class="menu-admin-console-accounts"><a href="{{ url('/admin-console/accounts') }}"><i class="icon-office"></i> <span>Accounts</span></a></li>
                     <li class="menu-admin-console-billing"><a href="{{ url('/admin-console/billing') }}"><i class="icon-coins"></i> <span>Billing</span></a></li>
