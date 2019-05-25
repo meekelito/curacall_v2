@@ -50,13 +50,13 @@ class RolePermissionSeeder extends Seeder
                     'notification-setting',               
                     // Generate Information
                     'edit-company-information',         
-                    'edit-support-contact-information',  
-                    //Case Management
-                    'manage-case',                      
+                    'edit-support-contact-information',                       
                     //Billing
                     'view-billing-report',              
                     //Curacall Admin Console
-                    'manage-general-info',              
+                    'case-repository',
+                    'archived-closed-case',
+                    'manage-curacall-general-info',            
                     'manage-roles',                      
                     'manage-users',                     
                     'manage-accounts',                  
@@ -101,9 +101,7 @@ class RolePermissionSeeder extends Seeder
                     'notification-setting',               
                     // Generate Information
                     'edit-company-information',         
-                    'edit-support-contact-information',  
-                    //Case Management
-                    'manage-case',                      
+                    'edit-support-contact-information',                     
                     //Billing
                     'view-billing-report',              
                ]
@@ -184,11 +182,12 @@ class RolePermissionSeeder extends Seeder
                     'notification-setting',               
                     // Generate Information
                     'edit-company-information',         
-                    'edit-support-contact-information',  
-                    //Case Management
-                    'manage-case',                      
+                    'edit-support-contact-information',                      
                     //Billing
-                    'view-billing-report',              
+                    'view-billing-report', 
+                    //Account Console
+                    'manage-account-general-info',
+                    'case-management'          
                ]
             );
 
@@ -228,9 +227,7 @@ class RolePermissionSeeder extends Seeder
                 'notification-setting',               
                 // Generate Information
                 'edit-company-information',         
-                'edit-support-contact-information',  
-                //Case Management
-                'manage-case',                      
+                'edit-support-contact-information',                      
                 //Billing
                 'view-billing-report',
            ]

@@ -237,10 +237,21 @@
                    <li class="menu-cases"><a href="{{ url('/all-cases') }}"><i class="icon-briefcase"></i> <span>Cases</span></a></li>
                   @endif
                  
+                  @can('send-mesage-to-anyone')
                   <li class="menu-messages"><a href="{{ url('/new-message') }}"><i class="icon-bubbles4"></i> <span>Messages</span></a></li>
+                  @endcan
+
+                  @can('view-contacts')
                   <li class="menu-contacts"><a href="{{ url('/contacts') }}"><i class="icon-address-book2"></i> <span>Contacts</span></a></li>
+                  @endcan
                   <!-- <li class="menu-directory"><a href="{{ url('/directory') }}"><i class="icon-book3"></i> <span>Directory</span></a></li> -->
+                  @if(auth()->user()->hasAnyPermission([    
+                    'profile-setting',                  
+                    'security-login', 
+                    'message-setting',
+                    'notification-setting']))
                   <li class="menu-user-account-settings"><a href="{{ url('/user-account-settings') }}"><i class="icon-gear"></i> <span>Settings</span></a></li>
+                  @endif
                   @if( Auth::user()->role_id == 1 )
                     <li class="menu-repository-cases"><a href="{{ url('/repository-cases') }}"><i class="icon-file-check2"></i> <span>Case Repository</span></a></li>
                     <li class="menu-archive-cases"><a href="{{ url('/archived-cases') }}"><i class="icon-bin"></i> <span>Archive Closed Cases</span></a></li>

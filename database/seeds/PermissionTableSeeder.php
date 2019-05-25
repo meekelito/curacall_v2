@@ -47,19 +47,22 @@ class PermissionTableSeeder extends Seeder
               // Generate Information
               ['name'  => 'edit-company-information',           'description'  =>  'Edit Company Information', 'module' => 'general information'],
               ['name'  => 'edit-support-contact-information',   'description'  =>  'Edit Support Contact Information', 'module' => 'general information'],
-              //Case Management
-              ['name'  => 'manage-case',                        'description'  =>  'Manage Case', 'module' => 'case management'],
               //Billing
               ['name'  => 'view-billing-report',                'description'  =>  'View Billing Report', 'module' => 'billing'],
               //Curacall Admin Console
-              ['name'  => 'manage-general-info',                'description'  =>  'Manage General Information', 'module' => 'admin console'],
+              ['name'  => 'case-repository',                    'description'  =>  'Case Repository', 'module' => 'admin console'],
+              ['name'  => 'archived-closed-case',               'description'  =>  'Archive Closed Case', 'module' => 'admin console'],
+              ['name'  => 'manage-curacall-general-info',       'description'  =>  'Manage Curacall General Information', 'module' => 'admin console'],
               ['name'  => 'manage-roles',                       'description'  =>  'Manage Roles', 'module' => 'admin console'],
               ['name'  => 'manage-users',                       'description'  =>  'Manage Users', 'module' => 'admin console'],
               ['name'  => 'manage-accounts',                    'description'  =>  'Manage Accounts', 'module' => 'admin console'],
               ['name'  => 'manage-billing',                     'description'  =>  'Manage Billing', 'module' => 'admin console'],
+              //Account Admin Console
+              ['name'  => 'manage-account-general-info',        'description'  =>  'Manage Account General Information', 'module' => 'account console'],
+              ['name'  => 'case-management',                    'description'  =>  'Case Management', 'module' => 'account console'],
           ];
 
-
+        Permission::truncate();
         foreach ($permissions as $permission) {
              Permission::create(['name'=>$permission['name'],'description'=>$permission['description'],'module'=>$permission['module']]);
         }
