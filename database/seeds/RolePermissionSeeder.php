@@ -109,7 +109,7 @@ class RolePermissionSeeder extends Seeder
                ]
             );
 
-		// curacall maangement role's permission
+		// curacall user role's permission
         $role = Role::findByName('curacall-user');
 		  $role->givePermissionTo(
                [
@@ -147,7 +147,7 @@ class RolePermissionSeeder extends Seeder
                ]
             );
 
-        // curacall maangement role's permission
+        // account admin role's permission
         $role = Role::findByName('account-admin');
         $role->givePermissionTo(
                [
@@ -192,12 +192,11 @@ class RolePermissionSeeder extends Seeder
                ]
             );
 
-        // curacall maangement role's permission
+        // agency management role's permission
         $role = Role::findByName('agency-management');
         $role->givePermissionTo(
            [
                 //Dashboard
-                'view-account-reports',
                 'view-oncall-reports',
                 // Cases
                 'view-all-cases',                  
@@ -237,12 +236,11 @@ class RolePermissionSeeder extends Seeder
            ]
         );
 
-        // curacall maangement role's permission
+        // agency nursing role's permission
         $role = Role::findByName('agency-nursing');
          $role->givePermissionTo(
                [
                     //Dashboard
-                    'view-account-reports',
                     'view-oncall-reports',
                     // Cases
                     'view-all-cases',                  
@@ -275,12 +273,11 @@ class RolePermissionSeeder extends Seeder
                ]
             );
 
-        // curacall maangement role's permission
+        // agency coordinator role's permission
         $role = Role::findByName('agency-coordinator');
         $role->givePermissionTo(
                [
                     //Dashboard
-                    'view-account-reports',
                     'view-oncall-reports',
                     // Cases
                     'view-all-cases',                  
@@ -313,26 +310,10 @@ class RolePermissionSeeder extends Seeder
                ]
             );
 
-        // curacall maangement role's permission
+        // agency caregiver role's permission
         $role = Role::findByName('agency-caregiver');
         $role->givePermissionTo(
                [
-                    //Dashboard
-                    'view-account-reports',
-                    'view-oncall-reports',
-                    // Cases
-                    'view-all-cases',                  
-                    'view-active-cases', 
-                    'view-pending-cases',
-                    'view-closed-cases', 
-                    'view-silent-cases',
-                    'forward-case',
-                    'accept-case',
-                    'close-case', 
-                    'pull-case', 
-                    'add-note',
-                    'export-pdf',
-                    'add-case-participant',  
                      // Messages
                     'never-send-message-unless-message-received', 
                     'send-message-to-caregiver',            
