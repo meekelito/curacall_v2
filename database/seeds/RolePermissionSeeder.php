@@ -15,7 +15,7 @@ class RolePermissionSeeder extends Seeder
     {
     	// curacall admin role's permission
         $role = Role::findByName('curacall-admin');
-		  $role->givePermissionTo(
+		  $role->syncPermissions(
                [
                     //Dashboard
                     'view-account-reports',
@@ -66,7 +66,7 @@ class RolePermissionSeeder extends Seeder
 
 		// curacall maangement role's permission
         $role = Role::findByName('curacall-management');
-		$role->givePermissionTo(
+		$role->syncPermissions(
                [
                     //Dashboard
                     'view-account-reports',
@@ -111,7 +111,7 @@ class RolePermissionSeeder extends Seeder
 
 		// curacall user role's permission
         $role = Role::findByName('curacall-user');
-		  $role->givePermissionTo(
+		  $role->syncPermissions(
                [
                     //Dashboard
                     'view-account-reports',
@@ -149,7 +149,7 @@ class RolePermissionSeeder extends Seeder
 
         // account admin role's permission
         $role = Role::findByName('account-admin');
-        $role->givePermissionTo(
+        $role->syncPermissions(
                [
                     //Dashboard
                     'view-account-reports',
@@ -194,7 +194,7 @@ class RolePermissionSeeder extends Seeder
 
         // agency management role's permission
         $role = Role::findByName('agency-management');
-        $role->givePermissionTo(
+        $role->syncPermissions(
            [
                 //Dashboard
                 'view-oncall-reports',
@@ -238,7 +238,7 @@ class RolePermissionSeeder extends Seeder
 
         // agency nursing role's permission
         $role = Role::findByName('agency-nursing');
-         $role->givePermissionTo(
+         $role->syncPermissions(
                [
                     //Dashboard
                     'view-oncall-reports',
@@ -275,7 +275,7 @@ class RolePermissionSeeder extends Seeder
 
         // agency coordinator role's permission
         $role = Role::findByName('agency-coordinator');
-        $role->givePermissionTo(
+        $role->syncPermissions(
                [
                     //Dashboard
                     'view-oncall-reports',
@@ -312,7 +312,7 @@ class RolePermissionSeeder extends Seeder
 
         // agency caregiver role's permission
         $role = Role::findByName('agency-caregiver');
-        $role->givePermissionTo(
+        $role->syncPermissions(
                [
                      // Messages
                     'never-send-message-unless-message-received', 
