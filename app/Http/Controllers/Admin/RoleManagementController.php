@@ -11,6 +11,8 @@ use Spatie\Permission\Models\Role;
 use App\Account;
 use Auth;
 use Str;
+use App\Account_role;
+
 class RoleManagementController extends Controller
 {
 	public function test()
@@ -30,7 +32,7 @@ class RoleManagementController extends Controller
 
     public function index()
 	{
-	    $accounts = Account::all();
+	
      	$roles = Role::all();
      	$permissions = Permission::all();
      	$permission_arr = array();
@@ -40,7 +42,7 @@ class RoleManagementController extends Controller
      	}
 
      	//dd($permission_arr);
-    	return view( 'role-management.roles',[ 'accounts' => $accounts,'roles'=>$roles,'permissions'=> $permission_arr ]);
+    	return view( 'role-management.roles',['roles'=>$roles,'permissions'=> $permission_arr ]);
 	}
 
 	public function fetchRoles() 
@@ -53,6 +55,25 @@ class RoleManagementController extends Controller
 	      '; 
 	    })
 	    ->rawColumns(['action'])
+	    ->make(true);                                                                                
+	} 
+
+	public function fetchPermissions() 
+	{    
+	    $role = Permission::all();
+	    return Datatables::of($role)
+	    ->make(true);                                                                                
+	} 
+
+	public function fetchClients() 
+	{    
+	    $accounts = Account::all();
+	    return Datatables::of($accounts)
+	      ->addColumn('action', function ($account) {
+	      $id = Crypt::encrypt($account->id);
+	      return '<a class="btn btn-success btn-xs" onclick="show_edit_account_role_modal('."'$id'".','."'$account->account_name'".')"><i class="icon-pencil4"></i></a>
+	      '; 
+	    })
 	    ->make(true);                                                                                
 	} 
 
@@ -119,4 +140,18 @@ class RoleManagementController extends Controller
 		else
 			return json_encode(array("status"=>0,"message"=>"Oops, Something went wrong."));
 	}
+
+	public function editAccountRoles(Request $request)
+    {
+      $account_id = 0;
+      try {
+          $account_id = Crypt::decrypt($request->account_id);
+      } catch (DecryptException $e) {
+          $account_id = 0;
+      }
+
+      $result = Account_role::select('roles.id','roles.description')->leftJoin('roles','roles.id','=','account_roles.role_id')->where('account_roles.account_id',$account_id)->get();
+      
+      return json_encode($result);
+    }
 }

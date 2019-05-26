@@ -55,14 +55,14 @@
                     <table class="table tbl-permissions" cellspacing="0" width="100%">
                       <thead>
                         <tr>
-                          <th>Role Title</th><th>Description</th><th width="150">Actions</th>
+                          <th>Name</th><th>Description</th><th>Module</th>
                         </tr>
                       </thead>
                       <tbody>
                       </tbody>
                        <tfoot>
                         <tr>
-                          <th>Role Title</th><th>Description</th><th width="150">Actions</th>
+                          <th>Name</th><th>Description</th><th>Module</th>
                         </tr>
                       </tfoot>
                     </table>
@@ -71,32 +71,18 @@
                   <div class="tab-pane" id="accounts-tab">
                     <form class="form-horizontal">
                       <div class="col-lg-12">
-                        <div class="form-group form-group-lg">
-                          <div class="col-lg-4">
-                            <select class="form-control input-lg"  id="_account" onchange="get_account_roles(this.value)">
-                              <option value="" selected disabled>Select Account</option>
-                              @foreach($accounts as $row)
-                              <option value="{{ Crypt::encrypt($row->id) }}">{{ $row->account_name }}</option>
-                              @endforeach
-                            </select> 
-
-                          </div>
-                          <div class="col-lg-4">
-                              <a id="btn-edit-roles" href="javascript:show_edit_role_modal();" class="btn btn-primary hidden"><i class="icon-pencil5"></i> Edit Roles</a>
-                            </div>
-                        </div>
-                        <hr>
+                       
                         <table class="table tbl-client-roles" cellspacing="0" width="100%">
                           <thead>
                             <tr>
-                              <th>Role Title</th><th>Description</th><th width="150">Actions</th>
+                              <th>Account ID</th><th>Name</th><th width="150">Actions</th>
                             </tr>
                           </thead>
                           <tbody>
                           </tbody>
                            <tfoot>
                             <tr>
-                              <th>Role Title</th><th>Description</th><th width="150">Actions</th>
+                              <th>Account ID</th><th>Name</th><th width="150">Actions</th>
                             </tr>
                           </tfoot>
                         </table>
@@ -275,6 +261,42 @@
       </div>
     </div>
   </div>
+
+    <div id="modal-edit-account-role" class="modal" data-backdrop="static">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content content-edit-role">
+          <div class="modal-header bg-primary">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h5 class="modal-title">Edit Roles</h5>
+          </div>
+          <form class="form-horizontal" id="frmUpdateAccountRoles" method="POST" action="">
+          @csrf
+          <input type="hidden" id="role_account_id" />
+          <div class="modal-body">
+              <!-- Disable filter -->
+              <div class="panel panel-flat">
+                <div class="panel-heading">
+                  <h5 class="panel-title">Assign roles</h5>
+                </div>
+
+                <div class="panel-body">
+                  <p class="content-group">Click roles from the left to assign it to the account on the right tab</p>
+                  <div class="col-md-12"><span class="pull-left">All Roles</span>    <span id="account-role" class="pull-right">Account Roles</span></div>
+                  <select multiple="multiple" id="cmbAccountRoles" name="role_ids[]" class="form-control listbox-filter-disabled">
+                  </select>
+                </div>
+              </div>
+              <!-- /disable filter -->
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-link" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+          </div>
+          </form>
+      </div>
+    </div>
+  </div>
 @endsection  
 
 @section('script')
@@ -307,16 +329,19 @@
     }); 
 
     dt_client = $('.tbl-client-roles').DataTable({
+      pageLength: 100,
+      lengthMenu : [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
       responsive: true,
       processing: true,
       serverSide: true,
       "language": {
         "search": " Search : "
       },
-      ajax: "{{ url('admin/client-roles') }}",
+      "order": [],
+      ajax: "{{ route('admin.clients.fetch') }}",
       columns: [
-        {data: 'name'},
-        {data: 'description'},
+        {data: 'account_id'},
+        {data: 'account_name'},
         {data: 'action', orderable: false, searchable: false}
       ]
     });
@@ -345,6 +370,24 @@
                 }
             },
         {data: 'action', orderable: false, searchable: false}
+      ]
+    }); 
+
+      dt_permissions = $('.tbl-permissions').DataTable({
+      pageLength: 100,
+      lengthMenu : [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+      responsive: true,
+      processing: true,
+      serverSide: true,
+      "language": {
+        "search": " Search : "
+      },
+      ajax: "{{ route('admin.permissions.fetch') }}",
+      "order": [],
+      columns: [
+        {data: 'name'},
+        {data: 'description'},
+        {data: 'module'}
       ]
     }); 
 
@@ -390,6 +433,64 @@
       });
     }
   }
+
+  function show_edit_account_role_modal(id,name = "test")
+  {
+      $('#cmbAccountRoles').empty().trigger('change');
+      @foreach($roles as $role)
+          $("#cmbAccountRoles").append("<option value='{{ $role->id }}'>{{ $role->description }}</option>");
+      @endforeach
+
+      $('#cmbAccountRoles').bootstrapDualListbox('refresh', true);
+
+      $.ajax({
+            url: "{{ route('admin.account.roles') }}", 
+            type: "GET",             
+            data: { account_id : id },      
+            beforeSend: function(){
+                  $('body').addClass('wait-pointer');
+            },
+            complete: function(){
+              $('body').removeClass('wait-pointer');
+            },          
+            success: function(data) {
+
+              var obj = $.parseJSON(data);
+              console.log(obj);
+                    //$('#cmbAccountRoles').empty().trigger('change');
+                    $.each(obj, function(i, item) {
+                      $("#cmbAccountRoles option[value='"+item.id+"']").remove();
+                        $("#cmbAccountRoles").append("<option value='"+item.id+"' selected='selected'>"+item.description+"</option>");
+                    });
+
+                    $('#cmbAccountRoles').bootstrapDualListbox('refresh', true);
+                    // $('#application-form-container').html('');
+                    // $('#form_id').trigger('change'); 
+
+                    // <option value="option1" selected="selected">Account Admin</option>
+                    // <option value="option2">Agency Caregiver</option>
+                    // <option value="option4">Agency Coordinator</option>
+                    // <option value="option5" selected="selected">Agency Management</option>
+                    // <option value="option7">Agency Nursing</option>
+              $('#account-role').html(name+ '\'s Roles');
+              $('#modal-edit-account-role').modal('show');
+
+            },
+            error: function(data, errorThrown)
+            {
+                //$(block).unblock()
+                // $('#content').unblock();
+                // notify('request failed :'+errorThrown,"error");
+                //    notify(data.responseJSON.error[Object.keys(data.responseJSON.error)[0]]);
+            }
+        });
+
+  }
+
+   // Disable filtering
+    $('.listbox-filter-disabled').bootstrapDualListbox({
+        showFilterInputs: false
+    });
 
   function get_account_roles(id)
   {
