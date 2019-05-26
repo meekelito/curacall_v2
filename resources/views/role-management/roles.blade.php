@@ -145,57 +145,22 @@
     </div>
   </div>
 
-   <div id="modal-edit-role" class="modal" data-backdrop="static">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content content-edit-role">
-          <div class="modal-header bg-primary">
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
-            <h5 class="modal-title">Edit Roles</h5>
-          </div>
-          <form class="form-horizontal" id="frmUpdateAccountRoles" method="POST" action="">
-          @csrf
-          <input type="hidden" id="role_account_id" />
-          <div class="modal-body">
-              <!-- Disable filter -->
-              <div class="panel panel-flat">
-                <div class="panel-heading">
-                  <h5 class="panel-title">Assign roles</h5>
-                </div>
-
-                <div class="panel-body">
-                  <p class="content-group">Click roles from the left to assign it to the account on the right tab</p>
-                  <div class="col-md-12"><span class="pull-left">All Roles</span>    <span id="account-role" class="pull-right">Account Roles</span></div>
-                  <select multiple="multiple" id="cmbAccountRoles" name="role_ids[]" class="form-control listbox-filter-disabled">
-                  </select>
-                </div>
-              </div>
-              <!-- /disable filter -->
-          </div>
-
-          <div class="modal-footer">
-            <button type="button" class="btn btn-link" data-dismiss="modal">Close</button>
-            <button type="submit" class="btn btn-primary">Save Changes</button>
-          </div>
-          </form>
-      </div>
-    </div>
-  </div>
 
     <div id="modal-add-role" class="modal" data-backdrop="static">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
       <div class="modal-content">
           <div class="modal-header bg-primary">
             <button type="button" class="close" data-dismiss="modal">&times;</button>
             <h5 class="modal-title">Add Role</h5>
           </div>
-          <form id="frmAddRole" class="form-horizontal" method="POST" action="">
+          <form id="frmAddRole" class="form-horizontal" method="POST" action="{{ route('admin.roles.create') }}">
             {{ csrf_field() }}
             <div class="modal-body">
               <fieldset class="content-group">
                 <div class="form-group">
                   <label class="control-label col-lg-3 text-right">Role Title :</label>
                   <div class="col-lg-9">
-                    <input id="txtRoleName" type="text" class="form-control" name="name" value="">
+                    <input id="txtRoleName" type="text" class="form-control" name="role_title" value="">
                   </div>
                 </div>
                 <div class="form-group">
@@ -205,7 +170,18 @@
                   </div>
                 </div>  
 
+                <div class="form-group">
+                  <label class="control-label col-lg-3 text-right">Owner :</label>
+                  <div class="col-lg-9">
+                   <select name="is_curacall" class="form-control">
+                      <option value="0">Client</option>
+                      <option value="1">Curacall</option>
+                   </select>
+                  </div>
+                </div> 
+
                 <div class="row well">
+                  <h5>Permissions</h5>
                   <ul class="checktree">
                    @foreach($permissions as $key => $permission)
                       <li>
@@ -213,7 +189,73 @@
                         <ul>
                           @foreach($permission as $row)
                            
-                          <li><input id="{{ $row['name'] }}" type="checkbox" /> <label for="{{ $row['name'] }}">{{ $row['description'] }}</label></li>
+                          <li><input id="{{ $row['name'] }}" type="checkbox" name="permissions[]" value="{{ $row['name'] }}" /> <label for="{{ $row['name'] }}">{{ $row['description'] }}</label></li>
+                          @endforeach
+                         
+                        </ul>
+                      </li>
+                      @endforeach
+                    </ul>
+                </div>
+              
+              </fieldset>
+            </div>
+
+            <div class="modal-footer">
+              <button type="button" class="btn btn-link" data-dismiss="modal">Cancel</button>
+              <button type="submit" class="btn btn-primary">Save Changes</button>
+            </div>
+          </form>
+      </div>
+    </div>
+  </div>
+
+
+  <div id="modal-edit-role" class="modal" data-backdrop="static">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+          <div class="modal-header bg-primary">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h5 class="modal-title">Edit Role</h5>
+          </div>
+          <form id="frmEditRole" class="form-horizontal" method="POST">
+            {{ csrf_field() }}
+              <input type="hidden" name="_method" value="PUT">
+            <div class="modal-body">
+              <fieldset class="content-group">
+                <div class="form-group">
+                  <label class="control-label col-lg-3 text-right">Role Title :</label>
+                  <div class="col-lg-9">
+                    <input id="txtEditRoleName" type="text" class="form-control" name="role_title" value="">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-lg-3 text-right">Description :</label>
+                  <div class="col-lg-9">
+                    <input id="txtEditRoleDescription" type="text" class="form-control" name="description" value="">
+                  </div>
+                </div>  
+
+                <div class="form-group">
+                  <label class="control-label col-lg-3 text-right">Owner :</label>
+                  <div class="col-lg-9">
+                   <select id="txtEditRoleOwner" name="is_curacall" class="form-control">
+                      <option value="0">Client</option>
+                      <option value="1">Curacall</option>
+                   </select>
+                  </div>
+                </div> 
+
+                <div class="row well">
+                  <h5>Permissions</h5>
+                  <ul id="editPermission" class="checktree">
+                   @foreach($permissions as $key => $permission)
+                      <li>
+                        <input id="{{ $key }}" type="checkbox" /> <label for="{{ $key }}">{{ $key }}</label>
+                        <ul>
+                          @foreach($permission as $row)
+                           
+                          <li><input id="{{ $row['name'] }}" type="checkbox" name="permissions[]" value="{{ $row['name'] }}" /> <label for="{{ $row['name'] }}">{{ $row['description'] }}</label></li>
                           @endforeach
                          
                         </ul>
@@ -280,6 +322,8 @@
     });
 
     dt_roles = $('.tbl-roles').DataTable({
+      pageLength: 100,
+      lengthMenu : [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
       responsive: true,
       processing: true,
       serverSide: true,
@@ -287,6 +331,7 @@
         "search": " Search : "
       },
       ajax: "{{ route('admin.roles.fetch') }}",
+      "order": [],
       columns: [
         {data: 'role_title'},
         {data: 'description'},
@@ -359,13 +404,13 @@
       dt_client.ajax.url("{{ url('admin/client-roles') }}?id="+id).load();
   }
 
-  function show_edit_role_modal()
+  function show_edit_role_modal(id)
   {
-      // $(".content-data-update-md").html( data );
+  
       $.ajax({
-            url: "", 
+            url: "{{ route('admin.roles.editrole') }}", 
             type: "GET",             
-            data: { account_id : $('#_account').val() },      
+            data: { role_id : id },      
             beforeSend: function(){
                   $('body').addClass('wait-pointer');
             },
@@ -375,25 +420,22 @@
             success: function(data) {
 
               var obj = $.parseJSON(data);
-              console.log(obj);
-                    //$('#cmbAccountRoles').empty().trigger('change');
-                    $.each(obj, function(i, item) {
-                      $("#cmbAccountRoles option[value='"+item.id+"']").remove();
-                        $("#cmbAccountRoles").append("<option value='"+item.id+"' selected='selected'>"+item.description+"</option>");
-                    });
+              //console.log(obj.permissions);
 
-                    $('#cmbAccountRoles').bootstrapDualListbox('refresh', true);
-                    // $('#application-form-container').html('');
-                    // $('#form_id').trigger('change'); 
+                  $('#frmEditRole').attr('action',obj.update_url);
+                  $('#modal-edit-role').modal('show');
+                  $('#frmEditRole').trigger("reset");
+                  $('#txtEditRoleName').focus();
+                  $('#txtEditRoleName').val(obj.role.role_title);
+                  $('#txtEditRoleDescription').val(obj.role.description);
+                  $('#txtEditRoleOwner').val(obj.role.is_curacall).trigger('change');
 
-                    // <option value="option1" selected="selected">Account Admin</option>
-                    // <option value="option2">Agency Caregiver</option>
-                    // <option value="option4">Agency Coordinator</option>
-                    // <option value="option5" selected="selected">Agency Management</option>
-                    // <option value="option7">Agency Nursing</option>
-              var selectedAccount = $('#_account option:selected').html();
-              $('#account-role').html(selectedAccount+ '\'s Roles');
-              $('#modal-edit-role').modal('show');
+                  $.each(obj.permissions, function(i, val){
+
+                     $("#editPermission ul li input[value='" + val + "']").prop('checked', true);
+                     $.uniform.update();
+
+                  });
 
             },
             error: function(data, errorThrown)
@@ -456,9 +498,59 @@
                     }
                   },
                   error: function (data) {
+                    console.log(data);
                     swal({
-                      title: "Oops...",
-                      text: "No connection could be made because the target machine actively refused it. Please refresh the browser and try again.!",
+                      title: "Oops! Something went wrong",
+                      text: data.responseJSON.errors.name[0],
+                      confirmButtonColor: "#EF5350",
+                      type: "error"
+                    });
+                  },
+              });
+              return false;
+      });
+
+       $('#frmEditRole').on('submit',function (ev) {
+              ev.preventDefault();
+               var frm = $(this);
+                $.ajax({
+                  type: frm.attr('method'),
+                  url: frm.attr('action'),
+                  data: frm.serialize(),
+                  beforeSend: function(){
+                    $('body').addClass('wait-pointer');
+                  },
+                  complete: function(){
+                    $('body').removeClass('wait-pointer');
+                  },
+                  success: function (data) {
+                    var res = $.parseJSON(data);
+                    if( res.status == 1 ){
+                    
+                      swal({
+                        title: "Good job!",
+                        text: res.message,
+                        confirmButtonColor: "#66BB6A",
+                        type: "success"
+                      }, function() {
+                          $('#modal-edit-role').modal('hide');
+                          dt_roles.search('').draw();
+                      });  
+                    
+                    }else{
+                      swal({
+                        title: "Oops..!",
+                        text: res.message,
+                        confirmButtonColor: "#EF5350",
+                        type: "error"
+                      }); 
+                    }
+                  },
+                  error: function (data) {
+                    console.log(data);
+                    swal({
+                      title: "Oops! Something went wrong",
+                      text: data.responseJSON.errors.name[0],
                       confirmButtonColor: "#EF5350",
                       type: "error"
                     });

@@ -10,7 +10,7 @@ use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use App\Account;
 use Auth;
-
+use Str;
 class RoleManagementController extends Controller
 {
 	public function test()
@@ -49,10 +49,74 @@ class RoleManagementController extends Controller
 	    return Datatables::of($role)
 	    ->addColumn('action', function ($role) {
 	      $id = Crypt::encrypt($role->id);
-	      return '<a class="btn btn-success btn-xs" onclick="admin_role_md('."'$id'".')"><i class="icon-pencil4"></i></a>
+	      return '<a class="btn btn-success btn-xs" onclick="show_edit_role_modal('."'$id'".')"><i class="icon-pencil4"></i></a>
 	      '; 
 	    })
 	    ->rawColumns(['action'])
 	    ->make(true);                                                                                
 	} 
+
+	public function createrole(Request $request)
+	{
+		$slug = str_slug($request->role_title);
+		$request->merge(['name' =>$slug]);
+		$request->validate([
+			"name"	=> 'unique:roles,name'
+		],
+		["name.unique"=>"Role title was already taken"]);
+
+		$role = Role::create(['name'=>$request->name,'role_title'=> $request->role_title,'description'=>$request->description,'is_curacall'=> $request->is_curacall]);
+
+		if($role){
+			$role->syncPermissions($request->permissions);
+
+			return json_encode(array("status"=>1,"message"=> "Successfuly saved"));
+		}
+		else
+			return json_encode(array("status"=>0,"message"=>"Oops, Something went wrong."));
+	}
+
+	public function editrole(Request $request)
+	{
+		try {
+			$id = Crypt::decrypt( $request->input('role_id') );
+			$role = Role::findOrFail($id);
+			$permissions = Role::findOrFail($id)->permissions;
+			$permission_arr = array();
+			foreach($permissions as $row)
+			{
+				$permission_arr[] = $row["name"];
+			}
+
+			return json_encode(array('role'=>$role,'permissions'=>$permission_arr,"update_url"=>route('admin.roles.update',Crypt::encrypt($id))));
+		} catch (Exception $e) {
+            return "error";
+        }
+	}
+
+	public function updaterole(Request $request, $id)
+	{
+		$id = Crypt::decrypt($id);
+		$slug = str_slug($request->role_title);
+		$request->merge(['name' =>$slug]);
+		$request->validate([
+			"name"	=> 'unique:roles,name,'.$id
+		],
+		["name.unique"=>"Role title was already taken"]);
+
+		$role = Role::find($id);
+		$role->name = $request->name;
+		$role->role_title = $request->role_title;
+		$role->description = $request->description;
+		$role->is_curacall = $request->is_curacall;
+		$role->save();
+
+		if($role){
+			$role->syncPermissions($request->permissions);
+
+			return json_encode(array("status"=>1,"message"=> "Role Successfully updated"));
+		}
+		else
+			return json_encode(array("status"=>0,"message"=>"Oops, Something went wrong."));
+	}
 }

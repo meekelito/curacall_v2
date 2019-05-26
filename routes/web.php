@@ -176,8 +176,11 @@ Route::group(['middleware' => array('auth','nocache')], function () {
         // new admin role management
         Route::get('admin/roles','Admin\RoleManagementController@index');
         Route::get('admin/roles/all','Admin\RoleManagementController@fetchRoles')->name('admin.roles.fetch');
-         Route::get('admin/roles/test','Admin\RoleManagementController@test');
-          Route::get('admin/roles/testblade','Admin\RoleManagementController@testblade');
+        Route::get('admin/roles/test','Admin\RoleManagementController@test');
+        Route::get('admin/roles/testblade','Admin\RoleManagementController@testblade');
+        Route::post('admin/roles/create','Admin\RoleManagementController@createrole')->name('admin.roles.create');
+        Route::get('admin/roles/edit','Admin\RoleManagementController@editrole')->name('admin.roles.editrole');
+        Route::put('admin/roles/update/{id}','Admin\RoleManagementController@updaterole')->name('admin.roles.update');
     });
     
     Route::group(['middleware' => array('App\Http\Middleware\AccountAdminMiddleware')], function () {
