@@ -241,7 +241,7 @@
                    <li class="menu-cases"><a href="{{ url('/all-cases') }}"><i class="icon-briefcase"></i> <span>Cases</span></a></li>
                   @endif
                  
-                  @can('send-mesage-to-anyone')
+                  @can('send-message-to-anyone')
                   <li class="menu-messages"><a href="{{ url('/new-message') }}"><i class="icon-bubbles4"></i> <span>Messages</span></a></li>
                   @endcan
 
@@ -275,7 +275,7 @@
                   @endcan
                 <!--     <li class="menu-admin-console-roles"><a href="{{ url('/admin-console/roles') }}"><i class="icon-share3"></i> <span>Roles</span></a></li> -->
                   @can('manage-roles')
-                    <li class="menu-admin-console-roles"><a href="{{ url('/admin/roles') }}"><i class="icon-key"></i> <span>Access Control List</span></a></li>
+                    <li class="menu-admin-console-roles"><a href="{{ url('/admin/roles') }}"><i class="icon-key"></i> <span>Role & Access Control List</span></a></li>
                   @endcan
 
                   @can('manage-users')
@@ -409,11 +409,11 @@
         success: function (data) {
           var res = $.parseJSON(data);
           if( res.status == 1 ){
-            document.getElementById("case-count-all").innerHTML = res.all_count;
-            document.getElementById("case-count-active").innerHTML = res.active_count;
-            document.getElementById("case-count-pending").innerHTML = res.pending_count;
-            document.getElementById("case-count-closed").innerHTML = res.closed_count; 
-            document.getElementById("case-count-silent").innerHTML = res.silent_count; 
+            $("#case-count-all").html(res.all_count);
+            $("#case-count-active").html(res.active_count);
+            $("#case-count-pending").html(res.pending_count);
+            $("#case-count-closed").html(res.closed_count); 
+            $("#case-count-silent").html(res.silent_count); 
           }
         },
         error: function (data){

@@ -36,6 +36,8 @@ Route::group(['middleware' => array('auth','nocache')], function () {
 	Route::get('dashboard','Dashboard\DashboardController@index');
     Route::get('dashboard/checkauth','Dashboard\DashboardController@checkuser')->name('checkuser');
 
+    Route::group(['middleware' => array('permission:send-message-to-anyone')], function () {
+
 	Route::get('new-message','Messages\NewMessageController@index');
 	Route::post('new-message','Messages\NewMessageController@createMessage');
 	Route::post('create-room','Messages\NewMessageController@createRoom');
@@ -47,43 +49,46 @@ Route::group(['middleware' => array('auth','nocache')], function () {
 	Route::get('messages', 'ChatsController@fetchMessages');
 	Route::post('messages', 'ChatsController@sendMessage');
 
-	Route::get('all-cases','Cases\AllCasesController@index'); 
-	Route::get('active-cases','Cases\ActiveCasesController@index');
-	Route::get('pending-cases','Cases\PendingCasesController@index');
-	Route::get('closed-cases','Cases\ClosedCasesController@index');
+    });
+
+	Route::get('all-cases','Cases\AllCasesController@index')->middleware('permission:view-all-cases');
+	Route::get('active-cases','Cases\ActiveCasesController@index')->middleware('permission:view-active-cases');
+	Route::get('pending-cases','Cases\PendingCasesController@index')->middleware('permission:view-pending-cases');
+	Route::get('closed-cases','Cases\ClosedCasesController@index')->middleware('permission:view-closed-cases');
 	Route::get('deleted-cases','Cases\DeletedCasesController@index');
-    Route::get('silent-cases','Cases\SilentCasesController@index'); 
+    Route::get('silent-cases','Cases\SilentCasesController@index')->middleware('permission:view-silent-cases');
 
 
     Route::post('count-case','Cases\NewCaseController@countCase');
-    Route::get('pdf-case/{id}','Cases\NewCaseController@pdfCase');
+    Route::get('pdf-case/{id}','Cases\NewCaseController@pdfCase')->middleware('permission:export-pdf');
 
     Route::post('fetch-case','Cases\NewCaseController@fetchCase');
 
-    Route::get('cases/case_id/{id}','Cases\NewCaseController@index')->name('case');
+    Route::get('cases/case_id/{id}','Cases\NewCaseController@index')->name('case')->middleware('permission:view-all-cases|view-active-cases|view-pending-cases|view-closed-cases|view-silent-cases');
+
     Route::get('case/notes/{id}','Cases\NewCaseController@fetchNotes');
     Route::get('case/participants/{id}','Cases\NewCaseController@fetchParticipants');
-    Route::post('case/new-note', 'Cases\NewCaseController@newNote');
+    Route::post('case/new-note', 'Cases\NewCaseController@newNote')->middleware('permission:add-note');
 
     Route::post('decline-case-md','Cases\NewCaseController@getModalDeclineCase');
     Route::post('decline-case','Cases\NewCaseController@declineCase');
 
-    Route::post('accept-case','Cases\NewCaseController@acceptCase');
+    Route::post('accept-case','Cases\NewCaseController@acceptCase')->middleware('permission:accept-case');
     Route::post('check-case','Cases\NewCaseController@checkCase');
 
     Route::post('forward-case-md','Cases\NewCaseController@getModalForwardCase');
-    Route::post('forward-case', 'Cases\NewCaseController@forwardCase');
+    Route::post('forward-case', 'Cases\NewCaseController@forwardCase')->middleware('permission:forward-case');
 
     Route::post('close-case-md','Cases\NewCaseController@getModalCloseCase');
-    Route::post('close-case', 'Cases\NewCaseController@closeCase');
+    Route::post('close-case', 'Cases\NewCaseController@closeCase')->middleware('permission:close-case');
 
     Route::post('reopen-case-md','Cases\NewCaseController@getModalReOpenCase');
-    Route::post('reopen-case','Cases\NewCaseController@reopenCase');
+    Route::post('reopen-case','Cases\NewCaseController@reopenCase')->middleware('permission:reopen-case');
 
     Route::post('add-note-md','Cases\NewCaseController@getModalAddNote');
     Route::post('view-note-md','Cases\NewCaseController@getModalViewNote');
 
-	Route::get('contacts','Contacts\ContactsController@index');
+	Route::get('contacts','Contacts\ContactsController@index')->middleware('permission:view-contacts');
 	Route::get('contacts/fetch-contacts','Contacts\ContactsController@fetchContacts');
 
     //Reports
@@ -110,16 +115,16 @@ Route::group(['middleware' => array('auth','nocache')], function () {
 
     Route::group(['middleware' => array('App\Http\Middleware\CuraCallAdminMiddleware')], function () {
         //Admin Console - General Info
-        Route::get('admin-console/general','Admin\AdminGeneralController@index');
-        Route::post('admin/general-info','Admin\AdminGeneralController@updateGeneralInfo'); 
+        Route::get('admin-console/general','Admin\AdminGeneralController@index')->middleware('permission:manage-curacall-general-info');
+        Route::post('admin/general-info','Admin\AdminGeneralController@updateGeneralInfo')->middleware('permission:manage-curacall-general-info');
         //admin console - general info END
 
         //Admin Console - Roles
-        Route::get('admin-console/roles','Admin\AdminRolesController@index'); 
-        Route::get('admin/admin-roles','Admin\AdminRolesController@fetchAdminRoles'); 
-        Route::get('admin/client-roles','Admin\AdminRolesController@fetchClientRoles'); 
-        Route::post('update-client-role-md','Admin\AdminRolesController@getModalUpdateClientRole');
-        Route::post('admin/update-client-role','Admin\AdminRolesController@updateClientRole'); 
+        // Route::get('admin-console/roles','Admin\AdminRolesController@index'); 
+        // Route::get('admin/admin-roles','Admin\AdminRolesController@fetchAdminRoles'); 
+        // Route::get('admin/client-roles','Admin\AdminRolesController@fetchClientRoles'); 
+        // Route::post('update-client-role-md','Admin\AdminRolesController@getModalUpdateClientRole');
+        // Route::post('admin/update-client-role','Admin\AdminRolesController@updateClientRole'); 
         //admin console - roles END
 
         //Admin Console - Users

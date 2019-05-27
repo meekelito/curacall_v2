@@ -65,6 +65,9 @@ class Kernel extends HttpKernel
         'sanitize' => \App\Http\Middleware\FilterInput::class,
         'nocache' => \App\Http\Middleware\NoHttpCache::class,
         'jwt.verify' => \App\Http\Middleware\JwtMiddleware::class,
+        'role' => \Spatie\Permission\Middlewares\RoleMiddleware::class,
+        'permission' => \Spatie\Permission\Middlewares\PermissionMiddleware::class,
+        'role_or_permission' => \Spatie\Permission\Middlewares\RoleOrPermissionMiddleware::class,
     ];
 
     /**

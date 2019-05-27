@@ -215,15 +215,13 @@
                 <div class="row well">
                   <h5>Permissions</h5>
                   <ul id="editPermission" class="checktree">
-                   @foreach($permissions as $key => $permission)
+                      @foreach($permissions as $key => $permission)
                       <li>
                         <input id="{{ $key }}" type="checkbox" /> <label for="{{ $key }}">{{ $key }}</label>
                         <ul>
                           @foreach($permission as $row)
-                           
                           <li><input id="{{ $row['name'] }}" type="checkbox" name="permissions[]" value="{{ $row['name'] }}" /> <label for="{{ $row['name'] }}">{{ $row['description'] }}</label></li>
                           @endforeach
-                         
                         </ul>
                       </li>
                       @endforeach
