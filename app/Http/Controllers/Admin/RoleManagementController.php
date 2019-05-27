@@ -77,6 +77,18 @@ class RoleManagementController extends Controller
 	    ->make(true);                                                                                
 	} 
 
+	public function fetchCuracallRoles() 
+	{    
+	    $role = Role::where('is_curacall',1);
+	    return Datatables::of($role)
+	     ->addColumn('action', function ($role) {
+	      $id = Crypt::encrypt($role->id);
+	      return '<a class="btn btn-success btn-xs" onclick="show_edit_role_modal('."'$id'".')"><i class="icon-pencil4"></i></a>
+	      '; 
+	    })
+	    ->make(true);                                                                                
+	} 
+
 	public function createrole(Request $request)
 	{
 		$slug = str_slug($request->role_title);
@@ -141,6 +153,21 @@ class RoleManagementController extends Controller
 			return json_encode(array("status"=>0,"message"=>"Oops, Something went wrong."));
 	}
 
+	public function updateaccountrole(Request $request,$id)
+	{
+		Account_role::where('account_id',$id)->delete();
+		$account_role = array();
+		foreach($request->role_ids as $row)
+		{
+			$account_role[] = array("account_id"=>$id,"role_id"=>$row,"created_at"=>date("Y-m-d H:i:s"),"updated_at"=>date("Y-m-d H:i:s"));
+		}
+		$result = Account_role::insert($account_role);
+		if($result)
+			return json_encode(array("status"=>1,"message"=> "Successfully updated"));
+		else
+			return json_encode(array("status"=>0,"message"=>"Oops, Something went wrong."));
+	}
+
 	public function editAccountRoles(Request $request)
     {
       $account_id = 0;
@@ -149,9 +176,9 @@ class RoleManagementController extends Controller
       } catch (DecryptException $e) {
           $account_id = 0;
       }
-
-      $result = Account_role::select('roles.id','roles.description')->leftJoin('roles','roles.id','=','account_roles.role_id')->where('account_roles.account_id',$account_id)->get();
+      $roles = Role::select('id','description')->where('is_curacall',0)->get();
+      $account_roles = Account_role::select('roles.id','roles.description')->leftJoin('roles','roles.id','=','account_roles.role_id')->where('account_roles.account_id',$account_id)->get();
       
-      return json_encode($result);
+      return json_encode(array("roles"=>$roles,"account_roles"=>$account_roles,"update_url"=> route('admin.accountroles.update',$account_id)));
     }
 }

@@ -176,11 +176,13 @@ Route::group(['middleware' => array('auth','nocache')], function () {
         // new admin role management
         Route::get('admin/roles','Admin\RoleManagementController@index');
         Route::get('admin/roles/all','Admin\RoleManagementController@fetchRoles')->name('admin.roles.fetch');
+        Route::get('admin/roles/curacall','Admin\RoleManagementController@fetchCuracallRoles')->name('admin.roles.curacall');
         Route::get('admin/roles/test','Admin\RoleManagementController@test');
         Route::get('admin/roles/testblade','Admin\RoleManagementController@testblade');
         Route::post('admin/roles/create','Admin\RoleManagementController@createrole')->name('admin.roles.create');
         Route::get('admin/roles/edit','Admin\RoleManagementController@editrole')->name('admin.roles.editrole');
         Route::put('admin/roles/update/{id}','Admin\RoleManagementController@updaterole')->name('admin.roles.update');
+        Route::put('admin/account-roles/update/{id}','Admin\RoleManagementController@updateaccountrole')->name('admin.accountroles.update');
         Route::get('admin/permissions/all','Admin\RoleManagementController@fetchPermissions')->name('admin.permissions.fetch');
         Route::get('admin/clients/all','Admin\RoleManagementController@fetchClients')->name('admin.clients.fetch');
         Route::get('admin/account/roles','Admin\RoleManagementController@editAccountRoles')->name('admin.account.roles');  

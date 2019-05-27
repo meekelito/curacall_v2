@@ -55,14 +55,14 @@
                     <table class="table tbl-permissions" cellspacing="0" width="100%">
                       <thead>
                         <tr>
-                          <th>Name</th><th>Description</th><th>Module</th>
+                          <th>Module</th><th>Name</th><th>Description</th>
                         </tr>
                       </thead>
                       <tbody>
                       </tbody>
                        <tfoot>
                         <tr>
-                          <th>Name</th><th>Description</th><th>Module</th>
+                          <th>Module</th><th>Name</th><th>Description</th>
                         </tr>
                       </tfoot>
                     </table>
@@ -106,32 +106,12 @@
                       </tfoot>
                     </table>
                   </div>
-
-                 
-
               </div>
           </div>
-
       </div>
     </div>
   </div>
-  <div id="modal_default modal-add-md" class="modal fade" data-backdrop="static" data-keyboard="false">
-    <div class="modal-dialog">
-      <div class="modal-content content-data-add-md">
-
-      </div>
-    </div>
-  </div>
-
-  <div id="modal-update-md" class="modal fade" data-backdrop="static" data-keyboard="false">
-    <div class="modal-dialog">
-      <div class="modal-content content-data-update-md">
-
-      </div>
-    </div>
-  </div>
-
-
+ 
     <div id="modal-add-role" class="modal" data-backdrop="static">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
@@ -146,13 +126,13 @@
                 <div class="form-group">
                   <label class="control-label col-lg-3 text-right">Role Title :</label>
                   <div class="col-lg-9">
-                    <input id="txtRoleName" type="text" class="form-control" name="role_title" value="">
+                    <input id="txtRoleName" type="text" class="form-control" name="role_title" required>
                   </div>
                 </div>
                 <div class="form-group">
                   <label class="control-label col-lg-3 text-right">Description :</label>
                   <div class="col-lg-9">
-                    <input type="text" class="form-control" name="description" value="">
+                    <input type="text" class="form-control" name="description" required>
                   </div>
                 </div>  
 
@@ -212,13 +192,13 @@
                 <div class="form-group">
                   <label class="control-label col-lg-3 text-right">Role Title :</label>
                   <div class="col-lg-9">
-                    <input id="txtEditRoleName" type="text" class="form-control" name="role_title" value="">
+                    <input id="txtEditRoleName" type="text" class="form-control" name="role_title" required>
                   </div>
                 </div>
                 <div class="form-group">
                   <label class="control-label col-lg-3 text-right">Description :</label>
                   <div class="col-lg-9">
-                    <input id="txtEditRoleDescription" type="text" class="form-control" name="description" value="">
+                    <input id="txtEditRoleDescription" type="text" class="form-control" name="description" required>
                   </div>
                 </div>  
 
@@ -262,16 +242,16 @@
     </div>
   </div>
 
-    <div id="modal-edit-account-role" class="modal" data-backdrop="static">
+  <div id="modal-edit-account-role" class="modal" data-backdrop="static">
     <div class="modal-dialog modal-lg">
       <div class="modal-content content-edit-role">
           <div class="modal-header bg-primary">
             <button type="button" class="close" data-dismiss="modal">&times;</button>
-            <h5 class="modal-title">Edit Roles</h5>
+            <h5 class="modal-title">Client's Roles</h5>
           </div>
           <form class="form-horizontal" id="frmUpdateAccountRoles" method="POST" action="">
           @csrf
-          <input type="hidden" id="role_account_id" />
+          <input type="hidden" name="_method" value="PUT">
           <div class="modal-body">
               <!-- Disable filter -->
               <div class="panel panel-flat">
@@ -300,27 +280,40 @@
 @endsection  
 
 @section('script')
-<script type="text/javascript" src="{{ asset('assets/js/plugins/trees/checktree.js') }}"></script>
-<script type="text/javascript" src="{{ asset('assets/js/plugins/forms/inputs/duallistbox.min.js') }}"></script>
 <script type="text/javascript">
-
   $(function(){
-    $("ul.checktree").checktree();
-    $('.checktree input').uniform();
+      $.getScripts({
+        urls: ["{{ asset('assets/js/plugins/trees/checktree.js') }}",
+                "{{ asset('assets/js/plugins/forms/inputs/duallistbox.min.js') }}"],
+        cache: true,  // Default
+        async: false, // Default
+        success: function(response) {
+              $("ul.checktree").checktree();
+              $('.checktree input').uniform();
+
+             // Disable filtering
+              $('.listbox-filter-disabled').bootstrapDualListbox({
+                  showFilterInputs: false
+              });
+        }
+      });
   });
-  var dt_admin,dt_client,dt_roles,dt_permissions;
+  var dt_admin,dt_client,dt_roles,dt_permissions,account_name;
 
     $(".menu-curacall li").removeClass("active");
     $(".menu-admin-console-roles").addClass('active');
 
     dt_admin = $('.tbl-admin-roles').DataTable({
+      pageLength: 100,
+      lengthMenu : [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
       responsive: true,
       processing: true,
       serverSide: true,
       "language": {
         "search": " Search : "
       },
-      ajax: "{{ url('admin/admin-roles') }}",
+      "order": [],
+      ajax: "{{ route('admin.roles.curacall') }}",
       columns: [
         {data: 'name'},
         {data: 'description'},
@@ -385,64 +378,16 @@
       ajax: "{{ route('admin.permissions.fetch') }}",
       "order": [],
       columns: [
+        {data: 'module'},
         {data: 'name'},
-        {data: 'description'},
-        {data: 'module'}
+        {data: 'description'}
       ]
     }); 
 
-  function admin_role_md(id) { 
-    swal({
-      title: "For your information",
-      text: "This function is not yet available.",
-      confirmButtonColor: "#2196F3",
-      type: "info"
-    });
-  }
-  
-  function client_role_md(id) { 
-    var account = document.getElementById('_account').value;
-    if( account == "" ){
-      swal({
-        title: "Oops..!",
-        text: "Please select an account.",
-        confirmButtonColor: "#FF5722",
-        type: "warning"
-      });
-    }else{
-      $.ajax({ 
-        type: "POST", 
-        url: "{{ url('update-client-role-md') }}",
-        data: { 
-          _token : '{{ csrf_token() }}',
-          id : id,
-          account : account
-        },
-        success: function (data) {  
-          $(".content-data-update-md").html( data );
-          $('#modal-update-md').modal('show');
-        },
-        error: function (data){
-          swal({
-            title: "Oops..!",
-            text: "No connection could be made because the target machine actively refused it. Please refresh the browser and try again.",
-            confirmButtonColor: "#EF5350",
-            type: "error"
-          });
-        }
-      });
-    }
-  }
 
   function show_edit_account_role_modal(id,name = "test")
   {
-      $('#cmbAccountRoles').empty().trigger('change');
-      @foreach($roles as $role)
-          $("#cmbAccountRoles").append("<option value='{{ $role->id }}'>{{ $role->description }}</option>");
-      @endforeach
-
-      $('#cmbAccountRoles').bootstrapDualListbox('refresh', true);
-
+      account_name = name;
       $.ajax({
             url: "{{ route('admin.account.roles') }}", 
             type: "GET",             
@@ -454,27 +399,25 @@
               $('body').removeClass('wait-pointer');
             },          
             success: function(data) {
+              var result = $.parseJSON(data);
+              //console.log(result.update_url);
+                   $('#frmUpdateAccountRoles').attr('action',result.update_url);
 
-              var obj = $.parseJSON(data);
-              console.log(obj);
-                    //$('#cmbAccountRoles').empty().trigger('change');
-                    $.each(obj, function(i, item) {
+                    $('#cmbAccountRoles').empty().trigger('change');
+                    $.each(result.roles, function(i, item) {
+                      $("#cmbAccountRoles").append("<option value='"+item.id+"'>"+item.description+"</option>");
+                    });
+
+                    $('#cmbAccountRoles').bootstrapDualListbox('refresh', true);
+
+                    $.each(result.account_roles, function(i, item) {
                       $("#cmbAccountRoles option[value='"+item.id+"']").remove();
                         $("#cmbAccountRoles").append("<option value='"+item.id+"' selected='selected'>"+item.description+"</option>");
                     });
 
                     $('#cmbAccountRoles').bootstrapDualListbox('refresh', true);
-                    // $('#application-form-container').html('');
-                    // $('#form_id').trigger('change'); 
-
-                    // <option value="option1" selected="selected">Account Admin</option>
-                    // <option value="option2">Agency Caregiver</option>
-                    // <option value="option4">Agency Coordinator</option>
-                    // <option value="option5" selected="selected">Agency Management</option>
-                    // <option value="option7">Agency Nursing</option>
               $('#account-role').html(name+ '\'s Roles');
               $('#modal-edit-account-role').modal('show');
-
             },
             error: function(data, errorThrown)
             {
@@ -484,26 +427,9 @@
                 //    notify(data.responseJSON.error[Object.keys(data.responseJSON.error)[0]]);
             }
         });
-
   }
 
-   // Disable filtering
-    $('.listbox-filter-disabled').bootstrapDualListbox({
-        showFilterInputs: false
-    });
 
-  function get_account_roles(id)
-  {
-      $('#role_account_id').val(id);
-      $('#btn-edit-roles').removeClass('hidden');
-       $('#cmbAccountRoles').empty().trigger('change');
-      @foreach($roles as $role)
-          $("#cmbAccountRoles").append("<option value='{{ $role->id }}'>{{ $role->description }}</option>");
-      @endforeach
-
-      $('#cmbAccountRoles').bootstrapDualListbox('refresh', true);
-      dt_client.ajax.url("{{ url('admin/client-roles') }}?id="+id).load();
-  }
 
   function show_edit_role_modal(id)
   {
@@ -550,11 +476,6 @@
 
   }
 
-   // Disable filtering
-    $('.listbox-filter-disabled').bootstrapDualListbox({
-        showFilterInputs: false
-    });
-
     function add_role()
     {
       $('#modal-add-role').modal('show');
@@ -587,6 +508,7 @@
                       }, function() {
                           $('#modal-add-role').modal('hide');
                           dt_roles.search('').draw();
+                          dt_admin.search('').draw();
                       });  
                     
                     }else{
@@ -599,7 +521,6 @@
                     }
                   },
                   error: function (data) {
-                    console.log(data);
                     swal({
                       title: "Oops! Something went wrong",
                       text: data.responseJSON.errors.name[0],
@@ -613,51 +534,133 @@
 
        $('#frmEditRole').on('submit',function (ev) {
               ev.preventDefault();
-               var frm = $(this);
-                $.ajax({
-                  type: frm.attr('method'),
-                  url: frm.attr('action'),
-                  data: frm.serialize(),
-                  beforeSend: function(){
-                    $('body').addClass('wait-pointer');
-                  },
-                  complete: function(){
-                    $('body').removeClass('wait-pointer');
-                  },
-                  success: function (data) {
-                    var res = $.parseJSON(data);
-                    if( res.status == 1 ){
-                    
-                      swal({
-                        title: "Good job!",
-                        text: res.message,
-                        confirmButtonColor: "#66BB6A",
-                        type: "success"
-                      }, function() {
-                          $('#modal-edit-role').modal('hide');
-                          dt_roles.search('').draw();
-                      });  
-                    
-                    }else{
-                      swal({
-                        title: "Oops..!",
-                        text: res.message,
-                        confirmButtonColor: "#EF5350",
-                        type: "error"
-                      }); 
+
+                  swal({
+                    title: "Are you sure you want to update?",
+                    text: "All existing users with this role would be affected.",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#EF5350",
+                    confirmButtonText: "Update",
+                    cancelButtonText: "Cancel",
+                    closeOnConfirm: false,
+                    closeOnCancel: true
+                },
+                function(isConfirm){
+                    if (isConfirm) {
+                          var frm = $('#frmEditRole');
+                          $.ajax({
+                            type: frm.attr('method'),
+                            url: frm.attr('action'),
+                            data: frm.serialize(),
+                            beforeSend: function(){
+                              $('body').addClass('wait-pointer');
+                            },
+                            complete: function(){
+                              $('body').removeClass('wait-pointer');
+                            },
+                            success: function (data) {
+                              var res = $.parseJSON(data);
+                              if( res.status == 1 ){
+                              
+                                swal({
+                                  title: "Good job!",
+                                  text: res.message,
+                                  confirmButtonColor: "#66BB6A",
+                                  type: "success"
+                                }, function() {
+                                    $('#modal-edit-role').modal('hide');
+                                    dt_roles.search('').draw();
+                                    dt_admin.search('').draw();
+                                });  
+                              
+                              }else{
+                                swal({
+                                  title: "Oops..!",
+                                  text: res.message,
+                                  confirmButtonColor: "#EF5350",
+                                  type: "error"
+                                }); 
+                              }
+                            },
+                            error: function (data) {
+                              swal({
+                                title: "Oops! Something went wrong",
+                                text: data.responseJSON.errors.name[0],
+                                confirmButtonColor: "#EF5350",
+                                type: "error"
+                              });
+                            },
+                        });
+                        return false;
                     }
-                  },
-                  error: function (data) {
-                    console.log(data);
-                    swal({
-                      title: "Oops! Something went wrong",
-                      text: data.responseJSON.errors.name[0],
-                      confirmButtonColor: "#EF5350",
-                      type: "error"
-                    });
-                  },
-              });
-              return false;
+                });
+
+             
+      });
+
+        $('#frmUpdateAccountRoles').on('submit',function (ev) {
+              ev.preventDefault();
+                swal({
+                    title: "Are you sure you want to update?",
+                    text: "Some existing user\'s role of " + account_name + " might be affected.",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#EF5350",
+                    confirmButtonText: "Update",
+                    cancelButtonText: "Cancel",
+                    closeOnConfirm: false,
+                    closeOnCancel: true
+                },
+                function(isConfirm){
+                    if (isConfirm) {
+
+                        var frm = $('#frmUpdateAccountRoles');
+                          $.ajax({
+                            type: frm.attr('method'),
+                            url: frm.attr('action'),
+                            data: frm.serialize(),
+                            beforeSend: function(){
+                              $('body').addClass('wait-pointer');
+                            },
+                            complete: function(){
+                              $('body').removeClass('wait-pointer');
+                            },
+                            success: function (data) {
+                              var res = $.parseJSON(data);
+                              if( res.status == 1 ){
+                              
+                                swal({
+                                  title: "Good job!",
+                                  text: res.message,
+                                  confirmButtonColor: "#66BB6A",
+                                  type: "success"
+                                }, function() {
+                                    $('#modal-edit-account-role').modal('hide');
+                                    dt_client.search('').draw();
+                                });  
+                              
+                              }else{
+                                swal({
+                                  title: "Oops..!",
+                                  text: res.message,
+                                  confirmButtonColor: "#EF5350",
+                                  type: "error"
+                                }); 
+                              }
+                            },
+                            error: function (data) {
+                              swal({
+                                title: "Oops! Something went wrong",
+                                text: data.responseJSON.errors.name[0],
+                                confirmButtonColor: "#EF5350",
+                                type: "error"
+                              });
+                            },
+                        });
+                        return false;
+                    }
+                });
       });
 </script>
 @endsection 
