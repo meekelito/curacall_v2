@@ -78,7 +78,7 @@
               <div class="form-group login-options">
                 <div class="row">
                   <div class="col-sm-6">
-                    <a >Forgot email?</a>
+                    <a href="{{ route('password.request') }}">Trouble Signing in?</a>
                   </div>
                 </div>
               </div>

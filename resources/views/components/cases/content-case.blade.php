@@ -196,7 +196,8 @@
                   }
                 },
                 error: function (data){
-                  alert("No connection could be made because the target machine actively refused it. Please refresh the browser and try again.");
+                  console.log(data);
+                  alert(data.responseJSON.message);
                 }
               });
             }
@@ -212,7 +213,8 @@
         }
       },
       error: function (data){
-        alert("No connection could be made because the target machine actively refused it. Please refresh the browser and try again.");
+        console.log(data);
+        alert(data.responseJSON.message);
       }
     });
 
