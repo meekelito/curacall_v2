@@ -46,7 +46,7 @@
 		<td>{{$ctr_past_month_prorate}}</td>
 		<td>${{$total_past_month_prorate}}</td>
 		<td align="center">{{$ctr_curr_month_prorate}}</td>
-		<td>${{ number_format($total_curr_month_prorate, 2, '.', '') }}</td>
+		<td align="right">${{ number_format($total_curr_month_prorate, 2, '.', '') }}</td>
 		<td>${{$total_past_month_prorate+$total_curr_month_prorate}} </td>
 	</tr>
 	@php 
@@ -99,6 +99,21 @@
 		$account_holder = $user->account_name; 
 		$ctr++;
 	@endphp
+
+	@if ($loop->last) 
+	<tr class="bg-blue">
+		<td></td>
+		<td>Total</td>
+		<td></td>
+		<td></td>
+		<td>{{$ctr_past_month_prorate}}</td>
+		<td>${{$total_past_month_prorate}}</td>
+		<td align="center">{{$ctr_curr_month_prorate}}</td>
+		<td align="right">${{ number_format($total_curr_month_prorate, 2, '.', '') }}</td>
+		<td>${{$total_past_month_prorate+$total_curr_month_prorate}} </td>
+	</tr>
+
+	@endif
 	@empty
 	<tr><td colspan="3">No data found.</td></tr>
 	@endforelse

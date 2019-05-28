@@ -173,6 +173,8 @@ Route::group(['middleware' => array('auth','nocache')], function () {
         //Admin Console - Accounts
         //index
         Route::get('admin-console/billing','Admin\AdminBillingController@index');
+        Route::post('admin-console/update-billing-md','Admin\AdminBillingController@getModallUpdateBilling');
+        Route::post('admin-console/update-billing','Admin\AdminBillingController@updateBilling');
         Route::post('account-billing','Admin\AdminBillingController@accountBilling');
         //admin console - accounts END.
 

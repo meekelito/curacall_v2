@@ -42,7 +42,7 @@
 	</div>
 
 	<div id="modal-add" class="modal fade" data-backdrop="static" data-keyboard="false">
-		<div class="modal-dialog">
+		<div class="modal-dialog modal-sm">
 			<div class="modal-content content-data">
 
 			</div>
@@ -50,7 +50,7 @@
 	</div>
 
 	<div id="modal-update" class="modal fade" data-backdrop="static" data-keyboard="false">
-		<div class="modal-dialog">
+		<div class="modal-dialog modal-sm">
 			<div class="modal-content content-data-update">
 
 			</div>
@@ -68,32 +68,63 @@
 	  $('.select-search').select2();
 
 	  $(".account-list").change(function(event) {
-			$.ajax({ 
-	      type: "POST", 
-	      url: "{{ url('account-billing') }}", 
-	      data: { 
-	        _token : '{{ csrf_token() }}',
-	        account_id: $(this).val()
-	      },
-	      beforeSend: function(){
-	          $('body').addClass('wait-pointer');
-	        },
-	      complete: function(){
-	          $('body').removeClass('wait-pointer');
-	        },
-	      success: function (data) {  
-	        $(".content-data-billing").html( data );
-	      },
-	      error: function (data){
-	        swal({
-	          title: "Oops..!",
-	          text: "No connection could be made because the target machine actively refused it. Please refresh the browser and try again.",
-	          confirmButtonColor: "#EF5350",
-	          type: "error"
-	        });
-	      }
-	    });
+			fetch_table();
 		});
 	});
+	function fetch_table(account_id){
+		$.ajax({ 
+	    type: "POST", 
+	    url: "{{ url('account-billing') }}", 
+	    data: { 
+	      _token : '{{ csrf_token() }}',
+	      account_id: $('.account-list').val()
+	    },
+	    beforeSend: function(){
+	        $('body').addClass('wait-pointer');
+	      },
+	    complete: function(){
+	        $('body').removeClass('wait-pointer');
+	      },
+	    success: function (data) {  
+	      $(".content-data-billing").html( data );
+	    },
+	    error: function (data){
+	      swal({
+	        title: "Oops..!",
+	        text: "No connection could be made because the target machine actively refused it. Please refresh the browser and try again.",
+	        confirmButtonColor: "#EF5350",
+	        type: "error"
+	      });
+	    }
+	  });
+	}
+	function update_billing(id){
+		$.ajax({ 
+      type: "POST", 
+      url: "{{ url('admin-console/update-billing-md') }}", 
+      data: { 
+        _token : '{{ csrf_token() }}',
+        account_role: id
+      },
+      beforeSend: function(){
+          $('body').addClass('wait-pointer');
+        },
+      complete: function(){
+          $('body').removeClass('wait-pointer');
+        },
+      success: function (data) {  
+        $(".content-data-update").html( data );
+        $("#modal-update").modal('show');
+      },
+      error: function (data){
+        swal({
+          title: "Oops..!",
+          text: "No connection could be made because the target machine actively refused it. Please refresh the browser and try again.",
+          confirmButtonColor: "#EF5350",
+          type: "error"
+        });
+      }
+    });
+	}
 </script>
 @endsection 

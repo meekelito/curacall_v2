@@ -684,6 +684,7 @@ class ReportsController extends Controller
                 ->leftJoin('roles AS d','users.role_id','d.id')
                 ->where('users.status','active')
                 ->where('users.is_curacall',0) 
+                ->whereDate('users.date_activated','<=',$request->billing_month."-01 24:59:59")
                 ->whereIn('users.account_id',$request->account_id)
                 ->select('users.fname','users.lname','d.role_title','users.date_activated','b.account_name','c.billing_rate')
                 ->orderBy('users.account_id')
