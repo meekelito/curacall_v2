@@ -6,19 +6,20 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
+use Spatie\Permission\Traits\HasRoles;
 use Auth;
 
 class User extends Authenticatable implements JWTSubject
 {
     use Notifiable;
-
+    use HasRoles;
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'account_id','is_curacall','email','password','role_id','fname','lname','prof_suffix','title','phone_no','mobile_no','prof_img','status','created_by','updated_by', 'timezone'
+        'account_id','is_curacall','email','password','role_id','fname','lname','prof_suffix','title','phone_no','mobile_no','prof_img','status','created_by','updated_by', 'timezone','date_activated'
     ];
 
     /**

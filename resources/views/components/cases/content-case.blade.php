@@ -196,7 +196,8 @@
                   }
                 },
                 error: function (data){
-                  alert("No connection could be made because the target machine actively refused it. Please refresh the browser and try again.");
+                  console.log(data);
+                  alert(data.responseJSON.message);
                 }
               });
             }
@@ -212,7 +213,8 @@
         }
       },
       error: function (data){
-        alert("No connection could be made because the target machine actively refused it. Please refresh the browser and try again.");
+        console.log(data);
+        alert(data.responseJSON.message);
       }
     });
 
@@ -421,8 +423,6 @@
           });  
           count_case();
           fetchCase();
-          $(".menu-curacall li").removeClass("active");
-          $(".menu-reviewed-cases").addClass('active');
         }else if( res.status == 2 ){
           swal({
             title: "Notice!",

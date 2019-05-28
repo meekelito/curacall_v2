@@ -11676,7 +11676,7 @@ var app = new __WEBPACK_IMPORTED_MODULE_0_vue___default.a({
                 _this2.messages.push({
                     message: e.message.message,
                     user: e.user,
-                    created_at: e.message.created_at.date
+                    created_at: e.message.created_at
                 });
             }
         });
@@ -11872,8 +11872,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     formatTime: function formatTime(time) {
       if ((typeof time === 'undefined' ? 'undefined' : _typeof(time)) == 'object') time = time.date;
 
-      var previousTime = moment(time, 'YYYY-MM-DD HH:mm:ss').format('x');
-      var timeDifference = moment(previousTime, 'x').fromNow();
+      var local_date = moment.utc(time).local().format('x');
+
+      //let previousTime = moment(time,'YYYY-MM-DD HH:mm:ss').format('x');
+      var timeDifference = moment(local_date, 'x').fromNow();
       return timeDifference;
     }
   }
@@ -12076,8 +12078,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
       this.$emit('messagesent', {
         user: this.user,
         room_id: this.room_id,
-        message: this.newMessage,
-        created_at: time
+        message: this.newMessage
       });
 
       this.newMessage = '';

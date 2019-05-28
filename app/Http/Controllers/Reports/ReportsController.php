@@ -10,6 +10,8 @@ use DB;
 use Auth;
 use App\Call_type;
 use App\Subcall_type;
+use App\Case_history;
+
 class ReportsController extends Controller
 {
   public function charttrend(Request $request)
@@ -140,37 +142,29 @@ class ReportsController extends Controller
       }
   }
 
-  function getAverageTime($status,$from,$to,$action_note = '', $user_id = 'all')
+  function getAverageTime($type,$from,$to,$user_id = 'all')
   {
     /** Function to get the average time base on case_history table **/
-      $action_note_condition = '';
-      if($action_note != '')
-        $action_note_condition = " AND action_note = '$action_note'";
+      $data = Case_history::leftJoin('cases as b','case_history.case_id','=','b.id')
+      ->select(DB::raw("SUM(TIMESTAMPDIFF(MINUTE,b.created_at,case_history.created_at))/COUNT(0) as average"))
+      ->when($type, function ($query) use ($type) {
+          if($type == "read")
+                return $query->where('case_history.action_note','Case Read');
+          elseif($type == 'accepted')
+                return $query->where('case_history.action_note','Case Accepted');
+          elseif($type == 'closed')
+              return $query->where('case_history.action_note','Case Closed');
+      })
+      ->when($user_id, function ($query) use ($user_id) {
+          if($user_id != "all")
+                return $query->where('case_history.created_by',$user_id);
+      })
+      ->whereBetween('case_history.created_at', array($from, $to))
+      ->first();
 
-      if($user_id == 'all')
-        $case_participants = "SELECT case_id FROM case_participants WHERE  ownership != 4";
-      else
-        $case_participants = "SELECT case_id FROM case_participants WHERE  ownership != 4 AND user_id = ".$user_id;
 
-      $data = DB::select("SELECT a.*,b.created_at as date_created,TIMESTAMPDIFF(MINUTE,b.created_at,a.created_at) as time_diff FROM case_history a 
-
-       LEFT JOIN cases b ON a.case_id = b.id 
-       WHERE a.status = ?
-       AND a.case_id IN(".$case_participants.")
-       AND (a.created_at BETWEEN ? AND ?) 
-       GROUP BY a.case_id",[$status,$from,$to]);
-
-      $totaltime = 0;
-
-      if($data){
-        foreach($data as $row){
-                $timestamp = $row->time_diff;
-                $totaltime += $timestamp;
-        }
-
-        $average_time = ($totaltime/count($data));
-
-        return $this->convertToHumanTime($average_time);
+      if($data && $data->average){
+        return $this->convertToHumanTime($data->average);
       }else
       return "0";
   }
@@ -180,10 +174,14 @@ class ReportsController extends Controller
     $d = floor ($minutes / 1440);
     $h = floor (($minutes - $d * 1440) / 60);
     $m = floor($minutes - ($d * 1440) - ($h * 60));
+    $s = 0;
+    if($minutes < 1)
+      $s = $minutes * 60;
     
     $days = $d > 1 ? 'days' : 'day';
     $hours = $h > 1 ? 'hours' : 'hour';
     $minutes = $m > 1 ? 'minutes' : 'minute';
+    $seconds = $s > 1 ? 'seconds' : 'second';
 
     $display = array();
     if($d > 0 )
@@ -192,9 +190,11 @@ class ReportsController extends Controller
       array_push($display, "{$h}  $hours");
     if($m > 0)
       array_push($display, "{$m} $minutes");
+    if($s > 0)
+      array_push($display, "{$s} $seconds");
 
     if($precision == 'first')
-      return $display[0];
+      return $display[0] ?? 0;
     else if($precision == 'last')
       return $display[count($display)-1];
     else
@@ -316,25 +316,89 @@ class ReportsController extends Controller
       $closedAverage = 0;
 
     if($request->account_id == 'all'){
-      $readAverage = $this->getAverageTime(1,$from,$to,'Case Read');
-      $acceptedAverage = $this->getAverageTime(2,$from,$to);
-      $closedAverage = $this->getAverageTime(3,$from,$to);
+      $readAverage = $this->getAverageTime('read',$from,$to);
+      $acceptedAverage = $this->getAverageTime('accepted',$from,$to);
+      $closedAverage = $this->getAverageTime('closed',$from,$to);
     }else
     {
         if( Auth::user()->role_id != 7){
-          $readAverage = $this->getAverageTime(1,$from,$to,'Case Read',$request->account_id);
-          $acceptedAverage = $this->getAverageTime(2,$from,$to,'',$request->account_id);
-          $closedAverage = $this->getAverageTime(3,$from,$to,'',$request->account_id);
+          $readAverage = $this->getAverageTime('read',$from,$to,$request->account_id);
+          $acceptedAverage = $this->getAverageTime('accepted',$from,$to,$request->account_id);
+          $closedAverage = $this->getAverageTime('closed',$from,$to,$request->account_id);
         }
     }
 
     if( Auth::user()->role_id == 7  ){
-      $readAverage = $this->getAverageTime(1,$from,$to,'Case Read');
-      $acceptedAverage = $this->getAverageTime(2,$from,$to);
-      $closedAverage = $this->getAverageTime(3,$from,$to);
+      $readAverage = $this->getAverageTime('read',$from,$to);
+      $acceptedAverage = $this->getAverageTime('accepted',$from,$to);
+      $closedAverage = $this->getAverageTime('closed',$from,$to);
     }
 
     return json_encode(array('read'=>$readAverage,'accepted'=>$acceptedAverage,'closed'=>$closedAverage));
+  }
+
+  public function oncallcharttrend(Request $request)
+  {
+               $cases = Case_history::leftJoin('cases as b','case_history.case_id','=','b.id')
+                ->select('case_history.action_note',DB::raw("MONTH(case_history.created_at) as month"),DB::raw("SUM(TIMESTAMPDIFF(MINUTE,b.created_at,case_history.created_at))/COUNT(0) as total"))
+                ->when(request('user_id'), function ($query) {
+                    if(request('user_id') != "all")
+                            return $query->where('case_history.created_by',request('user_id'));
+                })
+                ->where(DB::raw("YEAR(case_history.created_at)"), $request->year)
+                ->whereIn('case_history.action_note',array('Case Read','Case Accepted','Case Closed'))
+                ->groupBy('case_history.action_note',DB::raw('EXTRACT(YEAR_MONTH FROM case_history.created_at)'))
+                ->orderBy(DB::raw("FIELD('Case Read','Case Accepted','Case Closed')"))
+                ->get();
+
+      
+            if($cases)
+            {
+              $cases_arr = array();
+           
+              foreach($cases as $case)
+              {
+                  $cases_arr[$case->action_note][$case->month] = $case->total;
+              }
+
+              $final = array();
+              $accounts = array();
+              foreach($cases_arr as $key => $value)
+              {
+                $accounts['name'][] = $key;
+                if($key == 'Case Read')
+                  $accounts['color'][] = '#03A9F4';
+                elseif($key == 'Case Accepted')
+                   $accounts['color'][] = '#F44336';
+                 else
+                   $accounts['color'][] = '#4CAF50';
+
+                $total_per_month = array('-','-','-','-','-','-','-','-','-','-','-','-');
+                  foreach($value as $month => $total)
+                  {
+                       
+                        for($x=0;$x<=11;$x++)
+                        {
+                          if($x == ($month-1)){
+                            $total_per_month[$x] = $total;
+                            break;
+                          }
+                        }
+                        
+                  }
+                  $final[] = array(
+                                  "name"  =>  $key,
+                                  "type"  =>  $request->chart,
+                                 // "stack" =>  "Total",
+                                  "data"  =>  $total_per_month
+                             );
+                 
+                    
+              }
+
+               return json_encode(array("accounts"=>$accounts,"data"=>$final));
+            }else
+             return json_encode([]);
   }
 
   public function getReportActiveCase(Request $request)
@@ -601,6 +665,33 @@ class ReportsController extends Controller
                      
 
     return view('components.reports.report-by-calltypes',[ 'cases' => $cases_arr,'active_count' => $active_count[0],'pending_count' => $pending_count[0],'closed_count' => $closed_count[0] ] );
+  }
+
+  public function reportsBilling(Request $request)
+  {
+    $accounts = Account::all();
+    return view( 'admin-console-reports',['accounts'=>$accounts]);
+  }
+
+  public function reportsBillingTable(Request $request)
+  {
+    // $accounts = Account::whereIn('id',$request->account_id)->get();
+    $users = User::leftJoin('accounts AS b','users.account_id','b.id')
+                ->leftJoin("account_roles AS c",function($join){
+                  $join->on('c.account_id','users.account_id')
+                        ->on('c.role_id','users.role_id');
+                })
+                ->leftJoin('roles AS d','users.role_id','d.id')
+                ->where('users.status','active')
+                ->where('users.is_curacall',0) 
+                ->whereDate('users.date_activated','<=',$request->billing_month."-01 24:59:59")
+                ->whereIn('users.account_id',$request->account_id)
+                ->select('users.fname','users.lname','d.role_title','users.date_activated','b.account_name','c.billing_rate')
+                ->orderBy('users.account_id')
+                ->orderBy('users.role_id')
+                ->orderBy('users.fname')
+                ->get(); 
+    return view( 'components.reports.report-admin-billing',['users'=>$users,'billing_month'=>$request->billing_month."-01"]);
   }
 
 }

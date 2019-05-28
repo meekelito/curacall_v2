@@ -35,12 +35,12 @@
 
             <div class="tabbable nav-tabs-vertical nav-tabs-left">
                 <ul class="nav nav-tabs nav-tabs-highlight" style="width: 200px;">
-                  @if( Auth::user()->role_id != 6 && Auth::user()->role_id != 7 && Auth::user()->role_id != 8 )
+                  @can('view-account-reports')
                     <li class="active" id="accounts-tab"><a data-toggle="tab" onclick="reportAccount(0)"><i class="icon-office position-left"></i> Accounts </a></li>
-                    <li><a data-toggle="tab" onclick="reportOncall('all','{{ date ( "m/01/Y" ) }} - {{ date ( "m/d/Y" ) }}')"><i class="icon-headset position-left"></i> On call</a></li>
-                  @else
-                    <li class="active" ><a data-toggle="tab" onclick="reportOncall('all','{{ date ( "m/01/Y" ) }} - {{ date ( "m/d/Y" ) }}')"><i class="icon-headset position-left"></i> On call</a></li>
-                  @endif
+                  @endcan
+                  @can('view-oncall-reports')
+                    <li @if(!auth()->user()->can('view-account-reports')) class="active" @endif><a data-toggle="tab" onclick="reportOncall('all','{{ date ( "m/01/Y" ) }} - {{ date ( "m/d/Y" ) }}')"><i class="icon-headset position-left"></i> On call</a></li>
+                  @endcan
                 </ul>
 
                 <div class="tab-content">
@@ -76,9 +76,13 @@
     
     var myElement = document.getElementById("accounts-tab");
     if(myElement){
-      reportAccount();
+      @can('view-account-reports')
+        reportAccount();
+      @endcan
     }else{
-      reportOncall('all','{{ date ( "m/01/Y" ) }} - {{ date ( "m/d/Y" ) }}');
+      @can('view-oncall-reports')
+        reportOncall('all','{{ date ( "m/01/Y" ) }} - {{ date ( "m/d/Y" ) }}');
+      @endcan
     }
   }); 
 
