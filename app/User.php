@@ -33,6 +33,7 @@ class User extends Authenticatable implements JWTSubject
 
     protected $appends = [
       'avatar',
+      'full_name'
     ];
 
     /**
@@ -58,6 +59,11 @@ class User extends Authenticatable implements JWTSubject
     public function getAvatarAttribute()
     {
       return url('/').'/storage/uploads/users/'.$this->attributes['prof_img'];
+    }
+    
+    public function getFullNameAttribute()
+    {
+      return $this->attributes['lname'].', '.$this->attributes['fname'];
     }
 
     public function messages()

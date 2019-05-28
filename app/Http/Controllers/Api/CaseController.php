@@ -282,4 +282,43 @@ class CaseController extends Controller
     {
         //
     }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function forward(Request $request, $id)
+    {
+        $recipients = $request->input('recipients');
+        $user_id = $request->input('user_id');
+        $note = $request->input('note');
+
+        foreach($recipients as $rec) {
+            Case_history::create( [
+                "is_visible"=>1,
+                "status"=>2,
+                "case_id" => $id,
+                "note" => $note,
+                "action_note" => "Case Forwarded",
+                'created_by' => $user_id,
+                'sent_to'=>$rec['id'] 
+            ]);
+            
+            $parti = Case_participant::where('case_id', $id)
+            ->where('user_id', $rec['id'])->update(['ownership'=>1]);
+
+            if(!$parti) {
+                Case_participant::create([
+                    'ownership'=>1,
+                    'case_id'=>$id,
+                    'user_id'=>$rec['id']
+                ]);
+            }
+            
+        }
+
+        return $request->all();
+    }
 }

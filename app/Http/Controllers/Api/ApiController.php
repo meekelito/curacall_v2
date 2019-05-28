@@ -26,6 +26,8 @@ class ApiController extends Controller
       'case_message' => 'bail|required',
       'recipients' => 'required|array',
       'recipients.*'=> 'distinct|exists:users,id',
+      'recipients.*'=> 'distinct|exists:users,id',
+      'recipients.*'=> 'distinct|exists:users,id',
     ],[
       'account_id.exists' => 'The account ID invalid ',
       'recipient.distinct'=>'Recipient must contain unique Curacall ID.',
@@ -215,7 +217,7 @@ class ApiController extends Controller
 
       $update_res = Case_participant::where('case_id', $request->case_id)
       ->where('user_id', $request->user_id )
-      ->update(['ownership' => 3]);
+      ->update(['ownership' => 2]);
     }
 
     $res = Case_history::create( ["is_visible"=>1,"status"=>2,"case_id" => $request->case_id,"action_note" => "Case Accepted", 'created_by' => $request->user_id ] ); 

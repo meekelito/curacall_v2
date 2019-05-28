@@ -19,13 +19,15 @@ use Illuminate\Http\Request;
 // });
 
 
-Route::post('login', 'Api\AuthController@login');
+Route::post('login_mobile', 'Api\AuthController@login');
 Route::post('check_email', 'Api\AuthController@check_email');
-Route::post('logout', 'Api\AuthController@logout');
+Route::post('forgot/password', 'Api\Auth\ForgotPasswordController')->name('forgot.password');
+Route::apiResource('support', 'Api\SupportTicketController');
 
 Route::group([
     'middleware' => 'jwt.auth',
 ], function ($router) {
+    Route::post('logout', 'Api\AuthController@logout');
     Route::post('refresh', 'Api\AuthController@refresh');
     Route::post('me', 'Api\AuthController@me');
     Route::put('contact/password/{id}', 'Api\UserController@password_update');
@@ -34,6 +36,7 @@ Route::group([
     Route::post('case-reopen', 'Api\CaseController@reopen_case');
     Route::post('case-read/{id}', 'Api\CaseController@read_case');
     Route::post('case-note/{id}', 'Api\CaseController@add_note');
+    Route::post('case-forward/{id}', 'Api\CaseController@forward');
     Route::post('/report/average','Api\ApiController@getReportAverageTime');
 
     Route::apiResources([
