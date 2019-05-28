@@ -14,8 +14,8 @@ class RepositoryCasesController extends Controller
   {
     $cases = Cases::with('participants')
               ->where('status',3)
-              ->orderBy('cases.id','DESC')
-              ->orderBy('cases.is_reviewed','DESC')
+              ->orderBy('is_reviewed')
+              ->orderBy('id','DESC')
               ->get();
 
     $cases_arr = array();
@@ -40,19 +40,15 @@ class RepositoryCasesController extends Controller
         "subcall_type"=> $case->subcall_type,
         "case_message" => $case->case_message,
         "status" => $case->status,
+        "is_reviewed" => $case->is_reviewed,
         "created_at" => $case->created_at,
         "updated_at" => $case->updated_at,
         "participants"=> $participants_arr
       );
       
-    }
-             
-		$closed_count = Cases::where('status',3)
-                  ->where('is_reviewed',0)
-									->select(DB::raw('count(id) as total'))
-				  				->get();	
+    }	
  
-    return view( 'repository-cases',[ 'cases' => $cases_arr,'closed_count' => $closed_count[0] ] );
+    return view( 'repository-cases',[ 'cases' => $cases_arr ] );
   }
 
   public function reviewCase(Request $request)

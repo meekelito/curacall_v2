@@ -48,13 +48,11 @@
             <th style="width: 50px" class="text-center" ><i class="icon-arrow-down12"></i></th>
           </tr>
         </thead>
-        <tbody>      
-          <tr class="active border-double">
-            <td colspan="3">Closed cases</td>
-            <td class="text-center">
-              <span class="badge bg-success">{{ $closed_count->total }}</span>
-            </td>
-          </tr>
+        <tbody>     
+          @php 
+            $forreview_count = 0;
+            $reviewed_count = 0;
+          @endphp 
           @forelse($cases as $case)    
             @php
             $owner = "";
@@ -70,36 +68,93 @@
                 @endphp
               @endif  
             @endforeach
-            <tr>
-              <td class="text-center">
-                @php
-                $datetime1 = new DateTime($case['created_at']);
-                $datetime2 = new DateTime($case['updated_at']);
-                $interval = $datetime1->diff($datetime2);
-                @endphp
-                {{ $interval->format('%ad %hh %im %ss') }}
-              </td>
-              <td> 
-                <div class="media-body">
-                  <a href="{{ url('review-case/case_id',$case['id']) }}" class="display-inline-block text-default letter-icon-title">{{ $owner }}</a>
-                  <div class="text-muted text-size-small"><span class="status-mark border-success position-left"></span> Closed</div>
-                </div>
-              </td>
-              <td>
-                <a href="{{ url('review-case/case_id',$case['id']) }}" class="text-default display-inline-block">
-                  <span>[#{{ $case['case_id'] }}] Call type</span>
-                  <span class="display-block text-muted">Full message of the case...</span>
-                </a>
-              </td>
-              <td class="text-left">
-                <span class="text-muted">
-                  @if(!empty($case['created_at']))
-                    {{  date_format($case['created_at'],"M d,Y") }}<br>
-                    {{  date_format($case['created_at'],"h:i a") }}
-                  @endif
-                </span>
-              </td>
-            </tr>
+
+            @switch($case['is_reviewed'])
+              @case(0)
+                @if($forreview_count == 0)
+                  <tr class="active border-double">
+                    <td colspan="3">Closed cases - For reviewed</td>
+                    <td class="text-center">
+                    </td>
+                  </tr>
+                  @php $forreview_count = 1; @endphp
+                @endif
+                <tr>
+                  <td class="text-center">
+                    @php
+                    $datetime1 = new DateTime($case['created_at']);
+                    $datetime2 = new DateTime($case['updated_at']);
+                    $interval = $datetime1->diff($datetime2);
+                    @endphp
+                    {{ $interval->format('%ad %hh %im %ss') }}
+                  </td>
+                  <td> 
+                    <div class="media-body">
+                      <a href="{{ url('review-case/case_id',$case['id']) }}" class="display-inline-block text-default letter-icon-title">{{ $owner }}</a>
+                      <div class="text-muted text-size-small"><span class="status-mark border-success position-left"></span> Closed</div>
+                    </div>
+                  </td>
+                  <td>
+                    <a href="{{ url('review-case/case_id',$case['id']) }}" class="text-default display-inline-block">
+                      <span>[#{{ $case['case_id'] }}] Call type</span>
+                      <span class="display-block text-muted">Full message of the case...</span>
+                    </a>
+                  </td>
+                  <td class="text-left">
+                    <span class="text-muted">
+                      @if(!empty($case['created_at']))
+                        {{  date_format($case['created_at'],"M d,Y") }}<br>
+                        {{  date_format($case['created_at'],"h:i a") }}
+                      @endif
+                    </span>
+                  </td>
+                </tr>
+              @break
+
+              @case(1)
+                @if($reviewed_count == 0)
+                  <tr class="active border-double">
+                    <td colspan="3">Closed cases - Reviewed</td>
+                    <td class="text-center">
+                    </td>
+                  </tr>
+                  @php $reviewed_count = 1; @endphp
+                @endif
+                <tr>
+                  <td class="text-center">
+                    @php
+                    $datetime1 = new DateTime($case['created_at']);
+                    $datetime2 = new DateTime($case['updated_at']);
+                    $interval = $datetime1->diff($datetime2);
+                    @endphp
+                    {{ $interval->format('%ad %hh %im %ss') }}
+                  </td>
+                  <td> 
+                    <div class="media-body">
+                      <a href="{{ url('review-case/case_id',$case['id']) }}" class="display-inline-block text-default letter-icon-title">{{ $owner }}</a>
+                      <div class="text-muted text-size-small"><span class="status-mark border-success position-left"></span> Closed</div>
+                    </div>
+                  </td>
+                  <td>
+                    <a href="{{ url('review-case/case_id',$case['id']) }}" class="text-default display-inline-block">
+                      <span>[#{{ $case['case_id'] }}] Call type</span>
+                      <span class="display-block text-muted">Full message of the case...</span>
+                    </a>
+                  </td>
+                  <td class="text-left">
+                    <span class="text-muted">
+                      @if(!empty($case['created_at']))
+                        {{  date_format($case['created_at'],"M d,Y") }}<br>
+                        {{  date_format($case['created_at'],"h:i a") }}
+                      @endif
+                    </span>
+                  </td>
+                </tr>
+              @break
+
+              @default
+                  Default case...
+            @endswitch
           @empty 
           <tr class="unread"><td colspan="4">No closed case(s) found.</td></tr>
           @endforelse

@@ -603,4 +603,30 @@ class ReportsController extends Controller
     return view('components.reports.report-by-calltypes',[ 'cases' => $cases_arr,'active_count' => $active_count[0],'pending_count' => $pending_count[0],'closed_count' => $closed_count[0] ] );
   }
 
+  public function reportsBilling(Request $request)
+  {
+    $accounts = Account::all();
+    return view( 'admin-console-reports',['accounts'=>$accounts]);
+  }
+
+  public function reportsBillingTable(Request $request)
+  {
+    // $accounts = Account::whereIn('id',$request->account_id)->get();
+    $users = User::leftJoin('accounts AS b','users.account_id','b.id')
+                ->leftJoin("account_roles AS c",function($join){
+                  $join->on('c.account_id','users.account_id')
+                        ->on('c.role_id','users.role_id');
+                })
+                ->leftJoin('roles AS d','users.role_id','d.id')
+                ->where('users.status','active')
+                ->where('users.is_curacall',0) 
+                ->whereIn('users.account_id',$request->account_id)
+                ->select('users.fname','users.lname','d.role_title','users.date_activated','b.account_name','c.billing_rate')
+                ->orderBy('users.account_id')
+                ->orderBy('users.role_id')
+                ->orderBy('users.fname')
+                ->get(); 
+    return view( 'components.reports.report-admin-billing',['users'=>$users,'billing_month'=>$request->billing_month."-01"]);
+  }
+
 }

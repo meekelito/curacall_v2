@@ -47,8 +47,8 @@
                 <div class="col-lg-12">
                   <div class="form-group form-group-lg">
                     <div class="col-lg-4">
-                      <select class="form-control input-lg"  id="_account">
-                        <option value=""></option>
+                      <select class="select-search input-lg" id="_account" style="width: 100% !important;">
+                        <option value="">Select Account</option>
                         @foreach($accounts as $row)
                         <option value="{{ Crypt::encrypt($row->id) }}">{{ $row->account_name }}</option>
                         @endforeach
@@ -100,6 +100,7 @@
 
 	var dt_admin,dt_client;
   $(document).ready(function () {
+    $('.select-search').select2();
 	 	$(".menu-curacall li").removeClass("active");
 	  $(".menu-admin-console-roles").addClass('active');
 

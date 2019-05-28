@@ -11,6 +11,7 @@ class Account_role extends Model
     protected $fillable = [
         'account_id',
         'role_id',
+        'billing_rate',
         'msg_acaregiver',
         'msg_time',
         'msg_caregiver',

@@ -166,10 +166,17 @@ Route::group(['middleware' => array('auth','nocache')], function () {
         //Admin Console - Accounts
         //index
         Route::get('admin-console/billing','Admin\AdminBillingController@index');
+        Route::post('account-billing','Admin\AdminBillingController@accountBilling');
         //admin console - accounts END.
+
+        //reports
+        Route::get('admin-console/reports','Reports\ReportsController@reportsBilling');
+        Route::post('admin-console/reports-billing','Reports\ReportsController@reportsBillingTable');
+        //reports end
 
         Route::get('repository-cases','Cases\RepositoryCasesController@index'); 
         Route::get('review-case/case_id/{id}','Cases\RepositoryCasesController@review_index');
+        Route::post('review-case','Cases\RepositoryCasesController@reviewCase');
     });
     
     Route::group(['middleware' => array('App\Http\Middleware\AccountAdminMiddleware')], function () {
