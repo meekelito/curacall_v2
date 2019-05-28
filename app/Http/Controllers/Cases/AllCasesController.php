@@ -20,8 +20,17 @@ class AllCasesController extends Controller
   	// 					->select('cases.id','cases.case_id','cases.sender_fullname','cases.status','cases.created_at','cases.updated_at')
   	// 					->get();
 
+    $status_arr = array();
+    if(auth()->user()->can('view-active-cases'))
+        $status_arr[] = 1;
+    if(auth()->user()->can('view-pending-cases'))
+        $status_arr[] = 2;
+    if(auth()->user()->can('view-closed-cases'))
+        $status_arr[] = 3;
+
     $cases_in = Cases::Join('case_participants AS b','cases.id','=','b.case_id')
              ->where('b.user_id',Auth::user()->id)
+             ->whereIn('cases.status',$status_arr)
              ->select('cases.id')
              ->get();
 

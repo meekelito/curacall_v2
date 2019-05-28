@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="en">
 <head>
 
@@ -48,6 +48,7 @@
 
   <script type="text/javascript" src="{{ asset('assets/js/plugins/forms/styling/switch.min.js') }}" ></script> 
   <script type="text/javascript" src="{{ asset('assets/js/plugins/visualization/echarts/echarts.js') }}"></script>
+  
 	<script type="text/javascript" src="{{ asset('assets/js/core/app.js') }}"></script> 
   <script src="{{ asset('js/jquery.getscripts.min.js') }}"></script>
 	<!-- /theme JS files -->
@@ -225,30 +226,82 @@
             <div class="category-content no-padding">
               <ul class="navigation navigation-main navigation-accordion menu-curacall">
                 <li class="navigation-header"><span>Main</span> <i class="icon-menu" title="Main pages"></i></li>
-                <li  class="menu-dashboard"><a href="{{ url('/dashboard') }}"><i class="icon-home4"></i> <span>Dashboard</span></a></li>
-                @if( Auth::user() ) 
-                  @if( Auth::user()->role_id != 8 )
-                    <li class="menu-cases"><a href="{{ url('/all-cases') }}"><i class="icon-briefcase"></i> <span>Cases</span></a></li>
-                  @endif
-                  <li class="menu-messages"><a href="{{ url('/new-message') }}"><i class="icon-bubbles4"></i> <span>Messages</span></a></li>
-                  <li class="menu-contacts"><a href="{{ url('/contacts') }}"><i class="icon-address-book2"></i> <span>Contacts</span></a></li>
-                  <!-- <li class="menu-directory"><a href="{{ url('/directory') }}"><i class="icon-book3"></i> <span>Directory</span></a></li> -->
-                  <li class="menu-user-account-settings"><a href="{{ url('/user-account-settings') }}"><i class="icon-gear"></i> <span>Settings</span></a></li>
-                  <li class="menu-archive-cases"><a href="{{ url('/archived-cases') }}"><i class="icon-bin"></i> <span>Archive Closed Cases</span></a></li>
-                  @if( Auth::user()->role_id == 1 )
-                    <li class="navigation-header"><span>Admin Console</span> <i class="icon-menu" title="Admin Console"></i></li>
-                    <li class="menu-admin-console-general"><a href="{{ url('/admin-console/general') }}"><i class="icon-hammer-wrench"></i> <span>General Information</span></a></li>
-                    <li class="menu-admin-console-roles"><a href="{{ url('/admin-console/roles') }}"><i class="icon-share3"></i> <span>Roles</span></a></li>
-                    <li class="menu-admin-console-users"><a href="{{ url('/admin-console/users') }}"><i class="icon-users"></i> <span>Users</span></a></li>
-                    <li class="menu-admin-console-accounts"><a href="{{ url('/admin-console/accounts') }}"><i class="icon-office"></i> <span>Accounts</span></a></li>
-                    <li class="menu-admin-console-billing"><a href="{{ url('/admin-console/billing') }}"><i class="icon-coins"></i> <span>Billing</span></a></li>
-                  @endif
-                  @if( Auth::user()->role_id == 4 )
-                    <li class="navigation-header"><span>Admin Console</span> <i class="icon-menu" title="Admin Console"></i></li>
-                    <li class="menu-account-general-info"><a href="{{ url('/account/general-info') }}"><i class="icon-hammer-wrench"></i> <span>General Information</span></a></li>
-                    <li class="menu-account-case-management"><a href="{{ url('account/case-management') }}"><i class="icon-files-empty2"></i> <span>Case Management</span></a></li>
-                  @endif
+                @if(auth()->user()->hasAnyPermission([    
+                    'view-account-reports',                  
+                    'view-oncall-reports']))
+                    <li  class="menu-dashboard"><a href="{{ url('/dashboard') }}"><i class="icon-home4"></i> <span>Dashboard</span></a></li>
                 @endif
+         
+                 
+                  @if(auth()->user()->hasAnyPermission([    
+                    'view-all-cases',                  
+                    'view-active-cases', 
+                    'view-pending-cases',
+                    'view-closed-cases']))
+                   <li class="menu-cases"><a href="{{ url('/all-cases') }}"><i class="icon-briefcase"></i> <span>Cases</span></a></li>
+                  @endif
+                 
+                  @can('send-message-to-anyone')
+                  <li class="menu-messages"><a href="{{ url('/new-message') }}"><i class="icon-bubbles4"></i> <span>Messages</span></a></li>
+                  @endcan
+
+                  @can('view-contacts')
+                  <li class="menu-contacts"><a href="{{ url('/contacts') }}"><i class="icon-address-book2"></i> <span>Contacts</span></a></li>
+                  @endcan
+                  <!-- <li class="menu-directory"><a href="{{ url('/directory') }}"><i class="icon-book3"></i> <span>Directory</span></a></li> -->
+                  @if(auth()->user()->hasAnyPermission([    
+                    'profile-setting',                  
+                    'security-login', 
+                    'message-setting',
+                    'notification-setting']))
+                  <li class="menu-user-account-settings"><a href="{{ url('/user-account-settings') }}"><i class="icon-gear"></i> <span>Settings</span></a></li>
+                  @endif
+
+                
+                  @can('case-repository')
+                    <li class="menu-repository-cases"><a href="{{ url('/repository-cases') }}"><i class="icon-file-check2"></i> <span>Case Repository</span></a></li>
+                  @endcan
+
+                  @can('archived-closed-case')
+                    <li class="menu-archive-cases"><a href="{{ url('/archived-cases') }}"><i class="icon-bin"></i> <span>Archive Closed Cases</span></a></li>
+                  @endcan
+
+                  @hasrole('curacall-admin')
+                    <li class="navigation-header"><span>Admin Console</span> <i class="icon-menu" title="Admin Console"></i></li>
+                  @endhasrole
+
+                  @can('manage-curacall-general-info')
+                    <li class="menu-admin-console-general"><a href="{{ url('/admin-console/general') }}"><i class="icon-hammer-wrench"></i> <span>General Information</span></a></li>
+                  @endcan
+                <!--     <li class="menu-admin-console-roles"><a href="{{ url('/admin-console/roles') }}"><i class="icon-share3"></i> <span>Roles</span></a></li> -->
+                  @can('manage-roles')
+                    <li class="menu-admin-console-roles"><a href="{{ url('/admin/roles') }}"><i class="icon-key"></i> <span>Role & Access Control List</span></a></li>
+                  @endcan
+
+                  @can('manage-users')
+                    <li class="menu-admin-console-users"><a href="{{ url('/admin-console/users') }}"><i class="icon-users"></i> <span>Users</span></a></li>
+                  @endcan
+
+                  @can('manage-accounts')
+                    <li class="menu-admin-console-accounts"><a href="{{ url('/admin-console/accounts') }}"><i class="icon-office"></i> <span>Accounts</span></a></li>
+                  @endcan
+
+                  @can('manage-billing')
+                    <li class="menu-admin-console-billing"><a href="{{ url('/admin-console/billing') }}"><i class="icon-coins"></i> <span>Billing</span></a></li>
+                  @endcan
+                
+                  @hasrole('account-admin')
+                  <li class="navigation-header"><span>Admin Console</span> <i class="icon-menu" title="Admin Console"></i></li>
+                  @endhasrole
+
+                  @can('manage-account-general-info')
+                    <li class="menu-account-general-info"><a href="{{ url('/account/general-info') }}"><i class="icon-hammer-wrench"></i> <span>General Information</span></a></li>
+                  @endcan
+
+                  @can('case-management')
+                    <li class="menu-account-case-management"><a href="{{ url('account/case-management') }}"><i class="icon-files-empty2"></i> <span>Case Management</span></a></li>
+                  @endcan
+                
               </ul>
             </div>
           </div>
@@ -281,11 +334,25 @@
 
                 <div class="category-content no-padding">
                     <ul class="navigation navigation-alt navigation-accordion submenu-curacall">
+                      @can('view-all-cases')
                         <li class="submenu-cases-all-cases"><a href="{{ url('/all-cases') }}"><i class="icon-files-empty"></i> All cases <span class="badge badge-default" id="case-count-all">0</span></a></li> 
+                      @endcan
+
+                      @can('view-active-cases')
                         <li class="submenu-cases-active-cases"><a href="{{ url('/active-cases') }}"><i class="icon-file-plus"></i> Active cases <span class="badge badge-danger" style="background-color: #03a9f4; border-color: #03a9f4;" id="case-count-active">0</span></a></li> 
+                      @endcan
+
+                      @can('view-pending-cases')
                         <li class="submenu-cases-pending-cases"><a href="{{ url('/pending-cases') }}"><i class="icon-hour-glass"></i> Pending cases <span class="badge badge-warning" style="background-color: #f44336; border-color: #f44336;" id="case-count-pending">0</span></a></li>
+                      @endcan
+
+                      @can('view-closed-cases')
                         <li class="submenu-cases-closed-cases"><a href="{{ url('/closed-cases') }}"><i class="icon-file-locked"></i> Closed cases <span class="badge badge-warning" style="background-color: #4caf50; border-color: #4caf50;" id="case-count-closed">0</span></a></li>
+                      @endcan
+
+                      @can('view-silent-cases')
                         <li class="submenu-cases-silent-cases"><a href="{{ url('/silent-cases') }}"><i class="icon-volume-mute5"></i> Silent cases <span class="badge badge-warning" style="background-color: #90A4AE; border-color: #90A4AE;" id="case-count-silent">0</span></a></li>
+                      @endcan
                     </ul>
                 </div>
             </div>
@@ -310,14 +377,12 @@
 	</div>
 	<!-- /page container -->
 </body>
-<script src="{{ asset('js/moment.min.js') }}"></script>
 
   <script type="text/javascript">
     $(function() {
       $(document).on('pjax:popstate', function() {
         location.reload();
       }); 
-
       $(document).pjax('a', '#content');
       
       $(document).on('pjax:timeout', function(event) {
@@ -344,11 +409,11 @@
         success: function (data) {
           var res = $.parseJSON(data);
           if( res.status == 1 ){
-            document.getElementById("case-count-all").innerHTML = res.all_count;
-            document.getElementById("case-count-active").innerHTML = res.active_count;
-            document.getElementById("case-count-pending").innerHTML = res.pending_count;
-            document.getElementById("case-count-closed").innerHTML = res.closed_count; 
-            document.getElementById("case-count-silent").innerHTML = res.silent_count; 
+            $("#case-count-all").html(res.all_count);
+            $("#case-count-active").html(res.active_count);
+            $("#case-count-pending").html(res.pending_count);
+            $("#case-count-closed").html(res.closed_count); 
+            $("#case-count-silent").html(res.silent_count); 
           }
         },
         error: function (data){

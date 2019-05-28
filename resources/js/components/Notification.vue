@@ -17,7 +17,7 @@
             <ul class="notification-list media-list dropdown-content-body width-350">
                <li v-for="notification in notifications" class="media" v-bind:class="[ notification.is_read == 0 ? 'new': '']">
                 <div class="media-left">
-                   <img class="img-circle" width="30" v-bind:src="'/storage/uploads/users/' + notification.data.from_image"  alt="">
+                   <img class="img-circle" width="30" v-bind:src="'/storage/uploads/users/' + notification.prof_img"  alt="">
                 </div>
 
                 <div class="media-body">
@@ -45,7 +45,8 @@
                     id: notification.id
                 };
                 axios.post('/notification/read', data).then(response => {
-                    window.location.href = notification.data.action_url;
+                    //window.location.href = notification.data.action_url;
+                    $.pjax.reload('#content',{ url: notification.data.action_url });
                 });
             },
              MarkAllNotificationRead: function() {

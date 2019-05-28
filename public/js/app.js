@@ -11831,6 +11831,8 @@ module.exports = Component.exports
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 //
 //
 //
@@ -11864,15 +11866,19 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['messages', 'user'],
+  props: ['messages', 'user'],
 
-    methods: {
-        formatTime: function formatTime(time) {
-            var previousTime = moment(time, 'YYYY-MM-DD HH:mm:ss').format('x');
-            var timeDifference = moment(previousTime, 'x').fromNow();
-            return timeDifference;
-        }
+  methods: {
+    formatTime: function formatTime(time) {
+      if ((typeof time === 'undefined' ? 'undefined' : _typeof(time)) == 'object') time = time.date;
+
+      var local_date = moment.utc(time).local().format('x');
+
+      //let previousTime = moment(time,'YYYY-MM-DD HH:mm:ss').format('x');
+      var timeDifference = moment(local_date, 'x').fromNow();
+      return timeDifference;
     }
+  }
 });
 
 /***/ }),
@@ -12072,8 +12078,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
       this.$emit('messagesent', {
         user: this.user,
         room_id: this.room_id,
-        message: this.newMessage,
-        created_at: time
+        message: this.newMessage
       });
 
       this.newMessage = '';

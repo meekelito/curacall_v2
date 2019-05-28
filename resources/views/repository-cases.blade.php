@@ -31,7 +31,7 @@
     <ul class="breadcrumb">
       <li><a href="#l"><i class="icon-home2 position-left"></i> Home</a></li>
       <li><a href="#">Cases</a></li>
-      <li class="active">Closed cases</li>
+      <li class="active">For review cases</li>
     </ul>
   </div>
 </div>
@@ -60,7 +60,11 @@
             $owner = "";
             @endphp
             @foreach($case['participants'] as $participant)
-              @if( $participant['ownership'] == 2 || $participant['ownership'] == 5 )
+              @if( $participant['ownership'] == 2 )
+                @php
+                  $owner = $participant['fname'].' '.$participant['lname'];
+                @endphp
+              @elseif( $participant['ownership'] == 5 )
                 @php
                   $owner = $participant['fname'].' '.$participant['lname'];
                 @endphp
@@ -68,7 +72,6 @@
             @endforeach
             <tr>
               <td class="text-center">
-                <!-- <i class="icon-checkmark3 text-success"></i> -->
                 @php
                 $datetime1 = new DateTime($case['created_at']);
                 $datetime2 = new DateTime($case['updated_at']);
@@ -76,14 +79,14 @@
                 @endphp
                 {{ $interval->format('%ad %hh %im %ss') }}
               </td>
-              <td>
+              <td> 
                 <div class="media-body">
-                  <a href="{{ url('/cases/case_id',$case['id']) }}" class="display-inline-block text-default letter-icon-title">{{ $owner }}</a>
+                  <a href="{{ url('review-case/case_id',$case['id']) }}" class="display-inline-block text-default letter-icon-title">{{ $owner }}</a>
                   <div class="text-muted text-size-small"><span class="status-mark border-success position-left"></span> Closed</div>
                 </div>
               </td>
               <td>
-                <a href="{{ url('/cases/case_id',$case['id']) }}" class="text-default display-inline-block">
+                <a href="{{ url('review-case/case_id',$case['id']) }}" class="text-default display-inline-block">
                   <span>[#{{ $case['case_id'] }}] Call type</span>
                   <span class="display-block text-muted">Full message of the case...</span>
                 </a>
@@ -110,10 +113,7 @@
 @section('script')
 <script type="text/javascript">
   $(".menu-curacall li").removeClass("active");
-  $(".menu-cases").addClass('active');
-  $(".submenu-curacall li").removeClass("active");
-  $(".submenu-cases-closed-cases").addClass('active');
- // fetchCase();
+  $(".menu-repository-cases").addClass('active');
 </script>
 
 @endsection 

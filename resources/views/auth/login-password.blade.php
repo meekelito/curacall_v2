@@ -65,6 +65,7 @@
 					<!-- Advanced login -->
 					<form method="POST" action="{{ url('login') }}">
             			{{ csrf_field() }}
+            			<input type="hidden" id="tz" name="tz" value="America/New_York" />
 						<div class="panel panel-body login-form">
 							<div class="text-center">
 								<img src="{{ asset('assets/images/curacall_logo.jpg') }}" width="100">
@@ -84,7 +85,7 @@
 							<div class="form-group login-options">
 								<div class="row">
 									<div class="col-sm-6">
-										<a href="#">Forgot Password?</a>
+										<a href="{{ route('password.request') }}">Forgot Password?</a>
 									</div>
 								</div>
 							</div>
@@ -115,7 +116,11 @@
 
 	</div>
 	<!-- /page container -->
-
+	<script>
+		 $(function() {
+		 		$('#tz').val(Intl.DateTimeFormat().resolvedOptions().timeZone);
+		 });
+	</script>
 </body>
  
 </html>

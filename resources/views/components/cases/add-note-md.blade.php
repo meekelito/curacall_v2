@@ -55,8 +55,8 @@
       },
       error: function (data) {
         swal({
-          title: "Oops...",
-          text: "No connection could be made because the target machine actively refused it. Please refresh the browser and try again.!",
+          title: "Oops. Something went wrong!",
+          text: data.responseJSON.message,
           confirmButtonColor: "#EF5350",
           type: "error"
         });

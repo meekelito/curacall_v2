@@ -9,34 +9,72 @@
         </li>
       </ul>
       <div class="navbar-collapse collapse">
-        @if( ($case_info[0]->status == 1 && $participation[0]->ownership == 1) || ($case_info[0]->status == 2 &&  $participation[0]->ownership == 1) 
-        || ($case_info[0]->status == 1 && Auth::user()->role_id == 4))  
-        <div class="btn-group navbar-btn">
-          <a class="btn btn-primary btn-accept"><i class="icon-thumbs-up3"></i> <span class="hidden-xs position-right">Accept</span></a>
-          <!-- <a class="btn btn-warning btn-decline"><i class="icon-thumbs-down3"></i> <span class="hidden-xs position-right">Decline</span></a> -->
-        </div>
-        @endif
-        @if( $case_info[0]->status == 2 && ($participation[0]->ownership == 2 || $participation[0]->ownership == 5 ) || ($case_info[0]->status == 2 && Auth::user()->role_id == 4 ) )
-        <div class="btn-group navbar-btn">
-          <a class="btn btn-default btn-forward"><i class="icon-forward"></i> <span class="hidden-xs position-right">Forward</span></a>
-          <a class="btn btn-default btn-close"><i class="icon-checkmark4"></i> <span class="hidden-xs position-right">Close</span></a>
-        </div>
-        @endif
-        @if( $case_info[0]->status == 3 && ($participation[0]->ownership == 2 || $participation[0]->ownership == 5 ) )
-        <div class="btn-group navbar-btn">
-          <a class="btn btn-default btn-reopen"><i class="icon-checkmark4"></i> <span class="hidden-xs position-right">Re-Open</span></a>
-        </div>
-        @endif
-        @if( $case_info[0]->status == 2 && ($participation[0]->ownership == 3 || $participation[0]->ownership == 4 ) ) 
-        <div class="btn-group navbar-btn">
-          @foreach($participants as $row)
-            @if( $row->ownership == 2 )
-             <a class="btn"> Assigned to :  {{ ucwords($row->fname.' '.$row->lname) }}</a>
+        @if( $is_reviewed == 1 && Auth::user()->role_id == 1)
+          <div class="btn-group navbar-btn">
+            @if( ($case_info[0]->status == 1) )
+            <span class="label border-left-primary label-striped">Active</span>
             @endif
-          @endforeach
-        </div>
+            @if( ($case_info[0]->status == 2) )
+            <span class="label border-left-warning label-striped">Pending</span>
+            @endif
+            @if( ($case_info[0]->status == 3) )
+            <span class="label border-left-success label-striped">Closed</span>
+            @endif
+          </div>
+          @if($case_info[0]->is_reviewed == 0)
+          <div class="btn-group navbar-btn">
+            <a class="btn btn-primary btn-reviewed"><i class="icon-checkmark2"></i> <span class="hidden-xs position-right">Reviewed</span></a>
+          </div>
+          @else
+          <div class="btn-group navbar-btn">
+            <span class="label border-left-success label-striped">Reviewed</span>
+          </div>
+          @endif
+        @else
+
+          @if( isset($participation[0]->ownership) )
+            @php $ownership = $participation[0]->ownership; @endphp
+          @else
+            @php $ownership = 0; @endphp
+          @endif
+
+          @if($ownership == 0 && Auth::user()->role_id == 4 )
+          <div class="btn-group navbar-btn">
+            <a class="btn btn-primary btn-pull"><i class="icon-file-download"></i> <span class="hidden-xs position-right">Pull case</span></a>
+          </div>
+          @endif
+
+          @if($ownership == 0 && Auth::user()->role_id == 4 )
+          <div class="btn-group navbar-btn">
+            <a class="btn btn-primary btn-pull"><i class="icon-file-download"></i> <span class="hidden-xs position-right">Pull case</span></a>
+          </div>
+          @endif
+          @if( ($case_info[0]->status == 1 && $ownership == 1) || ($case_info[0]->status == 2 &&  $ownership == 1) )  
+          <div class="btn-group navbar-btn">
+            <a class="btn btn-primary btn-accept"><i class="icon-thumbs-up3"></i> <span class="hidden-xs position-right">Accept</span></a>
+          </div>
+          @endif
+          @if( $case_info[0]->status == 2 && ($ownership == 2 || $ownership == 5 ) )
+          <div class="btn-group navbar-btn">
+            <a class="btn btn-default btn-forward"><i class="icon-forward"></i> <span class="hidden-xs position-right">Forward</span></a>
+            <a class="btn btn-default btn-close"><i class="icon-checkmark4"></i> <span class="hidden-xs position-right">Close</span></a>
+          </div>
+          @endif
+          @if( $case_info[0]->status == 3 && ($ownership == 2 || $ownership == 5 ) )
+          <div class="btn-group navbar-btn">
+            <a class="btn btn-default btn-reopen"><i class="icon-checkmark4"></i> <span class="hidden-xs position-right">Re-Open</span></a>
+          </div>
+          @endif
+          @if( $case_info[0]->status == 2 && ($ownership == 4 ) ) 
+          <div class="btn-group navbar-btn">
+            @foreach($participants as $row)
+              @if( $row->ownership == 2 )
+               <a class="btn"> Assigned to :  {{ ucwords($row->fname.' '.$row->lname) }}</a>
+              @endif
+            @endforeach
+          </div>
+          @endif
         @endif
-        
         <div class="pull-right-lg">
           <p class="navbar-text">
             {{  date_format($case_info[0]->created_at,"M d,Y  h:i a") }}
@@ -158,7 +196,8 @@
                   }
                 },
                 error: function (data){
-                  alert("No connection could be made because the target machine actively refused it. Please refresh the browser and try again.");
+                  console.log(data);
+                  alert(data.responseJSON.message);
                 }
               });
             }
@@ -174,7 +213,8 @@
         }
       },
       error: function (data){
-        alert("No connection could be made because the target machine actively refused it. Please refresh the browser and try again.");
+        console.log(data);
+        alert(data.responseJSON.message);
       }
     });
 
@@ -299,5 +339,117 @@
   $(".btn-pdf").click(function(){
     window.open("{{ url('pdf-case/'.$case_id) }}", '_blank'); 
   }); 
+
+  $(".btn-pull").click(function(){
+    $.ajax({ 
+      type: "POST", 
+      url: "{{ url('account/pull-case') }}", 
+      data: { 
+        _token : '{{ csrf_token() }}',
+        case_id : '{{ $case_id }}'
+      },
+      beforeSend: function(){
+          $('body').addClass('wait-pointer');
+        },
+        complete: function(){
+          $('body').removeClass('wait-pointer');
+        },
+      success: function (data) {  
+        var res = $.parseJSON(data);
+        if( res.status == 1 ){
+          swal({
+            title: "Good job!",
+            text: res.message,
+            confirmButtonColor: "#66BB6A",
+            type: "success"
+          });  
+          dt_participants.search('').draw();
+          dt.search('').draw();
+          count_case();
+          fetchCase();
+        }else if( res.status == 2 ){
+          swal({
+            title: "Notice!",
+            text: res.message,
+            confirmButtonColor: "#EF5350",
+            type: "warning"
+          }); 
+          dt_participants.search('').draw();
+          dt.search('').draw();
+          count_case();
+          fetchCase();
+        }else{
+          swal({
+            title: "Oops..!",
+            text: res.message,
+            confirmButtonColor: "#EF5350",
+            type: "error"
+          }); 
+        }
+      },
+      error: function (data){
+        swal({
+          title: "Oops..!",
+          text: "No connection could be made because the target machine actively refused it. Please refresh the browser and try again.",
+          confirmButtonColor: "#EF5350",
+          type: "error"
+        });
+      }
+    });
+  });
+
+  $(".btn-reviewed").click(function(){
+    $.ajax({ 
+      type: "POST", 
+      url: "{{ url('review-case') }}", 
+      data: { 
+        _token : '{{ csrf_token() }}',
+        case_id : '{{ $case_id }}'
+      },
+      beforeSend: function(){
+          $('body').addClass('wait-pointer');
+        },
+        complete: function(){
+          $('body').removeClass('wait-pointer');
+        },
+      success: function (data) {  
+        var res = $.parseJSON(data);
+        if( res.status == 1 ){
+          swal({
+            title: "Good job!",
+            text: res.message,
+            confirmButtonColor: "#66BB6A",
+            type: "success"
+          });  
+          count_case();
+          fetchCase();
+        }else if( res.status == 2 ){
+          swal({
+            title: "Notice!",
+            text: res.message,
+            confirmButtonColor: "#EF5350",
+            type: "warning"
+          }); 
+          count_case();
+          fetchCase();
+        }else{
+          swal({
+            title: "Oops..!",
+            text: res.message,
+            confirmButtonColor: "#EF5350",
+            type: "error"
+          }); 
+        }
+      },
+      error: function (data){
+        swal({
+          title: "Oops..!",
+          text: "No connection could be made because the target machine actively refused it. Please refresh the browser and try again.",
+          confirmButtonColor: "#EF5350",
+          type: "error"
+        });
+      }
+    });
+  });
 
 </script>

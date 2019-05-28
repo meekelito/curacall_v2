@@ -119,8 +119,8 @@
 <script type="text/javascript">
   var dt,dt_participants;
   $(document).ready(function () {
-    $(".menu-curacall li").removeClass("active");
-    $(".menu-cases").addClass('active'); 
+    // $(".menu-curacall li").removeClass("active");
+    // $(".menu-cases").addClass('active'); 
     fetchCase();
     dt = $('#tbl-notes').DataTable({
       responsive: true,
@@ -157,7 +157,8 @@
       url: "{{ url('fetch-case') }}", 
       data: {  
         _token : '{{ csrf_token() }}',
-        case_id : '{{ $case_id }}' 
+        case_id : '{{ $case_id }}',
+        is_reviewed : '{{ $is_reviewed }}' 
       },
       success: function (data) {  
         $("#content-case").html( data );
@@ -230,7 +231,6 @@
       }
     });
   });
-
 </script>
 
 @endsection 

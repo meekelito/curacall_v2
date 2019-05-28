@@ -93,6 +93,14 @@ const app = new Vue({
                                   console.log(err); 
                                 }
                             break;
+                            case "pull_case":
+                               try{
+                                   fetchCase();
+                                }catch(err)
+                                {
+                                  console.log(err); 
+                                }
+                            break;
                             default:
 
                           }

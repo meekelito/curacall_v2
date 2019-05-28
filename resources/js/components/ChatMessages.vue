@@ -35,8 +35,14 @@
 
     methods:{
         formatTime (time) {
-            let previousTime = moment(time,'YYYY-MM-DD HH:mm:ss').format('x');
-            let timeDifference = moment(previousTime,'x').fromNow();
+        if(typeof time =='object')
+          time = time.date;
+       
+    
+            var local_date= moment.utc(time).local().format('x');
+
+            //let previousTime = moment(time,'YYYY-MM-DD HH:mm:ss').format('x');
+            let timeDifference = moment(local_date,'x').fromNow();
             return timeDifference;
         }
     }

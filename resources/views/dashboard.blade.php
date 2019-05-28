@@ -35,12 +35,12 @@
 
             <div class="tabbable nav-tabs-vertical nav-tabs-left">
                 <ul class="nav nav-tabs nav-tabs-highlight" style="width: 200px;">
-                  @if( Auth::user()->role_id != 6 && Auth::user()->role_id != 7 && Auth::user()->role_id != 8 )
+                  @can('view-account-reports')
                     <li class="active" id="accounts-tab"><a data-toggle="tab" onclick="reportAccount(0)"><i class="icon-office position-left"></i> Accounts </a></li>
-                    <li><a data-toggle="tab" onclick="reportOncall('all','{{ date ( "m/01/Y" ) }} - {{ date ( "m/d/Y" ) }}')"><i class="icon-headset position-left"></i> On call</a></li>
-                  @else
-                    <li class="active" ><a data-toggle="tab" onclick="reportOncall('all','{{ date ( "m/01/Y" ) }} - {{ date ( "m/d/Y" ) }}')"><i class="icon-headset position-left"></i> On call</a></li>
-                  @endif
+                  @endcan
+                  @can('view-oncall-reports')
+                    <li @if(!auth()->user()->can('view-account-reports')) class="active" @endif><a data-toggle="tab" onclick="reportOncall('all','{{ date ( "m/01/Y" ) }} - {{ date ( "m/d/Y" ) }}')"><i class="icon-headset position-left"></i> On call</a></li>
+                  @endcan
                 </ul>
 
                 <div class="tab-content">
@@ -64,12 +64,25 @@
         cancelClass: 'btn-default'
     });
 
+     $.getScripts({
+      urls: ["{{ asset('assets/js/plugins/visualization/d3/d3.min.js') }}","{{ asset('assets/js/plugins/visualization/d3/d3_tooltip.js') }}"],
+      cache: true,  // Default
+      async: false, // Default
+      success: function(response) {
+          
+
+      }
+    });
     
     var myElement = document.getElementById("accounts-tab");
     if(myElement){
-      reportAccount();
+      @can('view-account-reports')
+        reportAccount();
+      @endcan
     }else{
-      reportOncall('all','{{ date ( "m/01/Y" ) }} - {{ date ( "m/d/Y" ) }}');
+      @can('view-oncall-reports')
+        reportOncall('all','{{ date ( "m/01/Y" ) }} - {{ date ( "m/d/Y" ) }}');
+      @endcan
     }
   }); 
 
@@ -117,113 +130,40 @@
       }
     });
   }
-function select_account_report(){ 
-    var account_id = $('#report_account_id').val();
-     $.ajax({ 
-        type: "GET", 
-        url: "{{ route('dashboard.cases.count') }}", 
-        data: {  
-          range: $('.date-range-val').val(),
-          account_id: account_id,
-          call_type: $('#report_account_calltype').val(),
-          subcall_type: $('#report_account_subcalltype').val()
-        },
-        success: function (data) {  
-          //$(".content-case").html( data );
-          var chart_data = $.parseJSON(data);
-          if(chart_data.length > 0)
-          {
-            var total_result = 0;
-            $.each( chart_data, function( key, value ) {
-              total_result += value.value;
-            });
 
-            $.each( chart_data, function( key, value ) {
-              var percentage = (value.value/total_result) * 100;
-              value.name = value.name + " (" + percentage.toPrecision(3) +"%) : " + value.value;
-            });
+     var htmlEntities = {
+          nbsp: ' ',
+          cent: '¢',
+          pound: '£',
+          yen: '¥',
+          euro: '€',
+          copy: '©',
+          reg: '®',
+          lt: '<',
+          gt: '>',
+          quot: '"',
+          amp: '&',
+          apos: '\''
+      };
 
-         //console.log($('.date-range-val').val());
-             // Set paths
-            // ------------------------------
-            require.config({
-                paths: {
-                    echarts: "{{ asset('assets/js/plugins/visualization/echarts') }}"
-                } 
-            });
-            // Configuration
-            // ------------------------------
-            require(
-                [
-                    'echarts',
-                    'echarts/theme/limitless',
-                    'echarts/chart/pie',
-                    'echarts/chart/funnel'
-                ],
-                // Charts setup
-                function (ec, limitless) {
-                    // Initialize charts
-                    // ------------------------------
-                    var rose_diagram_visible = ec.init(document.getElementById('rose_diagram_visible'), limitless);
+      function unescapeHTML(str) {
+          return str.replace(/\&([^;]+);/g, function (entity, entityCode) {
+              var match;
 
-                    rose_diagram_visible_options = {
-                        // Add title
-                        title: {
-                            text: 'Total Cases: ' + ' (' + total_result.toLocaleString() + ')',
-                            subtext: $('.date-range-val').val(),
-                            x: 'center'
-                        },
-                        // Add tooltip
-                        tooltip: {
-                            trigger: 'item',
-                            formatter: "{a} <br/>{b}"
-                            // formatter: "{a} <br/>{b}: {c} ({d}%)"
-                        },
-                        // Add series
-                        series: [
-                            {
-                                name: 'Cases',
-                                type: 'pie',
-                                radius: ['15%', '73%'],
-                                center: ['50%', '57%'],
-                                roseType: 'area',
-
-                                data: chart_data
-                            }
-                        ]
-                    };
-                    rose_diagram_visible.hideLoading();
-                    rose_diagram_visible.setOption(rose_diagram_visible_options);
-
-                    // Resize charts
-                    // ------------------------------
-
-                    // window.onresize = function () {
-                    //     setTimeout(function (){
-                    //       rose_diagram_visible.resize();
-                    //     }, 200);
-                    // }
-                }
-            );
-          }else{
-            $('#rose_diagram_visible').html('No result');
-          }
-        },
-        error: function (data){
-          swal({
-            title: "Oops..!",
-            text: "No connection could be made because the target machine actively refused it. Please refresh the browser and try again.",
-            confirmButtonColor: "#EF5350",
-            type: "error"
+              if (entityCode in htmlEntities) {
+                  return htmlEntities[entityCode];
+                  /*eslint no-cond-assign: 0*/
+              } else if (match = entityCode.match(/^#x([\da-fA-F]+)$/)) {
+                  return String.fromCharCode(parseInt(match[1], 16));
+                  /*eslint no-cond-assign: 0*/
+              } else if (match = entityCode.match(/^#(\d+)$/)) {
+                  return String.fromCharCode(~~match[1]);
+              } else {
+                  return entity;
+              }
           });
-        }
-      });
-
-  
-   
-}
-
-
+      };
+ 
 </script>
 @endsection  
 
