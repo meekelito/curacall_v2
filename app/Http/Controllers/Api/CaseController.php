@@ -184,7 +184,7 @@ class CaseController extends Controller
         ));
       }
       if( $request->case_form == "close" ){
-        $res = Cases::find($request->case_id);
+        $res = MobCase::find($request->case_id);
         $res->status = 2;
         $res->save();
       }
