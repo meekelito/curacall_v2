@@ -26,7 +26,6 @@ class PermissionTableSeeder extends Seeder
               ['name'  => 'accept-case',                        'description'  =>  'Accept case', 'module' => 'cases'],
               ['name'  => 'close-case',                         'description'  =>  'Close case', 'module' => 'cases'],
               ['name'  => 'reopen-case',                        'description'  =>  'Re-open case', 'module' => 'cases'],
-              ['name'  => 'pull-case',                          'description'  =>  'Pull case', 'module' => 'cases'],
               ['name'  => 'add-note',                           'description'  =>  'Add note', 'module' => 'cases'],
               ['name'  => 'export-pdf',                         'description'  =>  'Export PDF', 'module' => 'cases'],
               ['name'  => 'add-case-participant',               'description'  =>  'Add case participant', 'module' => 'cases'],
@@ -61,6 +60,8 @@ class PermissionTableSeeder extends Seeder
               //Account Admin Console
               ['name'  => 'manage-account-general-info',        'description'  =>  'Manage Account General Information', 'module' => 'account console'],
               ['name'  => 'case-management',                    'description'  =>  'Case Management', 'module' => 'account console'],
+              //Case Management
+              ['name'  => 'pull-case',                          'description'  =>  'Pull case', 'module' => 'case management']
           ];
 
         Permission::truncate();
