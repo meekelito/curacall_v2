@@ -38,17 +38,13 @@
             @php $ownership = 0; @endphp
           @endif
 
-          @if($ownership == 0 && Auth::user()->role_id == 4 )
+          @if($ownership == 0 && auth()->user()->can('pull-case') )
           <div class="btn-group navbar-btn">
             <a class="btn btn-primary btn-pull"><i class="icon-file-download"></i> <span class="hidden-xs position-right">Pull case</span></a>
           </div>
           @endif
 
-          @if($ownership == 0 && Auth::user()->role_id == 4 )
-          <div class="btn-group navbar-btn">
-            <a class="btn btn-primary btn-pull"><i class="icon-file-download"></i> <span class="hidden-xs position-right">Pull case</span></a>
-          </div>
-          @endif
+
           @if( ($case_info[0]->status == 1 && $ownership == 1) || ($case_info[0]->status == 2 &&  $ownership == 1) )  
           <div class="btn-group navbar-btn">
             <a class="btn btn-primary btn-accept"><i class="icon-thumbs-up3"></i> <span class="hidden-xs position-right">Accept</span></a>
