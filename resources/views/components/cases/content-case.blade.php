@@ -38,7 +38,7 @@
             @php $ownership = 0; @endphp
           @endif
 
-          @if($ownership == 0 && auth()->user()->can('pull-case') )
+          @if($ownership == 0 && auth()->user()->can('pull-case'))
           <div class="btn-group navbar-btn">
             <a class="btn btn-primary btn-pull"><i class="icon-file-download"></i> <span class="hidden-xs position-right">Pull case</span></a>
           </div>
