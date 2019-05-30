@@ -299,18 +299,11 @@ class ReportsController extends Controller
       $closedAverage = $this->getAverageTime('closed',$from,$to);
     }else
     {
-        if( Auth::user()->role_id != 7){
           $readAverage = $this->getAverageTime('read',$from,$to,$request->account_id);
           $acceptedAverage = $this->getAverageTime('accepted',$from,$to,$request->account_id);
           $closedAverage = $this->getAverageTime('closed',$from,$to,$request->account_id);
-        }
     }
 
-    if( Auth::user()->role_id == 7  ){
-      $readAverage = $this->getAverageTime('read',$from,$to);
-      $acceptedAverage = $this->getAverageTime('accepted',$from,$to);
-      $closedAverage = $this->getAverageTime('closed',$from,$to);
-    }
 
     return json_encode(array('read'=>$readAverage,'accepted'=>$acceptedAverage,'closed'=>$closedAverage));
   }
