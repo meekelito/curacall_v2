@@ -278,28 +278,6 @@ class ReportsController extends Controller
                       ->first();  
     }
 
-    if( Auth::user()->role_id == 7  ){
-      $active_count = Cases::Join('case_participants AS b','cases.id','=','b.case_id')
-                      ->where('b.user_id',Auth::user()->id)
-                      ->whereBetween('cases.created_at', array($from, $to))
-                      ->where('cases.status',1)
-                      ->select(DB::raw('count(cases.id) as total'))
-                      ->first();
-
-      $pending_count = Cases::Join('case_participants AS b','cases.id','=','b.case_id')
-                      ->where('b.user_id',Auth::user()->id)
-                      ->whereBetween('cases.created_at', array($from, $to))
-                      ->where('cases.status',2)
-                      ->select(DB::raw('count(*) as total'))
-                      ->first();
-      $closed_count = Cases::Join('case_participants AS b','cases.id','=','b.case_id')
-                      ->where('b.user_id',Auth::user()->id)
-                      ->whereBetween('cases.created_at', array($from, $to))
-                      ->where('cases.status',3)
-                      ->select(DB::raw('count(*) as total'))
-                      ->first();  
-    }
-
     return json_encode(array('active'=>$active_count->total,'pending'=>$pending_count->total,'closed'=>$closed_count->total));
   }
 
