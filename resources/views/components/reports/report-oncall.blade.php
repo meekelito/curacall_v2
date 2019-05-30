@@ -241,6 +241,19 @@
 
   function getOverallAverage()
   {
+     $(".content-case").block({
+        message: '<i style="font-size: 30px;" class="icon-spinner2 spinner"></i>',
+        overlayCSS: {
+            backgroundColor: '#fff',
+            opacity: 0.8,
+            cursor: 'wait'
+        },
+        css: {
+            border: 0,
+            padding: 0,
+            backgroundColor: 'none'
+        }
+      });
      $.ajax({  
       type: "POST", 
       url: "{{ route('report.overall-average') }}", 
@@ -262,12 +275,17 @@
           confirmButtonColor: "#EF5350",
           type: "error"
         });
+      },
+      complete: function()
+      {
+        $(".content-case").unblock();
       }
     });
   }
 
   function getOverallCaseStatus()
   {
+
      $.ajax({  
       type: "POST", 
       url: "{{ route('report.overall-case-status') }}", 
@@ -550,6 +568,19 @@
 
     function oncall_trend_report()
     {
+        $(".content-case").block({
+          message: '<i style="font-size: 30px;" class="icon-spinner2 spinner"></i>',
+          overlayCSS: {
+              backgroundColor: '#fff',
+              opacity: 0.8,
+              cursor: 'wait'
+          },
+          css: {
+              border: 0,
+              padding: 0,
+              backgroundColor: 'none'
+          }
+        });
         $.ajax({ 
         type: "GET", 
         url: "{{ route('report.oncall.chart.trend') }}", 
@@ -651,6 +682,10 @@
             confirmButtonColor: "#EF5350",
             type: "error"
           });
+        },
+        complete: function()
+        {
+          $(".content-case").unblock();
         }
       });  
     }
