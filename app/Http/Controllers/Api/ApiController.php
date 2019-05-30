@@ -26,6 +26,8 @@ class ApiController extends Controller
       'case_message' => 'bail|required',
       'recipients' => 'required|array',
       'recipients.*'=> 'distinct|exists:users,id',
+      'recipients.*'=> 'distinct|exists:users,id',
+      'recipients.*'=> 'distinct|exists:users,id',
     ],[
       'account_id.exists' => 'The account ID invalid ',
       'recipient.distinct'=>'Recipient must contain unique Curacall ID.',
@@ -215,7 +217,7 @@ class ApiController extends Controller
 
       $update_res = Case_participant::where('case_id', $request->case_id)
       ->where('user_id', $request->user_id )
-      ->update(['ownership' => 3]);
+      ->update(['ownership' => 2]);
     }
 
     $res = Case_history::create( ["is_visible"=>1,"status"=>2,"case_id" => $request->case_id,"action_note" => "Case Accepted", 'created_by' => $request->user_id ] ); 
@@ -402,6 +404,92 @@ class ApiController extends Controller
 
   }
 
+  function getAverageTime($status,$from,$to,$action_note = '', $user_id = 'all')
+  {
+    /** Function to get the average time base on case_history table **/
+      $action_note_condition = '';
+      if($action_note != '')
+        $action_note_condition = " AND action_note = '$action_note'";
 
+      if($user_id == 'all')
+        $case_participants = "SELECT case_id FROM case_participants WHERE  ownership != 4";
+      else
+        $case_participants = "SELECT case_id FROM case_participants WHERE  ownership != 4 AND user_id = ".$user_id;
+
+      $data = DB::select("SELECT a.*,b.created_at as date_created,TIMESTAMPDIFF(MINUTE,b.created_at,a.created_at) as time_diff FROM case_history a 
+
+       LEFT JOIN cases b ON a.case_id = b.id 
+       WHERE a.status = ?
+       AND a.case_id IN(".$case_participants.")
+       AND (a.created_at BETWEEN ? AND ?) 
+       GROUP BY a.case_id",[$status,$from,$to]);
+
+      $totaltime = 0;
+
+      if($data){
+        foreach($data as $row){
+                $timestamp = $row->time_diff;
+                $totaltime += $timestamp;
+        }
+
+        $average_time = ($totaltime/count($data));
+
+        return $this->convertToHumanTime($average_time);
+      }else
+      return "0";
+  }
+
+  function convertToHumanTime($minutes,$precision = 'first') {
+
+    $d = floor ($minutes / 1440);
+    $h = floor (($minutes - $d * 1440) / 60);
+    $m = floor($minutes - ($d * 1440) - ($h * 60));
+    
+    $days = $d > 1 ? 'days' : 'day';
+    $hours = $h > 1 ? 'hours' : 'hour';
+    $minutes = $m > 1 ? 'minutes' : 'minute';
+
+    $display = array();
+    if($d > 0 )
+      array_push($display, "{$d} $days");
+    if($h > 0 )
+      array_push($display, "{$h}  $hours");
+    if($m > 0)
+      array_push($display, "{$m} $minutes");
+
+    if($precision == 'first')
+      return $display[0];
+    else if($precision == 'last')
+      return $display[count($display)-1];
+    else
+      return implode(' ',$display);
+}
+
+  public function getReportAverageTime(Request $request)
+  {
+    $validator = Validator::make($request->all(),[ 
+      'user_id' => 'required',
+      'from'  => 'required|date',
+      'to'    =>  'required|date'
+    ]); 
+
+    if( $validator->fails() ){
+      return json_encode(array( 
+        "status"=>0,
+        "response"=>"error", 
+        "message"=>$validator->errors()
+      ));
+    }
+
+
+
+      $read =  $this->getAverageTime(1,$request->from,$request->to,'Case Read',$request->user_id);
+
+      $accepted = $this->getAverageTime(2,$request->from,$request->to,$request->user_id);
+  
+      $closed = $this->getAverageTime(3,$request->from,$request->to,$request->user_id);
+
+      return ["read"=> $read,"accepted" =>$accepted,"closed"=>$closed];
+  }
 
 }

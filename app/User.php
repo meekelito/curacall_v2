@@ -31,13 +31,39 @@ class User extends Authenticatable implements JWTSubject
         'password', 'remember_token',
     ];
 
+    protected $appends = [
+      'avatar',
+      'full_name'
+    ];
+
+    /**
+     * Get the identifier that will be stored in the subject claim of the JWT.
+     *
+     * @return mixed
+     */
     public function getJWTIdentifier()
     {
         return $this->getKey();
     }
+
+    /**
+     * Return a key value array, containing any custom claims to be added to the JWT.
+     *
+     * @return array
+     */
     public function getJWTCustomClaims()
     {
         return [];
+    }
+    
+    public function getAvatarAttribute()
+    {
+      return url('/').'/storage/uploads/users/'.$this->attributes['prof_img'];
+    }
+    
+    public function getFullNameAttribute()
+    {
+      return $this->attributes['lname'].', '.$this->attributes['fname'];
     }
 
     public function messages()
