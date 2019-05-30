@@ -128,12 +128,12 @@
             // alert(data);
           },
           error: function (data){
-            swal({
-              title: "Oops..!",
-              text: "No connection could be made because the target machine actively refused it. Please refresh the browser and try again.",
-              confirmButtonColor: "#EF5350",
-              type: "error"
-            });
+            // swal({
+            //   title: "Oops..!",
+            //   text: "No connection could be made because the target machine actively refused it. Please refresh the browser and try again.",
+            //   confirmButtonColor: "#EF5350",
+            //   type: "error"
+            // });
           }
         });
       }
@@ -148,7 +148,7 @@
                   },
                   success: function (data) {  
                         var obj = $.parseJSON(data);
-                        $('#report_account_subcalltype').empty().trigger('change');
+                        $('#report_account_subcalltype').empty();
                         $("#report_account_subcalltype").append("<option value='all'>Select Sub-Call Type</option>");
                       
                         $.each(obj, function(i, item) {
@@ -158,12 +158,12 @@
                        // $('#report_account_subcalltype').trigger('change'); 
                   },
                   error: function (data){
-                    swal({
-                      title: "Oops..!",
-                      text: "No connection could be made because the target machine actively refused it. Please refresh the browser and try again.",
-                      confirmButtonColor: "#EF5350",
-                      type: "error"
-                    });
+                    // swal({
+                    //   title: "Oops..!",
+                    //   text: "No connection could be made because the target machine actively refused it. Please refresh the browser and try again.",
+                    //   confirmButtonColor: "#EF5350",
+                    //   type: "error"
+                    // });
                   }
                 });
 
@@ -277,7 +277,20 @@
     }
 
     function select_account_report(){
-                          report_by_calltypes(); 
+        $(".content-case").block({
+        message: '<i style="font-size: 30px;" class="icon-spinner2 spinner"></i>',
+        overlayCSS: {
+            backgroundColor: '#fff',
+            opacity: 0.8,
+            cursor: 'wait'
+        },
+        css: {
+            border: 0,
+            padding: 0,
+            backgroundColor: 'none'
+        }
+      });
+        report_by_calltypes(); 
     var account_id = $('#report_account_id').val();
      $.ajax({ 
         type: "GET", 
@@ -366,14 +379,16 @@
           }else{
             $('#rose_diagram_visible').html('No result');
           }
+          $(".content-case").unblock();
         },
         error: function (data){
-          swal({
-            title: "Oops..!",
-            text: "No connection could be made because the target machine actively refused it. Please refresh the browser and try again.",
-            confirmButtonColor: "#EF5350",
-            type: "error"
-          });
+          // swal({
+          //   title: "Oops..!",
+          //   text: "No connection could be made because the target machine actively refused it. Please refresh the browser and try again.",
+          //   confirmButtonColor: "#EF5350",
+          //   type: "error"
+          // });
+            $(".content-case").unblock();
         }
       });   
 
