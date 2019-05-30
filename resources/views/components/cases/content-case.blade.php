@@ -9,7 +9,7 @@
         </li>
       </ul>
       <div class="navbar-collapse collapse">
-        @if( $is_reviewed == 1 && Auth::user()->role_id == 1)
+        
           <div class="btn-group navbar-btn">
             @if( ($case_info[0]->status == 1) )
             <span class="label border-left-primary label-striped">Active</span>
@@ -21,6 +21,7 @@
             <span class="label border-left-success label-striped">Closed</span>
             @endif
           </div>
+        @if( $is_reviewed == 1 && Auth::user()->role_id == 1)
           @if($case_info[0]->is_reviewed == 0)
           <div class="btn-group navbar-btn">
             <a class="btn btn-primary btn-reviewed"><i class="icon-checkmark2"></i> <span class="hidden-xs position-right">Reviewed</span></a>
@@ -38,17 +39,13 @@
             @php $ownership = 0; @endphp
           @endif
 
-          @if($ownership == 0 && Auth::user()->role_id == 4 )
+          @if($ownership == 0 && auth()->user()->can('pull-case'))
           <div class="btn-group navbar-btn">
             <a class="btn btn-primary btn-pull"><i class="icon-file-download"></i> <span class="hidden-xs position-right">Pull case</span></a>
           </div>
           @endif
 
-          @if($ownership == 0 && Auth::user()->role_id == 4 )
-          <div class="btn-group navbar-btn">
-            <a class="btn btn-primary btn-pull"><i class="icon-file-download"></i> <span class="hidden-xs position-right">Pull case</span></a>
-          </div>
-          @endif
+
           @if( ($case_info[0]->status == 1 && $ownership == 1) || ($case_info[0]->status == 2 &&  $ownership == 1) )  
           <div class="btn-group navbar-btn">
             <a class="btn btn-primary btn-accept"><i class="icon-thumbs-up3"></i> <span class="hidden-xs position-right">Accept</span></a>

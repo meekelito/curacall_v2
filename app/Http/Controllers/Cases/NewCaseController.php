@@ -23,7 +23,9 @@ class NewCaseController extends Controller
                     ->where('user_id',Auth::user()->id)
                     ->get();
 
-    if( $participation->isEmpty() && (Auth::user()->role_id != 4 ) ){
+    if(Auth::user()->role_id == 4 && Auth::user()->role_id == 1){
+
+    }else{
       abort(404);
     }
 
@@ -49,8 +51,13 @@ class NewCaseController extends Controller
                     ->where('user_id',Auth::user()->id)
                     ->get();
 
-    if( $participation->isEmpty() && (Auth::user()->role_id != 4) ){
-      abort(404);
+    if( $participation->isEmpty() ){
+      if(Auth::user()->role_id == 4 && Auth::user()->role_id == 1){
+
+      }else{
+        abort(404);
+      }
+      
     } 
 
     $case_info = Cases::where('id',$case_id)->get();
