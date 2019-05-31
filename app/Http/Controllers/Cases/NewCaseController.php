@@ -24,11 +24,9 @@ class NewCaseController extends Controller
                     ->get();
 
     if( $participation->isEmpty() ){
-      if(Auth::user()->role_id == 4 || Auth::user()->role_id == 1){
-
-      }else{
-        abort(404);
-      }
+        if(!auth()->user()->hasRole('account-admin') && !auth()->user()->hasRole('curacall-admin')){
+          abort(404);
+        }
     }
 
     $case_info = Cases::where('id',$case_id)->get();
@@ -54,13 +52,10 @@ class NewCaseController extends Controller
                     ->get();
 
     if( $participation->isEmpty() ){
-      if(Auth::user()->role_id == 4 || Auth::user()->role_id == 1){
-
-      }else{
-        abort(404);
-      }
-      
-    } 
+        if(!auth()->user()->hasRole('account-admin') && !auth()->user()->hasRole('curacall-admin')){
+          abort(404);
+        }
+    }
 
     $case_info = Cases::where('id',$case_id)->get();
     $participants = Case_participant::leftJoin('users AS b','case_participants.user_id','=','b.id')

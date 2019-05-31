@@ -278,28 +278,6 @@ class ReportsController extends Controller
                       ->first();  
     }
 
-    if( Auth::user()->role_id == 7  ){
-      $active_count = Cases::Join('case_participants AS b','cases.id','=','b.case_id')
-                      ->where('b.user_id',Auth::user()->id)
-                      ->whereBetween('cases.created_at', array($from, $to))
-                      ->where('cases.status',1)
-                      ->select(DB::raw('count(cases.id) as total'))
-                      ->first();
-
-      $pending_count = Cases::Join('case_participants AS b','cases.id','=','b.case_id')
-                      ->where('b.user_id',Auth::user()->id)
-                      ->whereBetween('cases.created_at', array($from, $to))
-                      ->where('cases.status',2)
-                      ->select(DB::raw('count(*) as total'))
-                      ->first();
-      $closed_count = Cases::Join('case_participants AS b','cases.id','=','b.case_id')
-                      ->where('b.user_id',Auth::user()->id)
-                      ->whereBetween('cases.created_at', array($from, $to))
-                      ->where('cases.status',3)
-                      ->select(DB::raw('count(*) as total'))
-                      ->first();  
-    }
-
     return json_encode(array('active'=>$active_count->total,'pending'=>$pending_count->total,'closed'=>$closed_count->total));
   }
 
@@ -321,18 +299,11 @@ class ReportsController extends Controller
       $closedAverage = $this->getAverageTime('closed',$from,$to);
     }else
     {
-        if( Auth::user()->role_id != 7){
           $readAverage = $this->getAverageTime('read',$from,$to,$request->account_id);
           $acceptedAverage = $this->getAverageTime('accepted',$from,$to,$request->account_id);
           $closedAverage = $this->getAverageTime('closed',$from,$to,$request->account_id);
-        }
     }
 
-    if( Auth::user()->role_id == 7  ){
-      $readAverage = $this->getAverageTime('read',$from,$to);
-      $acceptedAverage = $this->getAverageTime('accepted',$from,$to);
-      $closedAverage = $this->getAverageTime('closed',$from,$to);
-    }
 
     return json_encode(array('read'=>$readAverage,'accepted'=>$acceptedAverage,'closed'=>$closedAverage));
   }
@@ -691,7 +662,12 @@ class ReportsController extends Controller
                 ->orderBy('users.role_id')
                 ->orderBy('users.fname')
                 ->get(); 
-    return view( 'components.reports.report-admin-billing',['users'=>$users,'billing_month'=>$request->billing_month."-01"]);
+    if($request->is_check){
+      return view( 'components.reports.report-admin-billing-role',['users'=>$users,'billing_month'=>$request->billing_month."-01"]);
+    }else{
+      return view( 'components.reports.report-admin-billing',['users'=>$users,'billing_month'=>$request->billing_month."-01"]);
+    }
+    
   }
 
 }

@@ -1,6 +1,8 @@
 <div class="container-fluid">
     <div class="row">
-        @if( Auth::user()->role_id != 7 )
+        @role('agency-coordinators')
+         <input type="hidden" class="oncall-user" value="{{ Auth::user()->id }}" />
+        @else
         <div class="form-group form-group-xs col-sm-3">
             <select class="select-search oncall-user" style="width: 100% !important;">
                 <option value="all">Select On call</option>
@@ -9,7 +11,8 @@
                 @endforeach
             </select>
         </div>
-        @endif 
+        @endrole
+
         <div class="form-group form-group-xs col-sm-3">
             <input type="text" class="form-control daterange-basic date-range-val" 
             @if(!empty($range)) value="{{$range}}" 

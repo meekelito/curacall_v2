@@ -1,7 +1,7 @@
 <div class="container-fluid">
   
     <div class="row">
-        @if( Auth::user()->role_id == 1 )
+        @if( auth()->user()->hasRole('curacall-admin') )
         <div class="form-group form-group-xs col-sm-3">
             <!-- <select id="report_account_id" class="form-control" onchange="select_account_report()"> -->
             <select class="select-search" id="report_account_id" onchange="select_account_report()" style="width: 100% !important;">
