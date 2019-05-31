@@ -61,7 +61,7 @@
 				<td>${{number_format($total_past_month_prorate, 2, '.', '') }}</td>
 				<td align="center">{{$ctr_curr_month_prorate}}</td>
 				<td align="right">${{ number_format($total_curr_month_prorate, 2, '.', '') }}</td>
-				<td align="right">${{$total_past_month_prorate+$total_curr_month_prorate}} </td>
+				<td align="right">${{ number_format($total_past_month_prorate+$total_curr_month_prorate, 2, '.', '')}} </td>
 			</tr>
 
 
