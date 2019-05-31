@@ -30,6 +30,14 @@
           <div class="col-sm-3">
             <input type="month" class="form-control" name="billing_month" id="billing_month" required>
           </div>
+          <div class="col-sm-1">
+            <div class="checkbox">
+              <label>
+                <input type="checkbox" class="styled" name="is_role">
+                View by role
+              </label>
+            </div>
+          </div>
           <button type="button" class="btn btn-primary btn-icon btn-search"><i class="icon-search4"></i></button>
         </div>
         <div class="row">
@@ -88,7 +96,10 @@
     $(".styled, .multiselect-container input").uniform({ radioClass: 'choice'});
 
     $(".btn-search").click(function(){
-
+      var is_check = 0;
+      if($(".styled").is(":checked")){
+         is_check = 1;
+      }
       if( $('.multiselect-select-all').val() != null && $('#billing_month').val() != "" ){
         $.ajax({ 
           type: "POST", 
@@ -96,7 +107,8 @@
           data: { 
             _token : '{{ csrf_token() }}',
             account_id: $('.multiselect-select-all').val(),
-            billing_month: $('#billing_month').val()
+            billing_month: $('#billing_month').val(),
+            is_check : is_check
           },
           beforeSend: function(){
               $('body').addClass('wait-pointer');
@@ -116,6 +128,8 @@
             });
           }
         });
+      }else{
+        alert("Account and Date field is required.");
       }
     });
    

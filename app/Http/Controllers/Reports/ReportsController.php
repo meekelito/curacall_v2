@@ -662,7 +662,12 @@ class ReportsController extends Controller
                 ->orderBy('users.role_id')
                 ->orderBy('users.fname')
                 ->get(); 
-    return view( 'components.reports.report-admin-billing',['users'=>$users,'billing_month'=>$request->billing_month."-01"]);
+    if($request->is_check){
+      return view( 'components.reports.report-admin-billing-role',['users'=>$users,'billing_month'=>$request->billing_month."-01"]);
+    }else{
+      return view( 'components.reports.report-admin-billing',['users'=>$users,'billing_month'=>$request->billing_month."-01"]);
+    }
+    
   }
 
 }
