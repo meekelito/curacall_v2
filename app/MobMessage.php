@@ -8,7 +8,7 @@ class MobMessage extends Model
 {
 	protected $table = 'messages';
 
-  protected $fillable = ['room_id','message'];
+  protected $fillable = ['room_id','message', 'user_id'];
 
   protected $appends = [
     'user',

@@ -55,7 +55,8 @@ class MessageController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $mess = MobMessage::create($request->input());
+        return $mess;
     }
 
     /**
