@@ -18,6 +18,7 @@ class User extends Authenticatable implements JWTSubject
      *
      * @var array
      */
+    
     protected $fillable = [
         'account_id','is_curacall','email','password','role_id','fname','lname','prof_suffix','title','phone_no','mobile_no','prof_img','status','created_by','updated_by', 'timezone','date_activated','logoff_time'
     ];
