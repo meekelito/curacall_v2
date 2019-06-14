@@ -764,7 +764,6 @@ class ApiController extends Controller
       foreach ($oncall_personnel as $row) {
        $user = User::find($row['user_id']);
        $user->notify(new CaseNotification($arr)); // Notify participant
-          
       }
       /* END Notification */
 
