@@ -22,6 +22,7 @@ class AuthController extends Controller
     }
 
     public function timeInMinutes($user) {
+        return Carbon::now()->addDays(60)->timestamp;
         if (!$user) {
             return Carbon::now()->addMinutes(15)->timestamp;
         }
@@ -50,30 +51,21 @@ class AuthController extends Controller
      */
     public function login(Request $request)
     {   
-        $credentials = request(['email', 'password']);
-
-        if (! $token = auth()->attempt($credentials)) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+        $userInfo = User::where('email', $request->email)->first();
+        $time = $this->timeInMinutes($userInfo);
+        if ($request->mobile_pin) {
+            $user = User::where('email', $request->email)->where('mobile_pin',$request->mobile_pin)->first();
+            $token = JWTAuth::fromUser($user, ['exp' => $time]);
+        } else {
+            $credentials = request(['email', 'password']);
+            $token = auth('api')->attempt($credentials, ['exp' => $time]);
         }
 
-        return $this->respondWithToken($token);
+        if (!$token) {
+            return response()->json(['error' => 'Password did not match']);
+        }
 
-        
-        // $userInfo = User::where('email', $request->email)->first();
-        // $time = $this->timeInMinutes($userInfo);
-        // if ($request->mobile_pin) {
-        //     $user = User::where('email', $request->email)->where('mobile_pin',$request->mobile_pin)->first();
-        //     $token = JWTAuth::fromUser($user, ['exp' => $time]);
-        // } else {
-        //     $credentials = request(['email', 'password']);
-        //     $token = auth('api')->attempt($credentials, ['exp' => $time]);
-        // }
-
-        // if (!$token) {
-        //     return response()->json(['error' => 'Password did not match']);
-        // }
-
-        // return $this->respondWithToken($token, $time, $userInfo);
+        return $this->respondWithToken($token, $time, $userInfo);
     }
 
     /**
