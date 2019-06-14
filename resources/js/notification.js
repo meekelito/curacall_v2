@@ -17,23 +17,28 @@ window.Vue = require('vue');
 
 const NOTIFICATION_TYPES = {
     chat: 'App\\Notifications\\MessageNotification',
-    case: 'App\\Notifications\\CaseNotification'
+    case: 'App\\Notifications\\CaseNotification',
+    reminders: 'App\\Notifications\\ReminderNotification',
 };
 
 Vue.component('notification', require('./components/Notification.vue'));
 Vue.component('chatnotification', require('./components/ChatNotification.vue'));
+Vue.component('remindernotification', require('./components/ReminderNotification.vue'));
 
 const app = new Vue({
     el: '#notificationapp',
     data: {
         notifications: '',
         chatnotifications: '',
+        remindernotifications: '',
     },
     created() {
         this.countNotifications();
         this.countChatNotifications();
         this.fetchChatNotifications();
         this.fetchNotifications();
+        this.fetchReminderNotifications();
+        this.countReminderNotifications();
        
 
         var userId = $('meta[name="userId"]').attr('content');
@@ -55,7 +60,12 @@ const app = new Vue({
                       this.fetchChatNotifications();
                     
                     document.getElementById('chatNotificationAudio').play();
-                }else{
+                }else if(notification.type == NOTIFICATION_TYPES.reminders){
+                     var playPromise = document.getElementById('reminderNotificationAudio').play();
+                      $('#reminder-notif2').addClass('badge-notif');
+                      this.fetchReminderNotifications();
+                     
+                }else if(notification.type == NOTIFICATION_TYPES.case){
                   //case notifications below
 
                     //this.notifications.unshift(notification);
@@ -107,6 +117,9 @@ const app = new Vue({
 
                     }
                      
+                     if(current_url == "/all-cases" || current_url == "/active-cases" || current_url == "/pending-cases" || current_url == "/closed-cases" || current_url == "/silent-cases"){
+                       $.pjax.reload('#content',{ url: window.location.href });
+                     }
                   
 
                    
@@ -157,6 +170,24 @@ const app = new Vue({
             this.chatnotifications = response.data;
         });
       },
+
+      fetchReminderNotifications() {
+        axios.post(Laravel.baseUrl +'/notification/reminder/get').then(response => {
+            this.remindernotifications = response.data;
+        });
+      },
+      countReminderNotifications()
+      {
+         axios.post(Laravel.baseUrl +'/notification/reminder/count').then(response => {
+           if(response.data > 0)
+              $('#reminder-notif2').addClass('badge-notif');
+        });
+      },
+        MarkAllReminderNotificationRead() {
+            axios.post('/notification/reminder/read').then(response => {
+               $('#reminder-notif2').removeClass('badge-notif');
+            });
+        },
 
        MarkAllMessageRead(){
             axios.post('/notification/chat/read').then(response => {

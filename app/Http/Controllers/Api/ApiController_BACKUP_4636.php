@@ -508,7 +508,7 @@ class ApiController extends Controller
   }
 
 
-
+<<<<<<< HEAD
   public function reminderNotification(Request $request)
   {
         $validator = Validator::make($request->all(),[ 
@@ -538,6 +538,8 @@ class ApiController extends Controller
   }
 
 
+=======
+>>>>>>> 9d9b5aea49118029823b2a8e4a159b9bceaa1d89
   public function sendCaseOncall(Request $request)
   {
     $validator = Validator::make($request->all(),[ 
