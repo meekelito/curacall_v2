@@ -103,6 +103,43 @@ class NotificationController extends Controller
         return $result;
     }
 
+    /* Reminder Notifications */
+
+    public function remindercount()
+    {
+               //$notification = Auth::user()->unreadNotifications;
+             $notification = Notification::where('notifiable_id',Auth::user()->id)
+             ->where('type','App\Notifications\ReminderNotification')
+             ->whereNull('read_at')
+             ->take(10)
+             ->count();
+
+            return $notification;
+    }
+
+    public function reminderget() {
+
+        //$notification = Auth::user()->unreadNotifications;
+        $notification = Notification::select('data','created_at',DB::raw("(CASE WHEN ISNULL(read_at) THEN 0 ELSE 1 END) as is_read"))
+                            ->where('notifiable_id',Auth::user()->id)
+                            ->where('type','App\Notifications\ReminderNotification')
+                            ->latest()
+                            ->take(10)
+                            ->get()->toJson(JSON_PRETTY_PRINT);
+
+        return $notification;
+    }
+
+    public function reminderread(Request $request) {
+        //Auth::user()->unreadNotifications()->find($request->id)->markAsRead();
+        $result = Notification::where('notifiable_id',Auth::user()->id)
+        ->where('type','App\Notifications\ReminderNotification')
+        ->whereNull('read_at')
+        ->update(['read_at' => \Carbon\Carbon::now()]);
+
+        return $result;
+    }
+
 
 
     // public function chatnotifications()

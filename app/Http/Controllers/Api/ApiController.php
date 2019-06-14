@@ -13,6 +13,7 @@ use Cache;
 use Auth;
 use Validator;
 use Carbon\Carbon;
+use App\Notifications\ReminderNotification;
 
 class ApiController extends Controller
 {
@@ -490,6 +491,34 @@ class ApiController extends Controller
       $closed = $this->getAverageTime(3,$request->from,$request->to,$request->user_id);
 
       return ["read"=> $read,"accepted" =>$accepted,"closed"=>$closed];
+  }
+
+  public function reminderNotification(Request $request)
+  {
+        $validator = Validator::make($request->all(),[ 
+          'notifiable_id' => 'required',
+          'case_id'  => 'required'
+        ]); 
+
+        if( $validator->fails() ){
+            return json_encode(array( 
+              "status"=>0,
+              "response"=>"error", 
+              "message"=>$validator->errors()->first()
+            ));
+        }
+
+        $user = User::findOrFail($request->notifiable_id);
+        $message = str_replace("[case_id]",$request->case_id,__('notification.reminder'));
+        $arr = array(
+            'from_id'   => $request->from_id,
+            'from_name'   => $request->from_name,
+            'from_image' => '1551097384photo.jpg',
+            'case_id'   => $request->case_id,
+            'message' =>    $message,
+            'action_url'    => route('case',[$request->case_id])
+        );
+        $user->notify(new ReminderNotification($arr));
   }
 
 }
