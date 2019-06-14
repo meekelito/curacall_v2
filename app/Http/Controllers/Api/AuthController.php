@@ -22,6 +22,7 @@ class AuthController extends Controller
     }
 
     public function timeInMinutes($user) {
+        return Carbon::now()->addDays($days)->timestamp;
         if (!$user) {
             return Carbon::now()->addMinutes(15)->timestamp;
         }
