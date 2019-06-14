@@ -84,110 +84,35 @@
     </div>
   </div>
   <div style="height: 600px !important; overflow-y: scroll;">
-<!--   Caller Information:
-  Caller Type: Caregiver
-  First Name: Nikia
-  Last Name: Harris
-  Number of calls: 1st Time
-  Telephone Number: 724-802-5667
-  Hospital Related: No
 
-  Call Information:
-  Call Type: Scheduling; Field Worker Late for shift
-
-  Patient:
-  Patient First Name: Carol
-  Patient Last Name: Kelly
-  Patient Telephone Number: Does not have
-
-  Caregiver:
-  Employee First Name: Nikia
-  Employee Last Name: Harris
-  Caregiver: Home Health Aide (HHA)
-  Doesn't know PIN Code: Yes
-  Shift Start: 06/10/2019 07:30 AM
-  Shift End: 06/10/2019 11:30 AM
-
-  Services Requested:
-
-  Other Information:
-  Reason for Being Late: She slip in.
-  Doesn't know How Late Will Be To Shift: Yes
-  Full Message: The HHA called to inform that she will be late on her case today for because she slip in. She does not know how long she will be late.
-  Call Language: English
-
-  Account:
-  Company Information: Transitional Paths To Independant Living - Washington Office
-  Office Name: Washington
-  Team: NJ
-  Call Handled By (Initials): RRE -->
   <table class="table"> 
     <tr class="active"><td colspan="2">Caller Information</td></tr>
-    @if(!empty($case_info[0]->caller_type))
-    <tr><td width="180">Caller Type:</td><td>{{$case_info[0]->caller_type}}</td></tr>
-    @endif
-    @if(!empty($case_info[0]->caller_first_name))
-    <tr><td>First Name:</td><td>{{$case_info[0]->caller_first_name}}</td></tr>
-    @endif
-    @if(!empty($case_info[0]->caller_last_name))
-    <tr><td>Last Name:</td><td>{{$case_info[0]->caller_last_name}}</td></tr>
-    @endif
-    @if(!empty($case_info[0]->number_of_calls))
-    <tr><td>Number of calls:</td><td>{{$case_info[0]->number_of_calls}}</td></tr>
-    @endif
-    @if(!empty($case_info[0]->caller_telephone_number))
-    <tr><td>Telephone Number:</td><td>{{$case_info[0]->caller_telephone_number}}</td></tr>
-    @endif
+    <tr><td width="200">First Name:</td><td>Tara</td></tr>
+    <tr><td>Last Name:</td><td>Davis</td></tr>
+    <tr><td>Caller Type:</td><td>Caregiver</td></tr>
+    <tr class="active"><td colspan="2">Type of Caregiver Home Health Aide (HHA)</td></tr>
+    <tr><td>Caller Telephone Number:</td><td>212-098-7654</td></tr>
+    <tr><td>Is Hospital Related:</td><td>No</td></tr>
+    <tr><td>Is Clock-in Code Available:</td><td>Does Not Know</td></tr>
     <tr class="active"><td colspan="2">Call Information</td></tr>
-    @if(!empty($case_info[0]->call_type))
-    <tr><td>Call Type:</td><td>{{$case_info[0]->call_type .'; '.$case_info[0]->subcall_type}}</td></tr>
-    @endif
-    <tr class="active"><td colspan="2">Patient Information</td></tr>
-    @if(!empty($case_info[0]->patient_first_name))
-    <tr><td>First Name:</td><td>{{$case_info[0]->patient_first_name}}</td></tr>
-    @endif
-    @if(!empty($case_info[0]->patient_last_name))
-    <tr><td>Last Name:</td><td>{{$case_info[0]->patient_last_name}}</td></tr>
-    @endif
-    @if(!empty($case_info[0]->patient_telephone_number_confirmation))
-    <tr><td>Patient Telephone Number:</td><td>{{$case_info[0]->patient_telephone_number_confirmation}}</td></tr>
-    @endif
-
+    <tr><td>Call Type:</td><td>Office; Payroll</td></tr>
+    <tr><td>Payroll concern:</td><td>Was not paid Correct Amount</td></tr>
+    <tr><td>Action:</td><td>Take a Message and Send Email</td></tr>
     <tr class="active"><td colspan="2">Caregiver Information</td></tr>
-    @if(!empty($case_info[0]->caregiver_type))
-    <tr><td>Type of Caregiver:</td><td>{{$case_info[0]->caregiver_type}}</td></tr>
-    @endif
-    @if(!empty($case_info[0]->employee_first_name))
-    <tr><td>First Name:</td><td>{{$case_info[0]->employee_first_name}}</td></tr>
-    @endif
-    @if(!empty($case_info[0]->employee_last_name))
-    <tr><td>Last Name:</td><td>{{$case_info[0]->employee_last_name}}</td></tr>
-    @endif
-    @if(!empty($case_info[0]->doesnt_know_pin_code))
-    <tr><td>Doesn't know PIN Code:</td><td>{{$case_info[0]->doesnt_know_pin_code}}</td></tr>
-    @endif
-    @if(!empty($case_info[0]->employee_date_time_of_shift_start))
-    <tr><td>Shift Start:</td><td>{{$case_info[0]->employee_date_time_of_shift_start}}</td></tr>
-    @endif
-    @if(!empty($case_info[0]->employee_date_time_of_shift_end))
-    <tr><td>Shift End:</td><td>{{$case_info[0]->employee_date_time_of_shift_end}}</td></tr>
-    @endif
-
+    <tr><td>Type of Caregiver:</td><td>Home Health Aide (HHA)</td></tr>
+    <tr><td>First Name:</td><td>Tara</td></tr>
+    <tr><td>Last Name:</td><td>Davis</td></tr>
+    <tr><td>Telephone Number:</td><td>212-098-7654</td></tr>
+    <tr><td>Provide start time of shift:</td><td>Not Applicable</td></tr>
     <tr class="active"><td colspan="2">Other Information</td></tr>
-    @if(!empty($case_info[0]->full_message))
-    <tr><td>Full Message:</td><td>{{$case_info[0]->full_message}}</td></tr>
-    @endif
-    @if(!empty($case_info[0]->call_language))
-    <tr><td>Call Language:</td><td>{{$case_info[0]->call_language}}</td></tr>
-    @endif
-    @if(!empty($case_info[0]->contacted_translation_company))
-    <tr><td>Contact Translation Company:</td><td>{{$case_info[0]->contacted_translation_company}}</td></tr>
-    @endif
-
+    <tr><td>Full Message:</td><td>HHA called and wants to speak with Payroll in regards to incorrect amount on her paycheck Please give her a call back as soon as possible as she is currently in the bank.</td></tr>
+    <tr><td>Call Language:</td><td>Russian</td></tr>
+    <tr><td>Contact Translation Company:</td><td>Yes</td></tr>
+    <tr><td>Number of Calls:</td><td>1st Time</td></tr>
     <tr class="active"><td colspan="2">Case Create</td></tr>
     <tr><td>Date/Time:</td><td>11/30/2018 02:27 PM</td></tr>
-    <tr><td>Created By:</td><td>{{$case_info[0]->created_by}}</td></tr>
-    <tr><td>Case Sent Date/Time:</td><td>{{date_format($case_info[0]->created_at ,"m/d/Y  h:i a")}}</td></tr>
+    <tr><td>Created By:</td><td>Kristina Valerio</td></tr>
+    <tr><td>Case Sent Date/Time:</td><td>11/30/2018 02:37 PM</td></tr>
   </table>
   </div>
 </div>

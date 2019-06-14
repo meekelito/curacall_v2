@@ -8,7 +8,6 @@ use App\Account;
 use App\Api_keys; 
 use App\Case_participant;
 use App\Case_history;
-use App\Case_repository;
 use DB;
 use Cache;
 use Auth;
@@ -24,8 +23,10 @@ class ApiController extends Controller
       'account_id' => 'bail|required|exists:accounts,account_id',
       'call_type' => 'bail|required',
       'subcall_type' => 'bail|required',
-      'case_message' => 'required',
+      'case_message' => 'bail|required',
       'recipients' => 'required|array',
+      'recipients.*'=> 'distinct|exists:users,id',
+      'recipients.*'=> 'distinct|exists:users,id',
       'recipients.*'=> 'distinct|exists:users,id',
     ],[
       'account_id.exists' => 'The account ID invalid ',
@@ -45,9 +46,6 @@ class ApiController extends Controller
     try{
       $res = Account::where('account_id', $request->account_id)->firstOrFail();
       $request->merge(array('account_id' => $res->id));
-
-      $request->merge(array('case_message'=>json_encode($request->case_message)));
-
       $case = Cases::create($request->all());
 
       $now = Carbon::now()->toDateTimeString();
@@ -494,6 +492,7 @@ class ApiController extends Controller
       return ["read"=> $read,"accepted" =>$accepted,"closed"=>$closed];
   }
 
+<<<<<<< HEAD
   public function sendCaseOncall(Request $request)
   {
     $validator = Validator::make($request->all(),[ 
@@ -800,4 +799,6 @@ class ApiController extends Controller
     }
 
   }
+=======
+>>>>>>> parent of c4b694a... Commit updates.
 }
