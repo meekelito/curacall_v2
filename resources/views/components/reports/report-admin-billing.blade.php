@@ -1,4 +1,4 @@
-<table class="table" style="margin-top: 40px;">
+<table class="table" style="margin-top: 10px;">
 	<tr class="bg-primary">
 		<td>Account</td>
 		<td>Active User</td>
@@ -40,9 +40,9 @@
 	@if( $account_holder != $user->account_name && $ctr != 0)
 		<tr class="bg-blue">
 			<td></td>
+			<td></td>
+			<td></td>
 			<td>Total</td>
-			<td></td>
-			<td></td>
 			<td>{{$ctr_past_month_prorate}}</td>
 			<td>${{$total_past_month_prorate}}</td>
 			<td align="center">{{$ctr_curr_month_prorate}}</td>
@@ -107,9 +107,9 @@
 	@if ($loop->last) 
 	<tr class="bg-blue">
 		<td></td>
+		<td></td>
+		<td></td>
 		<td>Total</td>
-		<td></td>
-		<td></td>
 		<td>{{$ctr_past_month_prorate}}</td>
 		<td>${{$total_past_month_prorate}}</td>
 		<td align="center">{{$ctr_curr_month_prorate}}</td>

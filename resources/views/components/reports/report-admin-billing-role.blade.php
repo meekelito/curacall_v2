@@ -1,4 +1,4 @@
-<table class="table" style="margin-top: 40px;">
+<table class="table" style="margin-top: 10px;">
 	<tr class="bg-primary">
 		<td>Account</td>
 		<td>User Role</td>

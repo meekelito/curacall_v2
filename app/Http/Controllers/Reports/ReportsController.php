@@ -670,4 +670,9 @@ class ReportsController extends Controller
     
   }
 
+  public function reportsBillingPDF(Request $request)
+  {
+    
+  }
+
 }

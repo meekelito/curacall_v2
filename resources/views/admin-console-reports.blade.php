@@ -40,9 +40,14 @@
           </div>
           <button type="button" class="btn btn-primary btn-icon btn-search"><i class="icon-search4"></i></button>
         </div>
+        <div class="row" style="margin-top: 30px;">
+          <div class="float-righ col-sm-12">
+            <a class="btn btn-danger pull-right"><i class="icon-printer"></i> <span class="hidden-xs position-right">PDF</span></a>
+          </div> 
+        </div>
         <div class="row">
           <div class="col-sm-12 content-data-reports-billing">
-            <table class="table" style="margin-top: 40px;">
+            <table class="table" style="margin-top: 10px;">
               <tr class="bg-primary">
                 <td>Account</td>
                 <td>Active User</td>
