@@ -53,30 +53,36 @@ Route::group([
 
 
 Route::get('/cases/{status?}/{user_id}', 'Api\ApiController@getCases' ); 
-	Route::group([
-	    'middleware' => 'jwt.auth',
-	], function ($router) {
-	    
-		Route::get('/cases/{status?}/{user_id}', 'Api\ApiController@getCases' ); 
 
-		Route::get('/case-preview', 'Api\ApiController@getCaseSpecific' ); 
+    Route::group([
+        'middleware' => 'jwt.auth',
+    ], function ($router) {
+        
+        Route::get('/cases/{status?}/{user_id}', 'Api\ApiController@getCases' ); 
 
-		Route::get('/case-participants', 'Api\ApiController@getParticipants' ); 
+        Route::get('/case-preview', 'Api\ApiController@getCaseSpecific' ); 
 
-		Route::get('/case-count', 'Api\ApiController@getCaseCount' ); 
+        Route::get('/case-participants', 'Api\ApiController@getParticipants' ); 
 
-		Route::post('/case-accept', 'Api\ApiController@acceptCase' );  
+        Route::get('/case-count', 'Api\ApiController@getCaseCount' ); 
 
-		Route::post('/case-close', 'Api\ApiController@closeCase' ); 
+        Route::post('/case-accept', 'Api\ApiController@acceptCase' );  
 
-		Route::post('/case-new', 'Api\ApiController@newCase' );  
+        Route::post('/case-close', 'Api\ApiController@closeCase' ); 
 
-		Route::post('/case-test', 'Api\ApiController@testCase' ); 
+        Route::post('/case-new', 'Api\ApiController@newCase' );  
 
-	});
-    
+        Route::post('/case-test', 'Api\ApiController@testCase' ); 
 
-// Route::fallback(function(){
+        Route::post('/integration/dynamics/send-case-to-oncall', 'Api\ApiController@sendCaseOncall' ); 
+
+        Route::post('/integration/dynamics/send-case-to-oncall/simplified', 'Api\ApiController@sendCaseOncallSimplified' ); 
+
+        Route::post('/send-notification', 'Api\ApiController@sendNotification' ); 
+    });
+
+
+// Route::fallback(function(){ 
 //     return response()->json([
 //         'message' => 'Page Not Found. If error persists, contact info@website.com'], 404);
 // });
