@@ -14,6 +14,7 @@ use Auth;
 use Validator;
 use Carbon\Carbon;
 use App\Notifications\ReminderNotification;
+use App\Notifications\CaseNotification;
 
 class ApiController extends Controller
 {
@@ -51,6 +52,15 @@ class ApiController extends Controller
 
       $now = Carbon::now()->toDateTimeString();
       $participants = array();
+
+      $message = str_replace("[case_id]",$request->case_id,__('notification.new_case'));
+      $arr = array(
+          'case_id'     => $request->case_id,
+          'message'     =>    $message,
+          'type'        =>  'new_case',
+          'action_url'  => route('case',[$case->id])
+      );
+
       foreach ($request->recipients as $recipient) {
         $participants[] = array(
           'case_id'=>$case->id,
@@ -60,6 +70,10 @@ class ApiController extends Controller
           'created_at'=>$now,
           'updated_at'=>$now
         );
+
+       $user = User::find($recipient);
+       $user->notify(new CaseNotification($arr)); // Notify participant
+          
       }
 
       Case_participant::insert($participants);

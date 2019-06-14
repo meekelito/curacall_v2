@@ -117,6 +117,9 @@ const app = new Vue({
 
                     }
                      
+                     if(current_url == "/all-cases" || current_url == "/active-cases" || current_url == "/pending-cases" || current_url == "/closed-cases" || current_url == "/silent-cases"){
+                       $.pjax.reload('#content',{ url: window.location.href });
+                     }
                   
 
                    

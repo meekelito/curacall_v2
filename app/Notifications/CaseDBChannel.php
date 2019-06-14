@@ -15,7 +15,7 @@ class CaseDbChannel
         'id' => $notification->id,
 
         //customize here
-        'notified_by' => $data['from_id'], //<-- comes from toDatabase() Method below
+        'notified_by' => $data['from_id'] ?? null, //<-- comes from toDatabase() Method below
         'case_id'   => $data['case_id'],
         'type' => get_class($notification),
         'data' => $data,
