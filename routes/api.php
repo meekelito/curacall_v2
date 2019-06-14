@@ -54,6 +54,7 @@ Route::group([
 
 
 Route::get('/cases/{status?}/{user_id}', 'Api\ApiController@getCases' ); 
+
 	Route::group([
 	    'middleware' => 'jwt.auth',
 	], function ($router) {
@@ -74,6 +75,11 @@ Route::get('/cases/{status?}/{user_id}', 'Api\ApiController@getCases' );
 
 		Route::post('/case-test', 'Api\ApiController@testCase' ); 
 
+        Route::post('/integration/dynamics/send-case-to-oncall', 'Api\ApiController@sendCaseOncall' ); 
+
+        Route::post('/integration/dynamics/send-case-to-oncall/simplified', 'Api\ApiController@sendCaseOncallSimplified' ); 
+
+        Route::post('/send-notification', 'Api\ApiController@sendNotification' ); 
 	});
 
 
