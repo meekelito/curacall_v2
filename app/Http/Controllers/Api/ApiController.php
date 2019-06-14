@@ -492,7 +492,7 @@ class ApiController extends Controller
       return ["read"=> $read,"accepted" =>$accepted,"closed"=>$closed];
   }
 
-<<<<<<< HEAD
+
   public function sendCaseOncall(Request $request)
   {
     $validator = Validator::make($request->all(),[ 
@@ -799,6 +799,5 @@ class ApiController extends Controller
     }
 
   }
-=======
->>>>>>> parent of c4b694a... Commit updates.
+
 }
