@@ -125,11 +125,17 @@
       Your browser does not support the audio element.
     </audio>
 
+    <audio id="reminderNotificationAudio">
+      <source src="{{ asset('assets/notification/sounds/reminder.mp3') }}" type="audio/mpeg">
+      Your browser does not support the audio element.
+    </audio>
+
 		<div class="navbar-collapse collapse" id="navbar-mobile"> 
 			<ul class="nav navbar-nav">
         <li><a class="sidebar-control sidebar-main-toggle hidden-xs"><i class="icon-transmission"></i></a></li>
          <chatnotification v-bind:chatnotifications="chatnotifications"></chatnotification>
          <notification v-bind:notifications="notifications"></notification>
+         <remindernotification v-bind:remindernotifications="remindernotifications"></remindernotification>
 			</ul>
 			<p class="navbar-text">
 				<span class="label bg-success">Online</span>
