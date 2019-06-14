@@ -605,6 +605,7 @@ class ApiController extends Controller
       'oncall_personnel.oncall_staff' => 'required',
       'oncall_personnel.oncall_staff.dochalo_ID' => 'required',
     ]);
+
  
     if( $validator->fails() ){
       return response()->json([ 
