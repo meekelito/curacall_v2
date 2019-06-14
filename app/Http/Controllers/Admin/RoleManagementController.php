@@ -155,11 +155,24 @@ class RoleManagementController extends Controller
 
 	public function updateaccountrole(Request $request,$id)
 	{
+		$data = Account_role::where('account_id',$id)->get();
+		$role_rate = array();
+		foreach($data as $row)
+		{
+			$role_rate[$row->role_id] = $row->billing_rate;
+		}
+		
 		Account_role::where('account_id',$id)->delete();
+
 		$account_role = array();
 		foreach($request->role_ids as $row)
 		{
-			$account_role[] = array("account_id"=>$id,"role_id"=>$row,"created_at"=>date("Y-m-d H:i:s"),"updated_at"=>date("Y-m-d H:i:s"));
+			$rate = "0";
+
+			if(isset($role_rate[$row]))
+				$rate = $role_rate[$row];
+
+			$account_role[] = array("account_id"=>$id,"role_id"=>$row,"billing_rate"=> $rate,"created_at"=>date("Y-m-d H:i:s"),"updated_at"=>date("Y-m-d H:i:s"));
 		}
 		$result = Account_role::insert($account_role);
 		if($result)
