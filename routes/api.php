@@ -76,7 +76,6 @@ Route::get('/cases/{status?}/{user_id}', 'Api\ApiController@getCases' );
 	});
     
 
-
 // Route::fallback(function(){
 //     return response()->json([
 //         'message' => 'Page Not Found. If error persists, contact info@website.com'], 404);
