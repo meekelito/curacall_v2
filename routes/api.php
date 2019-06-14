@@ -80,6 +80,7 @@ Route::get('/cases/{status?}/{user_id}', 'Api\ApiController@getCases' );
 
         Route::post('/send-notification', 'Api\ApiController@sendNotification' ); 
 	});
+    
 
 
 // Route::fallback(function(){
