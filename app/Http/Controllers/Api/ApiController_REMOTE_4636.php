@@ -13,8 +13,6 @@ use Cache;
 use Auth;
 use Validator;
 use Carbon\Carbon;
-use App\Notifications\ReminderNotification;
-use App\Notifications\CaseNotification;
 
 class ApiController extends Controller
 {
@@ -52,15 +50,6 @@ class ApiController extends Controller
 
       $now = Carbon::now()->toDateTimeString();
       $participants = array();
-
-      $message = str_replace("[case_id]",$request->case_id,__('notification.new_case'));
-      $arr = array(
-          'case_id'     => $request->case_id,
-          'message'     =>    $message,
-          'type'        =>  'new_case',
-          'action_url'  => route('case',[$case->id])
-      );
-
       foreach ($request->recipients as $recipient) {
         $participants[] = array(
           'case_id'=>$case->id,
@@ -70,10 +59,6 @@ class ApiController extends Controller
           'created_at'=>$now,
           'updated_at'=>$now
         );
-
-       $user = User::find($recipient);
-       $user->notify(new CaseNotification($arr)); // Notify participant
-          
       }
 
       Case_participant::insert($participants);
@@ -508,36 +493,6 @@ class ApiController extends Controller
   }
 
 
-
-  public function reminderNotification(Request $request)
-  {
-        $validator = Validator::make($request->all(),[ 
-          'notifiable_id' => 'required',
-          'case_id'  => 'required'
-        ]); 
-
-        if( $validator->fails() ){
-            return json_encode(array( 
-              "status"=>0,
-              "response"=>"error", 
-              "message"=>$validator->errors()->first()
-            ));
-        }
-
-        $user = User::findOrFail($request->notifiable_id);
-        $message = str_replace("[case_id]",$request->case_id,__('notification.reminder'));
-        $arr = array(
-            'from_id'   => $request->from_id,
-            'from_name'   => $request->from_name,
-            'from_image' => '1551097384photo.jpg',
-            'case_id'   => $request->case_id,
-            'message' =>    $message,
-            'action_url'    => route('case',[$request->case_id])
-        );
-        $user->notify(new ReminderNotification($arr));
-  }
-
-
   public function sendCaseOncall(Request $request)
   {
     $validator = Validator::make($request->all(),[ 
@@ -751,21 +706,6 @@ class ApiController extends Controller
       }
 
       Case_participant::insert($oncall_personnel);
-
-      /* Notification */
-      $message = str_replace("[case_id]",$request->case_id,__('notification.new_case'));
-      $arr = array(
-          'case_id'     => $request->case_id,
-          'message'     =>    $message,
-          'type'        =>  'new_case',
-          'action_url'  => route('case',[$case->id])
-      );
-
-      foreach ($oncall_personnel as $row) {
-       $user = User::find($row['user_id']);
-       $user->notify(new CaseNotification($arr)); // Notify participant
-      }
-      /* END Notification */
 
       $request->merge(array(
         'call_information'=>json_encode($request->call_information),

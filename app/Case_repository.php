@@ -11,5 +11,6 @@ class Case_repository extends Model
     protected $fillable = [
         'questionnaire_id', 'client_id', 'call_information', 'caller_information', 'caregiver_information', 'patient_information', 'oncall_personnel'
     ];
+    
 
 }

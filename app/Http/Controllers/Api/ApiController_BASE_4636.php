@@ -8,13 +8,12 @@ use App\Account;
 use App\Api_keys; 
 use App\Case_participant;
 use App\Case_history;
+use App\Case_repository;
 use DB;
 use Cache;
 use Auth;
 use Validator;
 use Carbon\Carbon;
-use App\Notifications\ReminderNotification;
-use App\Notifications\CaseNotification;
 
 class ApiController extends Controller
 {
@@ -25,10 +24,8 @@ class ApiController extends Controller
       'account_id' => 'bail|required|exists:accounts,account_id',
       'call_type' => 'bail|required',
       'subcall_type' => 'bail|required',
-      'case_message' => 'bail|required',
+      'case_message' => 'required',
       'recipients' => 'required|array',
-      'recipients.*'=> 'distinct|exists:users,id',
-      'recipients.*'=> 'distinct|exists:users,id',
       'recipients.*'=> 'distinct|exists:users,id',
     ],[
       'account_id.exists' => 'The account ID invalid ',
@@ -48,19 +45,13 @@ class ApiController extends Controller
     try{
       $res = Account::where('account_id', $request->account_id)->firstOrFail();
       $request->merge(array('account_id' => $res->id));
+
+      $request->merge(array('case_message'=>json_encode($request->case_message)));
+
       $case = Cases::create($request->all());
 
       $now = Carbon::now()->toDateTimeString();
       $participants = array();
-
-      $message = str_replace("[case_id]",$request->case_id,__('notification.new_case'));
-      $arr = array(
-          'case_id'     => $request->case_id,
-          'message'     =>    $message,
-          'type'        =>  'new_case',
-          'action_url'  => route('case',[$case->id])
-      );
-
       foreach ($request->recipients as $recipient) {
         $participants[] = array(
           'case_id'=>$case->id,
@@ -70,10 +61,6 @@ class ApiController extends Controller
           'created_at'=>$now,
           'updated_at'=>$now
         );
-
-       $user = User::find($recipient);
-       $user->notify(new CaseNotification($arr)); // Notify participant
-          
       }
 
       Case_participant::insert($participants);
@@ -507,37 +494,6 @@ class ApiController extends Controller
       return ["read"=> $read,"accepted" =>$accepted,"closed"=>$closed];
   }
 
-
-
-  public function reminderNotification(Request $request)
-  {
-        $validator = Validator::make($request->all(),[ 
-          'notifiable_id' => 'required',
-          'case_id'  => 'required'
-        ]); 
-
-        if( $validator->fails() ){
-            return json_encode(array( 
-              "status"=>0,
-              "response"=>"error", 
-              "message"=>$validator->errors()->first()
-            ));
-        }
-
-        $user = User::findOrFail($request->notifiable_id);
-        $message = str_replace("[case_id]",$request->case_id,__('notification.reminder'));
-        $arr = array(
-            'from_id'   => $request->from_id,
-            'from_name'   => $request->from_name,
-            'from_image' => '1551097384photo.jpg',
-            'case_id'   => $request->case_id,
-            'message' =>    $message,
-            'action_url'    => route('case',[$request->case_id])
-        );
-        $user->notify(new ReminderNotification($arr));
-  }
-
-
   public function sendCaseOncall(Request $request)
   {
     $validator = Validator::make($request->all(),[ 
@@ -641,7 +597,7 @@ class ApiController extends Controller
       'patient_information.confirmed_patient_last_name' => 'nullable|boolean',
       'patient_information.provided_patient_first_name' => 'nullable|in:Does not have,Refuse to provide,Yes',
       'patient_information.provided_patient_last_name' => 'nullable|in:Does not have,Refuse to provide,Yes',
-      'patient_information.patient_telephone_number' => 'nullable|string',
+      'patient_information.patient_telephone_number' => 'required',
       'patient_information.confirmed_patient_telephone' => 'nullable|boolean',
       'patient_information.patient_telephone_number_confirmation' => 'nullable|in:Does not have,Refuse to provide,Yes',
 
@@ -649,7 +605,6 @@ class ApiController extends Controller
       'oncall_personnel.oncall_staff' => 'required',
       'oncall_personnel.oncall_staff.dochalo_ID' => 'required',
     ]);
-
  
     if( $validator->fails() ){
       return response()->json([ 
@@ -752,21 +707,6 @@ class ApiController extends Controller
 
       Case_participant::insert($oncall_personnel);
 
-      /* Notification */
-      $message = str_replace("[case_id]",$request->case_id,__('notification.new_case'));
-      $arr = array(
-          'case_id'     => $request->case_id,
-          'message'     =>    $message,
-          'type'        =>  'new_case',
-          'action_url'  => route('case',[$case->id])
-      );
-
-      foreach ($oncall_personnel as $row) {
-       $user = User::find($row['user_id']);
-       $user->notify(new CaseNotification($arr)); // Notify participant
-      }
-      /* END Notification */
-
       $request->merge(array(
         'call_information'=>json_encode($request->call_information),
         'caller_information'=>json_encode($request->caller_information),
@@ -859,5 +799,4 @@ class ApiController extends Controller
     }
 
   }
-
 }

@@ -8,6 +8,7 @@ use App\Account;
 use App\Api_keys; 
 use App\Case_participant;
 use App\Case_history;
+use App\Case_repository;
 use DB;
 use Cache;
 use Auth;
@@ -25,10 +26,8 @@ class ApiController extends Controller
       'account_id' => 'bail|required|exists:accounts,account_id',
       'call_type' => 'bail|required',
       'subcall_type' => 'bail|required',
-      'case_message' => 'bail|required',
+      'case_message' => 'required',
       'recipients' => 'required|array',
-      'recipients.*'=> 'distinct|exists:users,id',
-      'recipients.*'=> 'distinct|exists:users,id',
       'recipients.*'=> 'distinct|exists:users,id',
     ],[
       'account_id.exists' => 'The account ID invalid ',
@@ -48,6 +47,9 @@ class ApiController extends Controller
     try{
       $res = Account::where('account_id', $request->account_id)->firstOrFail();
       $request->merge(array('account_id' => $res->id));
+
+      $request->merge(array('case_message'=>json_encode($request->case_message)));
+
       $case = Cases::create($request->all());
 
       $now = Carbon::now()->toDateTimeString();
@@ -508,7 +510,6 @@ class ApiController extends Controller
   }
 
 
-
   public function reminderNotification(Request $request)
   {
         $validator = Validator::make($request->all(),[ 
@@ -641,7 +642,7 @@ class ApiController extends Controller
       'patient_information.confirmed_patient_last_name' => 'nullable|boolean',
       'patient_information.provided_patient_first_name' => 'nullable|in:Does not have,Refuse to provide,Yes',
       'patient_information.provided_patient_last_name' => 'nullable|in:Does not have,Refuse to provide,Yes',
-      'patient_information.patient_telephone_number' => 'nullable|string',
+      'patient_information.patient_telephone_number' => 'required',
       'patient_information.confirmed_patient_telephone' => 'nullable|boolean',
       'patient_information.patient_telephone_number_confirmation' => 'nullable|in:Does not have,Refuse to provide,Yes',
 
@@ -649,7 +650,6 @@ class ApiController extends Controller
       'oncall_personnel.oncall_staff' => 'required',
       'oncall_personnel.oncall_staff.dochalo_ID' => 'required',
     ]);
-
  
     if( $validator->fails() ){
       return response()->json([ 
