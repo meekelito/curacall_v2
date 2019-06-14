@@ -74,7 +74,7 @@ Route::get('/cases/{status?}/{user_id}', 'Api\ApiController@getCases' );
 		Route::post('/case-test', 'Api\ApiController@testCase' ); 
 
 	});
-
+    
 
 // Route::fallback(function(){
 //     return response()->json([

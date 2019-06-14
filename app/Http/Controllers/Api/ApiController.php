@@ -492,4 +492,313 @@ class ApiController extends Controller
       return ["read"=> $read,"accepted" =>$accepted,"closed"=>$closed];
   }
 
+<<<<<<< HEAD
+  public function sendCaseOncall(Request $request)
+  {
+    $validator = Validator::make($request->all(),[ 
+      'questionnaire_id' => 'bail|required|unique:cases,case_id',
+      'client_id' => 'bail|required|exists:accounts,account_id',
+      'caller_information' => 'required',
+      'caller_information.caller_id' => 'nullable|string',
+      'caller_information.caller_first_name' => 'required|string',
+      'caller_information.caller_last_name' => 'required|string',
+      'caller_information.caller_email_address' => 'required|email',
+      'caller_information.caller_type' => 'required|string',
+      'caller_information.caller_type_details' => 'nullable|string',
+      'caller_information.caller_details' => 'nullable|string',
+      'caller_information.caller_alternative_telephone_number' => 'nullable|string',
+      'caller_information.extension_direct_line' => 'nullable|string|in:Direct Line,Extension',
+      'caller_information.caller_confirmed_patient_telephone' => 'required|boolean',
+      'caller_information.confirmed_caller_first_name' => 'required|boolean',
+      'caller_information.confirmed_caller_last_name' => 'required|boolean',
+      'caller_information.caller_calling_from' => 'nullable|string',
+      'caller_information.confirmed_telephone_number' => 'required|boolean',
+      'caller_information.mobile_number' => 'nullable|string',
+      'caller_information.caller_telephone_extension' => 'nullable|string',
+      'caller_information.caller_telephone_number' => 'nullable|string',
+      'caller_information.caller_patient_telephone' => 'nullable|string',
+      'caller_information.telephone_number' => 'nullable|string',
+      'caller_information.caller_relationship_with_field_worker' => 'nullable|string',
+      'call_information' => 'required',
+      'call_information.call_typology' => 'required|in:Normal Call,Collect Call,Public Payphone Call',
+      'call_information.number_of_calls' => 'required|in:1st Time,2nd Time,3rd Time,4th Time,5th Time +',
+      'call_information.call_type' => 'required|string|in:Clocking Out/Checkin-Check-out,Complaints,Contact Request,Medical,Office,Referral or Agency Contract,Scheduling,Shift Cancelation,Other',
+      'call_information.call_subtype' => 'required|string',
+      'call_information.confirmation' => 'required|boolean',
+      'call_information.call_language' => 'required|string',
+      'call_information.call_reason' => 'nullable|string',
+      'call_information.reason_call_subtype' => 'nullable|string',
+      'call_information.contacted_translation_company' => 'required|boolean',
+      'call_information.pin_number' => 'required_if:call_information.contacted_translation_company,==,Yes',
+      'call_information.full_message' => 'required|string',
+      'call_information.direct_deposit_or_receive_a_check' => 'nullable|boolean',
+      'call_information.lab_doctor_notification' => 'required|boolean',
+      'call_information.hospital_related' => 'nullable|boolean',
+      'call_information.medical_emergency' => 'nullable|boolean',
+      'call_information.time_of_call' => 'required|string|in:After Hours/Holiday Hours,During Hours',
+      'call_information.name_of_compliance_officer' => 'nullable|string',
+      'call_information.name_of_insurance_company' => 'nullable|string',
+      'call_information.name_of_oncall_staff' => 'required|string',
+      'call_information.name_of_the_home_health_agency' => 'nullable|string',
+      'call_information.hospital_id' => 'nullable|string',
+      'call_information.name_of_the_hospital' => 'nullable|string',
+      'call_information.name_of_the_lab_company' => 'nullable|string',
+      'call_information.new_or_existing_employee' => 'nullable|in:Existing Employee,New Employee',
+      'call_information.new_referral_or_previous_patient' => 'nullable|in:New Referral,Previous Patient',
+      'call_information.new_existing_patient' => 'nullable|in:Existing Patient,New Patient',
+      'call_information.caller_position_interested_in' => 'nullable|string',
+      'call_information.reason_for_being_late' => 'nullable|string',
+      'call_information.reason_of_the_cancelation' => 'nullable|string',
+      'call_information.relation_to_patient' => 'nullable|string',
+      'call_information.services_requested' => 'nullable|in:Home Health Aide(HHA),Hospice,Private Duty,Rehabilitation,Visiting Nursing Service(VNS),Other',
+      'call_information.services_requested_details' => 'nullable|string',
+      'call_information.start_end_time_of_the_shift' => 'nullable|string|in:Does Not know,Not Applicable,Yes',
+      'call_information.team' => 'nullable|string|in:NJ,NJHO',
+      'call_information.was_timesheet_submitted' => 'nullable|boolean',
+      'call_information.type_of_results' => 'nullable|in:Abnormal,Stat,Critical,Normal',
+      'call_information.violence' => 'nullable|boolean',
+      'call_information.call_handled_by_initials' => 'required|string',
+      'call_information.created_by' => 'required|string',
+      'call_information.created_on' => 'required|string',
+      'call_information.message_content' => 'nullable|string',
+      'call_information.message_ticket' => 'nullable|string',
+      'call_information.read' => 'nullable|boolean',
+      'call_information.read_by' => 'nullable|string',
+      'call_information.read_on' => 'nullable|string',
+      'call_information.date_and_time' => 'nullable|string',
+      'call_information.call_outside_escalation_hours' => 'nullable|boolean',
+      'call_information.call_outside_escalation_interval' => 'nullable|boolean',
+      'call_information.compare_date' => 'nullable|string',
+      'call_informationstart_compare_date' => 'nullable|string',
+
+      'caregiver_information' => 'required',
+      'caregiver_information.caregiver_type' => 'required|in:Certified Nursing Assistant (CNA),Coordinator,Doctor (MD),Home Health Aide (HHA),Nurse Registered (RN) Licensed (LPN) Practitioner (NP),Personal Care Aide (PCA),Physical Therapist (PT) Pharmacist',
+      'caregiver_information.pin_code' => 'nullable|string',
+      'caregiver_information.employee_first_name' => 'nullable|string',
+      'caregiver_information.employee_last_name' => 'nullable|string',
+      'caregiver_information.information_confirmed' => 'nullable|boolean',
+      'caregiver_information.provided_caregiver_first_name' => 'nullable|in:Does not have,Refuse to provide,Yes',
+      'caregiver_information.provided_caregiver_last_name' => 'nullable|in:Does not have,Refuse to provide,Yes',
+      'caregiver_information.confirmed_caregiver_first_name' => 'nullable|boolean',
+      'caregiver_information.confirmed_caregiver_last_name' => 'nullable|boolean',
+      'caregiver_information.absent_or_late' => 'nullable|in:Absent,Late',
+      'caregiver_information.caregiver_time_and_attendance_pin_code' => 'nullable|string',
+      'caregiver_information.doesnt_know_how_late_will_be_to_shift' => 'nullable|boolean',
+      'caregiver_information.doesnt_know_pin_code' => 'nullable|boolean',
+      'caregiver_information.how_late_will_you_be_to_your_shift' => 'nullable|integer',
+      'caregiver_information.employee_date_time_of_shift_start' => 'nullable|string',
+      'caregiver_information.employee_date_time_of_shift_end' => 'nullable|string',
+      'patient_information' => 'required',
+      'patient_information.patient_date_and_time_of_first_visit' => 'nullable|string',
+      'patient_information.patient_first_name' => 'nullable|string',
+      'patient_information.patient_last_name' => 'nullable|string',
+      'patient_information.confirmed_patient_first_name' => 'nullable|boolean',
+      'patient_information.confirmed_patient_last_name' => 'nullable|boolean',
+      'patient_information.provided_patient_first_name' => 'nullable|in:Does not have,Refuse to provide,Yes',
+      'patient_information.provided_patient_last_name' => 'nullable|in:Does not have,Refuse to provide,Yes',
+      'patient_information.patient_telephone_number' => 'nullable|string',
+      'patient_information.confirmed_patient_telephone' => 'nullable|boolean',
+      'patient_information.patient_telephone_number_confirmation' => 'nullable|in:Does not have,Refuse to provide,Yes',
+
+      'oncall_personnel' => 'required',
+      'oncall_personnel.oncall_staff' => 'required',
+      'oncall_personnel.oncall_staff.dochalo_ID' => 'required',
+    ]);
+
+ 
+    if( $validator->fails() ){
+      return response()->json([ 
+        "status"=> 400,
+        "response"=>"bad request", 
+        "message"=>$validator->errors()
+      ]);
+    }
+
+  
+
+    $res = Account::where('account_id', $request->client_id)->firstOrFail();
+  
+
+    $array_holder = array(
+      "case_id"=>$request->questionnaire_id,
+      "account_id"=>$res->id,
+      "subcall_type"=>$request->call_information['call_subtype']
+    );
+
+    foreach ($request->call_information as $key => $value) {
+      $array_holder[$key] = $value;
+    }
+    foreach ($request->caller_information as $key => $value) {
+      $array_holder[$key] = $value;
+    }
+    foreach ($request->caregiver_information as $key => $value) {
+      $array_holder[$key] = $value;
+    }
+    foreach ($request->patient_information as $key => $value) {
+      $array_holder[$key] = $value;
+    }
+ 
+
+    
+    
+    
+
+    DB::beginTransaction();
+    try{
+      $case = Cases::create($array_holder);
+
+      $now = Carbon::now()->toDateTimeString();
+      $oncall_personnel = array(); //list of oncall personnel
+
+      foreach ($request->oncall_personnel['oncall_staff'] as $participant) {
+        $str2 = substr($participant['dochalo_ID'], 2);
+        $curacall_id = ltrim($str2, '0');
+        $oncall_personnel[] = array(
+          'case_id'=>$case->id,
+          'user_id'=>$curacall_id,
+          'oncall_personnel' => 'oncall',
+          'created_at'=>$now,
+          'updated_at'=>$now
+        );
+      }
+
+      // dd(count($request->oncall_personnel['silent_listener']));
+      if(count($request->oncall_personnel['backup_1'])>=1){
+        foreach ($request->oncall_personnel['backup_1'] as $participant) {
+          $str2 = substr($participant['dochalo_ID'], 2);
+          $curacall_id = ltrim($str2, '0');
+          $oncall_personnel[] = array(
+            'case_id'=>$case->id,
+            'user_id'=>$curacall_id,
+            'oncall_personnel' => 'backup_1',
+            'created_at'=>$now,
+            'updated_at'=>$now
+          );
+        }
+      }
+
+      if(count($request->oncall_personnel['backup_2'])>=1){
+        foreach ($request->oncall_personnel['backup_2'] as $participant) {
+          $str2 = substr($participant['dochalo_ID'], 2);
+          $curacall_id = ltrim($str2, '0');
+          $oncall_personnel[] = array(
+            'case_id'=>$case->id,
+            'user_id'=>$curacall_id,
+            'oncall_personnel' => 'backup_2',
+            'created_at'=>$now,
+            'updated_at'=>$now
+          );
+        }
+      }
+
+      if(count($request->oncall_personnel['silent_listener'])>=1){
+        foreach ($request->oncall_personnel['silent_listener'] as $participant) {
+          $str2 = substr($participant['dochalo_ID'], 2);
+          $curacall_id = ltrim($str2, '0');
+          $oncall_personnel[] = array(
+            'case_id'=>$case->id,
+            'user_id'=>$curacall_id,
+            'oncall_personnel' => 'silent_listener',
+            'created_at'=>$now,
+            'updated_at'=>$now
+          );
+        }
+      }
+
+      Case_participant::insert($oncall_personnel);
+
+      $request->merge(array(
+        'call_information'=>json_encode($request->call_information),
+        'caller_information'=>json_encode($request->caller_information),
+        'caregiver_information'=>json_encode($request->caregiver_information),
+        'patient_information'=>json_encode($request->patient_information),
+        'oncall_personnel'=>json_encode($request->oncall_personnel)
+      ));
+
+      Case_repository::create($request->all());
+
+      DB::commit();
+      return response()->json([
+        "status" => 200,
+        "response" => "success", 
+        "message" => "Successfully sent."
+      ]);
+    } catch (Exeption $e){
+      DB::rollback();
+      return response()->json([
+        "status" => 500,
+        "response" => "Internal Server Error", 
+        "message" => "An internal server error occurred while processing the request."
+      ]);
+    } 
+
+  }
+
+  public function sendNotification(Request $request)
+  {
+    $participants = array(4,5);
+    $case_id = 68;
+    /** Notification message template **/
+    $message = str_replace("[from_name]","Curacall User",__('notification.forward_case'));
+    $message = str_replace("[case_id]",$case_id,$message);
+    $arr = array(
+        'case_id'     => $questionnaire_id,
+        //'message'     => $message,
+        'type'        => 'forward_case',
+        //'forward_to'  => $forwarded_recipients,
+        'action_url'  => route('case',[$case_id])
+    );
+    /** END Notification message template **/
+
+    /** Sending Notifcation part **/
+
+
+    $participants_count = count($participants);
+    // Notify all participants of the case except you
+    foreach($participants as $participant)
+    {
+        $user = User::find($participant);
+
+        $str_recipients = "test";
+        if(count($request->recipient) > 1){
+          $str_recipients = "test" . " and " . $participants_count;
+          $str_recipients .= ($participants_count == 1) ? " Other" : " Others";
+        }
+        
+         $arr['forward_to'] = $forwarded_recipients;
+         $arr['message'] = $message . $str_recipients;
+         //$user->notify(new CaseNotification($arr)); // Notify participant
+         Notification::notify_user($arr,$user);
+    }
+    /** End Sending Notification part **/
+  }
+
+  public function sendCaseOncallSimplified(Request $request)
+  {
+    $validator = Validator::make($request->all(),[ 
+      'questionnaire_id' => 'required',
+      'client_id' => 'required',
+      'call_type' => 'required',
+      'subcall_type' => 'required',
+      'case_information' => 'required',
+      'oncall_personnel' => 'required'
+    ]);
+ 
+    if( $validator->fails() ){
+      return response()->json([ 
+        "status"=> 400,
+        "response"=>"bad request", 
+        "message"=>$validator->errors()
+      ]);
+    }else{
+      return response()->json([
+        "status" => 200,
+        "response" => "success", 
+        "message" => "Successfully sent."
+      ]);
+    }
+
+  }
+=======
+>>>>>>> parent of c4b694a... Commit updates.
 }
