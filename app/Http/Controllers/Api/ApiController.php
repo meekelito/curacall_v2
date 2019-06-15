@@ -539,13 +539,7 @@ class ApiController extends Controller
 
 
   public function sendCaseOncall(Request $request)
-  {
-    return response()->json([
-        "status" => 200,
-        "response" => "success", 
-        "message" => "Successfully sent."
-      ]);
-    
+  {    
     $validator = Validator::make($request->all(),[ 
       'questionnaire_id' => 'bail|required|unique:cases,case_id',
       'client_id' => 'bail|required|exists:accounts,account_id',
