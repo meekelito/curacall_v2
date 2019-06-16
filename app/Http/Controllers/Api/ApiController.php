@@ -696,15 +696,17 @@ class ApiController extends Controller
       $oncall_personnel = array(); //list of oncall personnel
 
       foreach ($request->oncall_personnel['oncall_staff'] as $participant) {
-        $str2 = substr($participant['dochalo_ID'], 2);
-        $curacall_id = ltrim($str2, '0');
-        $oncall_personnel[] = array(
-          'case_id'=>$case->id,
-          'user_id'=>$curacall_id,
-          'oncall_personnel' => 'oncall',
-          'created_at'=>$now,
-          'updated_at'=>$now
-        );
+        if(isset($participant['dochalo_ID'])){
+          $str2 = substr($participant['dochalo_ID'], 2);
+          $curacall_id = ltrim($str2, '0');
+          $oncall_personnel[] = array(
+            'case_id'=>$case->id,
+            'user_id'=>$curacall_id,
+            'oncall_personnel' => 'oncall',
+            'created_at'=>$now,
+            'updated_at'=>$now
+          );
+        }
       }
 
       // dd(count($request->oncall_personnel['silent_listener']));
@@ -833,15 +835,18 @@ class ApiController extends Controller
     /** End Sending Notification part **/
   }
 
-  public function sendCaseOncallSimplified(Request $request)
+  public function addOnCallBackUp(Request $request)
   {
     $validator = Validator::make($request->all(),[ 
-      'questionnaire_id' => 'required',
-      'client_id' => 'required',
-      'call_type' => 'required',
-      'subcall_type' => 'required',
-      'case_information' => 'required',
-      'oncall_personnel' => 'required'
+      'questionnaire_id' => 'required|exists:cases,case_id',
+      'client_id' => '|exists:accounts,account_id',
+      'oncall_type' => 'required|in:backup_1,backup_2,silent_listener',
+      'oncall_personnel' => 'required',
+    ],[ 
+      'questionnaire_id.exists'=>'Questionnaire ID does not exist.',
+      'client_id.exists'=>'Client ID does not exist.',
+      'phone_main.required'=>'Main Number is required.',
+      'oncall_type.required' => 'OnCall type is required.'
     ]);
  
     if( $validator->fails() ){
@@ -850,13 +855,50 @@ class ApiController extends Controller
         "response"=>"bad request", 
         "message"=>$validator->errors()
       ]);
-    }else{
+    }
+    $oncall_personnel = array();
+    $now = Carbon::now()->toDateTimeString();
+
+    DB::beginTransaction();
+    try{
+
+      $case = Cases::where('case_id',$request->questionnaire_id)->select('id')->get();
+      $case_participants = Case_participant::where('case_id',$case[0]->id)->select('user_id')->get()->toArray();
+
+
+      foreach ($request->oncall_personnel['oncall_staff'] as $participant) {
+
+        if(isset($participant['dochalo_ID']) ){
+          $str2 = substr($participant['dochalo_ID'], 2);
+          $curacall_id = ltrim($str2, '0');
+          if (!in_array($curacall_id, $case_participants[0])){
+            $oncall_personnel[] = array(
+              'case_id'=>$case[0]->id,
+              'user_id'=>$curacall_id,
+              'oncall_personnel' => $request->oncall_type,
+              'created_at'=>$now,
+              'updated_at'=>$now
+            );
+          }
+        }
+      }
+
+      $res = Case_participant::insert($oncall_personnel);
+      
+      DB::commit();
       return response()->json([
         "status" => 200,
         "response" => "success", 
         "message" => "Successfully sent."
       ]);
-    }
+    } catch (Exeption $e){
+      DB::rollback();
+      return response()->json([
+        "status" => 500,
+        "response" => "Internal Server Error", 
+        "message" => "An internal server error occurred while processing the request."
+      ]);
+    } 
 
   }
 

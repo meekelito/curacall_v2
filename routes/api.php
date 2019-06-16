@@ -77,9 +77,7 @@ Route::get('/cases/{status?}/{user_id}', 'Api\ApiController@getCases' );
 
         Route::post('/integration/dynamics/send-case-to-oncall', 'Api\ApiController@sendCaseOncall' ); 
 
-        Route::post('/integration/dynamics/send-case-to-oncall/simplified', 'Api\ApiController@sendCaseOncallSimplified' ); 
-
-        Route::post('/send-notification', 'Api\ApiController@sendNotification' ); 
+        Route::post('/integration/dynamics/add-oncall-backup', 'Api\ApiController@addOnCallBackUp' ); 
     });
 
 
