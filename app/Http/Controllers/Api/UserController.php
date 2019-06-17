@@ -29,7 +29,7 @@ class UserController extends Controller
         if (! $token = auth('api')->attempt($credentials)) {
             return response()->json(['error' => 'Password did not match']);
         }
-
+        unset($token->user);
         return $this->respondWithToken($token);
     }
 

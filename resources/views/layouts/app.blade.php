@@ -46,12 +46,13 @@
   <script type="text/javascript" src="{{ asset('assets/js/plugins/ui/moment/moment.min.js') }}"></script>
   <script type="text/javascript" src="{{ asset('assets/js/plugins/pickers/daterangepicker.js') }}"></script>
 
-
+  <script type="text/javascript" src="{{ asset('js/favico-0.3.10.min.js') }}"></script> 
   <script type="text/javascript" src="{{ asset('assets/js/plugins/forms/styling/switch.min.js') }}" ></script> 
   <script type="text/javascript" src="{{ asset('assets/js/plugins/visualization/echarts/echarts.js') }}"></script>
   
 	<script type="text/javascript" src="{{ asset('assets/js/core/app.js') }}"></script> 
   <script src="{{ asset('js/jquery.getscripts.min.js') }}"></script>
+
 	<!-- /theme JS files -->
 	<style type="text/css">
 	 	.navbar-inverse {
@@ -405,6 +406,15 @@
       $(document).on('pjax:complete', function(event) {
         hideLoader();
       });
+
+      var notification_count = 0;
+      var favicon = new Favico({
+          animation : 'popFade',
+          position : 'up'
+      });
+      
+      //intial value
+      favicon.badge(notification_count);
 
     });
     count_case();
