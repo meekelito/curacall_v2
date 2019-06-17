@@ -12353,7 +12353,12 @@ var app = new Vue({
   data: {
     notifications: '',
     chatnotifications: '',
-    remindernotifications: ''
+    remindernotifications: '',
+    all_count: 0,
+    case_count: 0,
+    chat_count: 0,
+    reminder_count: 0,
+    favicon: ''
   },
   created: function created() {
     var _this = this;
@@ -12365,15 +12370,22 @@ var app = new Vue({
     this.fetchReminderNotifications();
     this.countReminderNotifications();
 
+    // var notification_count = 0;
+    this.favicon = new Favico({
+      animation: 'popFade',
+      position: 'up'
+    });
+
     var userId = $('meta[name="userId"]').attr('content');
     Echo.private('App.User.' + userId).notification(function (notification) {
 
-      document.title = document.title + ' (1)';
+      //document.title = document.title + ' (1)';
       var current_url = window.location.pathname + window.location.search;
       console.log(current_url);
       if (notification.type == NOTIFICATION_TYPES.chat) {
         //this.chatnotifications.unshift(notification);
-        $('#message-notif2').addClass('badge-notif');
+        //$('#message-notif2').addClass('badge-notif');
+        _this.countChatNotifications();
         if (notification.data.room_id == $('#room').val()) {
           $('#message-notif2').removeClass('badge-notif');
           _this.MarkAllMessageRead();
@@ -12384,13 +12396,13 @@ var app = new Vue({
         document.getElementById('chatNotificationAudio').play();
       } else if (notification.type == NOTIFICATION_TYPES.reminders) {
         var playPromise = document.getElementById('reminderNotificationAudio').play();
-        $('#reminder-notif2').addClass('badge-notif');
+        _this.countReminderNotifications();
         _this.fetchReminderNotifications();
       } else if (notification.type == NOTIFICATION_TYPES.case) {
         //case notifications below
 
         //this.notifications.unshift(notification);
-        $('#case-notif2').addClass('badge-notif');
+        _this.countNotifications();
         _this.fetchNotifications();
 
         //console.log(window.location.pathname + window.location.search);
@@ -12458,58 +12470,84 @@ var app = new Vue({
 
   methods: {
     countNotifications: function countNotifications() {
+      var _this2 = this;
+
       axios.post(Laravel.baseUrl + '/notification/count').then(function (response) {
-        if (response.data > 0) $('#case-notif2').addClass('badge-notif');
+        if (response.data > 0) {
+          $('#case-notif2').addClass('badge-notif');
+          $('#case-notif2').html(response.data);
+          _this2.case_count = response.data;
+          _this2.notificationTitle();
+        }
       });
     },
     countChatNotifications: function countChatNotifications() {
+      var _this3 = this;
+
       axios.post(Laravel.baseUrl + '/notification/chat/count').then(function (response) {
-        if (response.data > 0) $('#message-notif2').addClass('badge-notif');
+        if (response.data > 0) {
+          $('#message-notif2').addClass('badge-notif');
+          $('#message-notif2').html(response.data);
+          _this3.chat_count = response.data;
+          _this3.notificationTitle();
+        }
       });
     },
     fetchNotifications: function fetchNotifications() {
-      var _this2 = this;
+      var _this4 = this;
 
       axios.post(Laravel.baseUrl + '/notification/get').then(function (response) {
-        _this2.notifications = response.data;
+        _this4.notifications = response.data;
       });
     },
     fetchChatNotifications: function fetchChatNotifications() {
-      var _this3 = this;
+      var _this5 = this;
 
       axios.post(Laravel.baseUrl + '/notification/chat/get').then(function (response) {
-        _this3.chatnotifications = response.data;
+        _this5.chatnotifications = response.data;
       });
     },
     fetchReminderNotifications: function fetchReminderNotifications() {
-      var _this4 = this;
+      var _this6 = this;
 
       axios.post(Laravel.baseUrl + '/notification/reminder/get').then(function (response) {
-        _this4.remindernotifications = response.data;
+        _this6.remindernotifications = response.data;
       });
     },
     countReminderNotifications: function countReminderNotifications() {
+      var _this7 = this;
+
       axios.post(Laravel.baseUrl + '/notification/reminder/count').then(function (response) {
-        if (response.data > 0) $('#reminder-notif2').addClass('badge-notif');
+        if (response.data > 0) {
+          $('#reminder-notif2').addClass('badge-notif');
+          $('#reminder-notif2').html(response.data);
+          _this7.reminder_count = response.data;
+          _this7.notificationTitle();
+        }
       });
     },
     MarkAllReminderNotificationRead: function MarkAllReminderNotificationRead() {
       axios.post('/notification/reminder/read').then(function (response) {
         $('#reminder-notif2').removeClass('badge-notif');
+        $('#reminder-notif2').html('');
       });
     },
     MarkAllMessageRead: function MarkAllMessageRead() {
       axios.post('/notification/chat/read').then(function (response) {
         $('#message-notif2').removeClass('badge-notif');
+        $('#message-notif2').html('');
       });
     },
     MarkAllNotificationRead: function MarkAllNotificationRead() {
       axios.post('/notification/read').then(function (response) {
+        $('#case-notif2').html('');
         $('#case-notif2').removeClass('badge-notif');
       });
     },
-    test: function test() {
-      alert('a');
+    notificationTitle: function notificationTitle() {
+      this.all_count = this.case_count + this.chat_count + this.reminder_count;
+
+      this.favicon.badge(this.all_count);
     }
   }
 });
@@ -43043,6 +43081,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         MarkAllNotificationRead: function MarkAllNotificationRead() {
             axios.post('/notification/read').then(function (response) {
                 $('#case-notif2').removeClass('badge-notif');
+                $('#case-notif2').html('');
             });
         }
     }
@@ -43293,6 +43332,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         MarkAllMessageRead: function MarkAllMessageRead() {
             axios.post('/notification/chat/read').then(function (response) {
                 $('#message-notif2').removeClass('badge-notif');
+                $('#message-notif2').html('');
             });
         }
     }
@@ -43538,6 +43578,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         MarkAllNotificationRead: function MarkAllNotificationRead() {
             axios.post('/notification/reminder/read').then(function (response) {
                 $('#reminder-notif2').removeClass('badge-notif');
+                $('#reminder-notif2').html('');
             });
         }
     }

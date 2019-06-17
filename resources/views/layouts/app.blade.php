@@ -95,6 +95,10 @@
       display: inline-block;
       position:relative;
       top:-5px;
+      font-size:.7em;
+      text-align: center;
+      vertical-align: middle;
+      line-height: 14px;
     }
   </style>
 </head>
@@ -407,14 +411,7 @@
         hideLoader();
       });
 
-      var notification_count = 0;
-      var favicon = new Favico({
-          animation : 'popFade',
-          position : 'up'
-      });
-      
-      //intial value
-      favicon.badge(notification_count);
+  
 
     });
     count_case();

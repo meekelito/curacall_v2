@@ -140,6 +140,15 @@ class NotificationController extends Controller
         return $result;
     }
 
+    public function countall()
+    {
+          $notification = Notification::where('notifiable_id',Auth::user()->id)
+             ->whereNull('read_at')
+             ->count();
+
+            return $notification;
+    }
+
 
 
     // public function chatnotifications()

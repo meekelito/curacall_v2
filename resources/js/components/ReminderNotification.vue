@@ -52,6 +52,7 @@
              MarkAllNotificationRead: function() {
                 axios.post('/notification/reminder/read').then(response => {
                    $('#reminder-notif2').removeClass('badge-notif');
+                   $('#reminder-notif2').html('');
                 });
             }
         }

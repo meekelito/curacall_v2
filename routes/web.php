@@ -37,6 +37,8 @@ Route::group(['middleware' => array('auth','nocache')], function () {
     Route::post('/notification/reminder/read', 'NotificationController@reminderread');
     Route::post('/notification/reminder/count', 'NotificationController@remindercount');
 
+    Route::post('/notification/all/count', 'NotificationController@countall');
+
 	Route::get('dashboard','Dashboard\DashboardController@index');
     Route::get('dashboard/checkauth','Dashboard\DashboardController@checkuser')->name('checkuser');
 

@@ -51,6 +51,7 @@
             MarkAllMessageRead: function() {
                 axios.post('/notification/chat/read').then(response => {
                    $('#message-notif2').removeClass('badge-notif');
+                   $('#message-notif2').html('');
                 });
             }
         }
