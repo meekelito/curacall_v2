@@ -710,47 +710,47 @@ class ApiController extends Controller
       }
 
       // dd(count($request->oncall_personnel['silent_listener']));
-      if(count($request->oncall_personnel['backup_1'])>=1){
-        foreach ($request->oncall_personnel['backup_1'] as $participant) {
-          $str2 = substr($participant['dochalo_ID'], 2);
-          $curacall_id = ltrim($str2, '0');
-          $oncall_personnel[] = array(
-            'case_id'=>$case->id,
-            'user_id'=>$curacall_id,
-            'oncall_personnel' => 'backup_1',
-            'created_at'=>$now,
-            'updated_at'=>$now
-          );
-        }
-      }
+      // if(count($request->oncall_personnel['backup_1'])>=1){
+      //   foreach ($request->oncall_personnel['backup_1'] as $participant) {
+      //     $str2 = substr($participant['dochalo_ID'], 2);
+      //     $curacall_id = ltrim($str2, '0');
+      //     $oncall_personnel[] = array(
+      //       'case_id'=>$case->id,
+      //       'user_id'=>$curacall_id,
+      //       'oncall_personnel' => 'backup_1',
+      //       'created_at'=>$now,
+      //       'updated_at'=>$now
+      //     );
+      //   }
+      // }
 
-      if(count($request->oncall_personnel['backup_2'])>=1){
-        foreach ($request->oncall_personnel['backup_2'] as $participant) {
-          $str2 = substr($participant['dochalo_ID'], 2);
-          $curacall_id = ltrim($str2, '0');
-          $oncall_personnel[] = array(
-            'case_id'=>$case->id,
-            'user_id'=>$curacall_id,
-            'oncall_personnel' => 'backup_2',
-            'created_at'=>$now,
-            'updated_at'=>$now
-          );
-        }
-      }
+      // if(count($request->oncall_personnel['backup_2'])>=1){
+      //   foreach ($request->oncall_personnel['backup_2'] as $participant) {
+      //     $str2 = substr($participant['dochalo_ID'], 2);
+      //     $curacall_id = ltrim($str2, '0');
+      //     $oncall_personnel[] = array(
+      //       'case_id'=>$case->id,
+      //       'user_id'=>$curacall_id,
+      //       'oncall_personnel' => 'backup_2',
+      //       'created_at'=>$now,
+      //       'updated_at'=>$now
+      //     );
+      //   }
+      // }
 
-      if(count($request->oncall_personnel['silent_listener'])>=1){
-        foreach ($request->oncall_personnel['silent_listener'] as $participant) {
-          $str2 = substr($participant['dochalo_ID'], 2);
-          $curacall_id = ltrim($str2, '0');
-          $oncall_personnel[] = array(
-            'case_id'=>$case->id,
-            'user_id'=>$curacall_id,
-            'oncall_personnel' => 'silent_listener',
-            'created_at'=>$now,
-            'updated_at'=>$now
-          );
-        }
-      }
+      // if(count($request->oncall_personnel['silent_listener'])>=1){
+      //   foreach ($request->oncall_personnel['silent_listener'] as $participant) {
+      //     $str2 = substr($participant['dochalo_ID'], 2);
+      //     $curacall_id = ltrim($str2, '0');
+      //     $oncall_personnel[] = array(
+      //       'case_id'=>$case->id,
+      //       'user_id'=>$curacall_id,
+      //       'oncall_personnel' => 'silent_listener',
+      //       'created_at'=>$now,
+      //       'updated_at'=>$now
+      //     );
+      //   }
+      // }
 
       Case_participant::insert($oncall_personnel);
 
@@ -867,7 +867,6 @@ class ApiController extends Controller
 
 
       foreach ($request->oncall_personnel['oncall_staff'] as $participant) {
-
         if(isset($participant['dochalo_ID']) ){
           $str2 = substr($participant['dochalo_ID'], 2);
           $curacall_id = ltrim($str2, '0');
