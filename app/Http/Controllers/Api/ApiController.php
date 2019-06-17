@@ -536,6 +536,13 @@ class ApiController extends Controller
             'action_url'    => route('case',[$request->case_id])
         );
         $user->notify(new ReminderNotification($arr));
+
+        if($user)
+          return response()->json([
+              "status" => 200,
+              "response" => "success", 
+              "message" => "Successfully sent."
+          ]);
   }
 
 
@@ -910,6 +917,22 @@ class ApiController extends Controller
       $res = Case_participant::insert($oncall_personnel);
       
       DB::commit();
+
+       /* Notification */
+      $message = str_replace("[case_id]",$case[0]->id,__('notification.new_case'));
+      $arr = array(
+          'case_id'     => $case[0]->id,
+          'message'     =>    $message,
+          'type'        =>  'new_case',
+          'action_url'  => route('case',[$case[0]->id])
+      );
+
+      foreach ($oncall_personnel as $row) {
+       $user = User::find($row['user_id']);
+       $user->notify(new CaseNotification($arr)); // Notify participant
+      }
+      /* END Notification */
+
       return response()->json([
         "status" => 200,
         "response" => "success", 
