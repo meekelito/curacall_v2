@@ -647,7 +647,7 @@ class ApiController extends Controller
 
       'oncall_personnel' => 'required',
       'oncall_personnel.oncall_staff' => 'required',
-      'oncall_personnel.oncall_staff.dochalo_ID' => 'required',
+      'oncall_personnel.oncall_staff.*.dochalo_ID' => 'required',
     ]);
 
  
@@ -842,11 +842,13 @@ class ApiController extends Controller
       'client_id' => '|exists:accounts,account_id',
       'oncall_type' => 'required|in:backup_1,backup_2,silent_listener',
       'oncall_personnel' => 'required',
+      'oncall_personnel.oncall_staff' => 'required',
+      'oncall_personnel.oncall_staff.*.dochalo_ID' => 'required',
     ],[ 
       'questionnaire_id.exists'=>'Questionnaire ID does not exist.',
       'client_id.exists'=>'Client ID does not exist.',
       'phone_main.required'=>'Main Number is required.',
-      'oncall_type.required' => 'OnCall type is required.'
+      'oncall_type.required' => 'OnCall type is required.',
     ]);
  
     if( $validator->fails() ){
