@@ -46,12 +46,13 @@
   <script type="text/javascript" src="{{ asset('assets/js/plugins/ui/moment/moment.min.js') }}"></script>
   <script type="text/javascript" src="{{ asset('assets/js/plugins/pickers/daterangepicker.js') }}"></script>
 
-
+  <script type="text/javascript" src="{{ asset('js/favico-0.3.10.min.js') }}"></script> 
   <script type="text/javascript" src="{{ asset('assets/js/plugins/forms/styling/switch.min.js') }}" ></script> 
   <script type="text/javascript" src="{{ asset('assets/js/plugins/visualization/echarts/echarts.js') }}"></script>
   
 	<script type="text/javascript" src="{{ asset('assets/js/core/app.js') }}"></script> 
   <script src="{{ asset('js/jquery.getscripts.min.js') }}"></script>
+
 	<!-- /theme JS files -->
 	<style type="text/css">
 	 	.navbar-inverse {
@@ -125,11 +126,17 @@
       Your browser does not support the audio element.
     </audio>
 
+    <audio id="reminderNotificationAudio">
+      <source src="{{ asset('assets/notification/sounds/reminder.mp3') }}" type="audio/mpeg">
+      Your browser does not support the audio element.
+    </audio>
+
 		<div class="navbar-collapse collapse" id="navbar-mobile"> 
 			<ul class="nav navbar-nav">
         <li><a class="sidebar-control sidebar-main-toggle hidden-xs"><i class="icon-transmission"></i></a></li>
          <chatnotification v-bind:chatnotifications="chatnotifications"></chatnotification>
          <notification v-bind:notifications="notifications"></notification>
+         <remindernotification v-bind:remindernotifications="remindernotifications"></remindernotification>
 			</ul>
 			<p class="navbar-text">
 				<span class="label bg-success">Online</span>
@@ -399,6 +406,15 @@
       $(document).on('pjax:complete', function(event) {
         hideLoader();
       });
+
+      var notification_count = 0;
+      var favicon = new Favico({
+          animation : 'popFade',
+          position : 'up'
+      });
+      
+      //intial value
+      favicon.badge(notification_count);
 
     });
     count_case();

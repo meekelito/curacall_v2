@@ -12340,17 +12340,20 @@ window.Vue = __webpack_require__(3);
 
 var NOTIFICATION_TYPES = {
   chat: 'App\\Notifications\\MessageNotification',
-  case: 'App\\Notifications\\CaseNotification'
+  case: 'App\\Notifications\\CaseNotification',
+  reminders: 'App\\Notifications\\ReminderNotification'
 };
 
 Vue.component('notification', __webpack_require__(50));
 Vue.component('chatnotification', __webpack_require__(53));
+Vue.component('remindernotification', __webpack_require__(56));
 
 var app = new Vue({
   el: '#notificationapp',
   data: {
     notifications: '',
-    chatnotifications: ''
+    chatnotifications: '',
+    remindernotifications: ''
   },
   created: function created() {
     var _this = this;
@@ -12359,6 +12362,8 @@ var app = new Vue({
     this.countChatNotifications();
     this.fetchChatNotifications();
     this.fetchNotifications();
+    this.fetchReminderNotifications();
+    this.countReminderNotifications();
 
     var userId = $('meta[name="userId"]').attr('content');
     Echo.private('App.User.' + userId).notification(function (notification) {
@@ -12377,7 +12382,11 @@ var app = new Vue({
         _this.fetchChatNotifications();
 
         document.getElementById('chatNotificationAudio').play();
-      } else {
+      } else if (notification.type == NOTIFICATION_TYPES.reminders) {
+        var playPromise = document.getElementById('reminderNotificationAudio').play();
+        $('#reminder-notif2').addClass('badge-notif');
+        _this.fetchReminderNotifications();
+      } else if (notification.type == NOTIFICATION_TYPES.case) {
         //case notifications below
 
         //this.notifications.unshift(notification);
@@ -12423,6 +12432,10 @@ var app = new Vue({
           }
         }
 
+        if (current_url == "/all-cases" || current_url == "/active-cases" || current_url == "/pending-cases" || current_url == "/closed-cases" || current_url == "/silent-cases") {
+          $.pjax.reload('#content', { url: window.location.href });
+        }
+
         var playPromise = document.getElementById('caseNotificationAudio').play();
 
         // In browsers that don’t yet support this functionality,
@@ -12466,6 +12479,23 @@ var app = new Vue({
 
       axios.post(Laravel.baseUrl + '/notification/chat/get').then(function (response) {
         _this3.chatnotifications = response.data;
+      });
+    },
+    fetchReminderNotifications: function fetchReminderNotifications() {
+      var _this4 = this;
+
+      axios.post(Laravel.baseUrl + '/notification/reminder/get').then(function (response) {
+        _this4.remindernotifications = response.data;
+      });
+    },
+    countReminderNotifications: function countReminderNotifications() {
+      axios.post(Laravel.baseUrl + '/notification/reminder/count').then(function (response) {
+        if (response.data > 0) $('#reminder-notif2').addClass('badge-notif');
+      });
+    },
+    MarkAllReminderNotificationRead: function MarkAllReminderNotificationRead() {
+      axios.post('/notification/reminder/read').then(function (response) {
+        $('#reminder-notif2').removeClass('badge-notif');
       });
     },
     MarkAllMessageRead: function MarkAllMessageRead() {
@@ -43074,7 +43104,10 @@ var render = function() {
                   staticClass: "img-circle",
                   attrs: {
                     width: "30",
-                    src: "/storage/uploads/users/" + notification.prof_img,
+                    src:
+                      notification.prof_img !== null
+                        ? "/storage/uploads/users/" + notification.prof_img
+                        : "/storage/uploads/users/default.png",
                     alt: ""
                   }
                 })
@@ -43395,6 +43428,250 @@ if (false) {
   module.hot.accept()
   if (module.hot.data) {
     require("vue-hot-reload-api")      .rerender("data-v-d0185564", module.exports)
+  }
+}
+
+/***/ }),
+/* 56 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(2)
+/* script */
+var __vue_script__ = __webpack_require__(57)
+/* template */
+var __vue_template__ = __webpack_require__(58)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/js/components/ReminderNotification.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-248f2630", Component.options)
+  } else {
+    hotAPI.reload("data-v-248f2630", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 57 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    props: ['remindernotifications'],
+    methods: {
+        MarkAsRead: function MarkAsRead(notification) {
+            var data = {
+                id: notification.id
+            };
+            axios.post('/notification/reminder/read', data).then(function (response) {
+                //window.location.href = notification.data.action_url;
+                $.pjax.reload('#content', { url: notification.data.action_url });
+            });
+        },
+        MarkAllNotificationRead: function MarkAllNotificationRead() {
+            axios.post('/notification/reminder/read').then(function (response) {
+                $('#reminder-notif2').removeClass('badge-notif');
+            });
+        }
+    }
+});
+
+/***/ }),
+/* 58 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("li", { staticClass: "dropdown" }, [
+    _c(
+      "a",
+      {
+        staticClass: "dropdown-toggle",
+        attrs: { href: "#", "data-toggle": "dropdown" },
+        on: {
+          click: function($event) {
+            _vm.MarkAllNotificationRead()
+          }
+        }
+      },
+      [
+        _c("i", { staticClass: "icon-alarm" }),
+        _vm._v(" "),
+        _c("span", { staticClass: "visible-xs-inline-block position-right" }, [
+          _vm._v("Reminders")
+        ]),
+        _vm._v(" "),
+        _c("span", {
+          staticClass: "bg-warning-400",
+          attrs: { id: "reminder-notif2" }
+        })
+      ]
+    ),
+    _vm._v(" "),
+    _c("div", { staticClass: "dropdown-menu dropdown-content" }, [
+      _vm._m(0),
+      _vm._v(" "),
+      _c(
+        "ul",
+        {
+          staticClass:
+            "notification-list media-list dropdown-content-body width-350"
+        },
+        _vm._l(_vm.remindernotifications, function(notification) {
+          return _c(
+            "li",
+            {
+              staticClass: "media",
+              class: [notification.is_read == 0 ? "new" : ""]
+            },
+            [
+              _c("div", { staticClass: "media-left" }, [
+                _c("img", {
+                  staticClass: "img-circle",
+                  attrs: {
+                    width: "30",
+                    src: "/storage/uploads/users/default.png",
+                    alt: ""
+                  }
+                })
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "media-body" }, [
+                _c(
+                  "a",
+                  {
+                    on: {
+                      click: function($event) {
+                        _vm.MarkAsRead(notification)
+                      }
+                    }
+                  },
+                  [
+                    _c("div", { staticClass: "text-muted" }, [
+                      _vm._v(_vm._s(notification.data.message))
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "media-annotation" }, [
+                      _vm._v(_vm._s(notification.created_at))
+                    ])
+                  ]
+                )
+              ])
+            ]
+          )
+        })
+      ),
+      _vm._v(" "),
+      _vm._m(1)
+    ])
+  ])
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "dropdown-content-heading" }, [
+      _vm._v("\r\n              Reminders\r\n              "),
+      _c("ul", { staticClass: "icons-list" }, [
+        _c("li", [
+          _c("a", { attrs: { href: "#" } }, [
+            _c("i", { staticClass: "icon-sync" })
+          ])
+        ])
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "dropdown-content-footer" }, [
+      _c(
+        "a",
+        {
+          attrs: { href: "#", "data-popup": "tooltip", title: "All Reminders" }
+        },
+        [_c("i", { staticClass: "icon-menu display-block" })]
+      )
+    ])
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-248f2630", module.exports)
   }
 }
 

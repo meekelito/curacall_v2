@@ -13,9 +13,6 @@ use Cache;
 use Auth;
 use Validator;
 use Carbon\Carbon;
-use App\Notifications\ReminderNotification;
-use App\Notifications\CaseNotification;
-use App\Case_repository;
 
 class ApiController extends Controller
 {
@@ -53,15 +50,6 @@ class ApiController extends Controller
 
       $now = Carbon::now()->toDateTimeString();
       $participants = array();
-
-      $message = str_replace("[case_id]",$request->case_id,__('notification.new_case'));
-      $arr = array(
-          'case_id'     => $request->case_id,
-          'message'     =>    $message,
-          'type'        =>  'new_case',
-          'action_url'  => route('case',[$case->id])
-      );
-
       foreach ($request->recipients as $recipient) {
         $participants[] = array(
           'case_id'=>$case->id,
@@ -71,10 +59,6 @@ class ApiController extends Controller
           'created_at'=>$now,
           'updated_at'=>$now
         );
-
-       $user = User::find($recipient);
-       $user->notify(new CaseNotification($arr)); // Notify participant
-          
       }
 
       Case_participant::insert($participants);
@@ -509,43 +493,6 @@ class ApiController extends Controller
   }
 
 
-
-  public function reminderNotification(Request $request)
-  {
-        $validator = Validator::make($request->all(),[ 
-          'notifiable_id' => 'required',
-          'case_id'  => 'required'
-        ]); 
-
-        if( $validator->fails() ){
-            return json_encode(array( 
-              "status"=>0,
-              "response"=>"error", 
-              "message"=>$validator->errors()->first()
-            ));
-        }
-
-        $user = User::findOrFail($request->notifiable_id);
-        $message = str_replace("[case_id]",$request->case_id,__('notification.reminder'));
-        $arr = array(
-            'from_id'   => $request->from_id,
-            'from_name'   => $request->from_name,
-            'from_image' => '1551097384photo.jpg',
-            'case_id'   => $request->case_id,
-            'message' =>    $message,
-            'action_url'    => route('case',[$request->case_id])
-        );
-        $user->notify(new ReminderNotification($arr));
-
-        if($user)
-          return response()->json([
-              "status" => 200,
-              "response" => "success", 
-              "message" => "Successfully sent."
-          ]);
-  }
-
-
   public function sendCaseOncall(Request $request)
   {
     $validator = Validator::make($request->all(),[ 
@@ -655,7 +602,7 @@ class ApiController extends Controller
 
       'oncall_personnel' => 'required',
       'oncall_personnel.oncall_staff' => 'required',
-      'oncall_personnel.oncall_staff.*.dochalo_ID' => 'required',
+      'oncall_personnel.oncall_staff.dochalo_ID' => 'required',
     ]);
 
  
@@ -704,66 +651,61 @@ class ApiController extends Controller
       $oncall_personnel = array(); //list of oncall personnel
 
       foreach ($request->oncall_personnel['oncall_staff'] as $participant) {
-        if(isset($participant['dochalo_ID'])){
+        $str2 = substr($participant['dochalo_ID'], 2);
+        $curacall_id = ltrim($str2, '0');
+        $oncall_personnel[] = array(
+          'case_id'=>$case->id,
+          'user_id'=>$curacall_id,
+          'oncall_personnel' => 'oncall',
+          'created_at'=>$now,
+          'updated_at'=>$now
+        );
+      }
+
+      // dd(count($request->oncall_personnel['silent_listener']));
+      if(count($request->oncall_personnel['backup_1'])>=1){
+        foreach ($request->oncall_personnel['backup_1'] as $participant) {
           $str2 = substr($participant['dochalo_ID'], 2);
           $curacall_id = ltrim($str2, '0');
           $oncall_personnel[] = array(
             'case_id'=>$case->id,
             'user_id'=>$curacall_id,
-            'oncall_personnel' => 'oncall',
+            'oncall_personnel' => 'backup_1',
             'created_at'=>$now,
             'updated_at'=>$now
           );
         }
       }
 
-      // dd(count($request->oncall_personnel['silent_listener']));
-      // if(count($request->oncall_personnel['backup_1'])>=1){
-      //   foreach ($request->oncall_personnel['backup_1'] as $participant) {
-      //     $str2 = substr($participant['dochalo_ID'], 2);
-      //     $curacall_id = ltrim($str2, '0');
-      //     $oncall_personnel[] = array(
-      //       'case_id'=>$case->id,
-      //       'user_id'=>$curacall_id,
-      //       'oncall_personnel' => 'backup_1',
-      //       'created_at'=>$now,
-      //       'updated_at'=>$now
-      //     );
-      //   }
-      // }
+      if(count($request->oncall_personnel['backup_2'])>=1){
+        foreach ($request->oncall_personnel['backup_2'] as $participant) {
+          $str2 = substr($participant['dochalo_ID'], 2);
+          $curacall_id = ltrim($str2, '0');
+          $oncall_personnel[] = array(
+            'case_id'=>$case->id,
+            'user_id'=>$curacall_id,
+            'oncall_personnel' => 'backup_2',
+            'created_at'=>$now,
+            'updated_at'=>$now
+          );
+        }
+      }
 
-      // if(count($request->oncall_personnel['backup_2'])>=1){
-      //   foreach ($request->oncall_personnel['backup_2'] as $participant) {
-      //     $str2 = substr($participant['dochalo_ID'], 2);
-      //     $curacall_id = ltrim($str2, '0');
-      //     $oncall_personnel[] = array(
-      //       'case_id'=>$case->id,
-      //       'user_id'=>$curacall_id,
-      //       'oncall_personnel' => 'backup_2',
-      //       'created_at'=>$now,
-      //       'updated_at'=>$now
-      //     );
-      //   }
-      // }
+      if(count($request->oncall_personnel['silent_listener'])>=1){
+        foreach ($request->oncall_personnel['silent_listener'] as $participant) {
+          $str2 = substr($participant['dochalo_ID'], 2);
+          $curacall_id = ltrim($str2, '0');
+          $oncall_personnel[] = array(
+            'case_id'=>$case->id,
+            'user_id'=>$curacall_id,
+            'oncall_personnel' => 'silent_listener',
+            'created_at'=>$now,
+            'updated_at'=>$now
+          );
+        }
+      }
 
-      // if(count($request->oncall_personnel['silent_listener'])>=1){
-      //   foreach ($request->oncall_personnel['silent_listener'] as $participant) {
-      //     $str2 = substr($participant['dochalo_ID'], 2);
-      //     $curacall_id = ltrim($str2, '0');
-      //     $oncall_personnel[] = array(
-      //       'case_id'=>$case->id,
-      //       'user_id'=>$curacall_id,
-      //       'oncall_personnel' => 'silent_listener',
-      //       'created_at'=>$now,
-      //       'updated_at'=>$now
-      //     );
-      //   }
-      // }
-
-      //return var_dump($oncall_personnel);
       Case_participant::insert($oncall_personnel);
-
-     
 
       $request->merge(array(
         'call_information'=>json_encode($request->call_information),
@@ -776,22 +718,6 @@ class ApiController extends Controller
       Case_repository::create($request->all());
 
       DB::commit();
-
-       /* Notification */
-      $message = str_replace("[case_id]",$case->id,__('notification.new_case'));
-      $arr = array(
-          'case_id'     => $case->id,
-          'message'     =>    $message,
-          'type'        =>  'new_case',
-          'action_url'  => route('case',[$case->id])
-      );
-
-      foreach ($oncall_personnel as $row) {
-       $user = User::find($row['user_id']);
-       $user->notify(new CaseNotification($arr)); // Notify participant
-      }
-      /* END Notification */
-      
       return response()->json([
         "status" => 200,
         "response" => "success", 
@@ -847,22 +773,15 @@ class ApiController extends Controller
     /** End Sending Notification part **/
   }
 
-  public function addOnCallBackUp(Request $request)
+  public function sendCaseOncallSimplified(Request $request)
   {
     $validator = Validator::make($request->all(),[ 
-      'questionnaire_id' => 'required|exists:cases,case_id',
-      'client_id' => '|exists:accounts,account_id',
-      'oncall_type' => 'required|in:backup_1,backup_2,silent_listener',
-      'oncall_personnel' => 'required',
-      'oncall_personnel.oncall_staff' => 'required',
-      'oncall_personnel.oncall_staff.*.dochalo_ID' => 'required',
-    ],[ 
-      'questionnaire_id.exists'=>'Questionnaire ID does not exist.',
-      'client_id.exists'=>'Client ID does not exist.',
-      'phone_main.required'=>'Main Number is required.',
-      'oncall_type.required' => 'OnCall type is required.',
-      'oncall_type.oncall_staff.required' => 'OnCall type is required.',
-      'oncall_personnel.oncall_staff.*.dochalo_ID.required' => 'Dochalo ID is required.',
+      'questionnaire_id' => 'required',
+      'client_id' => 'required',
+      'call_type' => 'required',
+      'subcall_type' => 'required',
+      'case_information' => 'required',
+      'oncall_personnel' => 'required'
     ]);
  
     if( $validator->fails() ){
@@ -871,81 +790,13 @@ class ApiController extends Controller
         "response"=>"bad request", 
         "message"=>$validator->errors()
       ]);
-    }
-    $oncall_personnel = array();
-    $now = Carbon::now()->toDateTimeString();
-
-    DB::beginTransaction();
-    try{
-
-      $case = Cases::where('case_id',$request->questionnaire_id)->select('id')->get();
-      $participants_id = Case_participant::where('case_id',$case[0]->id)->select('user_id')->get();
-
-      $participants = array();
-      $existing_participants = array();
-      foreach ($participants_id as $row) {
-        $participants[] = $row->user_id;
-      }
-
-      $pass = true;
-      foreach ($request->oncall_personnel['oncall_staff'] as $participant) {
-        if(isset($participant['dochalo_ID']) ){
-          $str2 = substr($participant['dochalo_ID'], 2);
-          $curacall_id = ltrim($str2, '0');
-          if (!in_array($curacall_id, $participants)){
-            $oncall_personnel[] = array(
-              'case_id'=>$case[0]->id,
-              'user_id'=>$curacall_id,
-              'oncall_personnel' => $request->oncall_type,
-              'created_at'=>$now,
-              'updated_at'=>$now
-            );
-          }else{
-            $existing_participants[] = $participant['dochalo_ID'];
-            $pass = false;
-          }
-        }
-      }
-      if($pass == false){
-        return response()->json([
-          "status" => 200,
-          "response" => "success", 
-          "message" => "This OnCall(s) is already a participant of this Case ". implode(', ', $existing_participants)
-        ]);
-      }
-
-      $res = Case_participant::insert($oncall_personnel);
-      
-      DB::commit();
-
-       /* Notification */
-      $message = str_replace("[case_id]",$case[0]->id,__('notification.new_case'));
-      $arr = array(
-          'case_id'     => $case[0]->id,
-          'message'     =>    $message,
-          'type'        =>  'new_case',
-          'action_url'  => route('case',[$case[0]->id])
-      );
-
-      foreach ($oncall_personnel as $row) {
-       $user = User::find($row['user_id']);
-       $user->notify(new CaseNotification($arr)); // Notify participant
-      }
-      /* END Notification */
-
+    }else{
       return response()->json([
         "status" => 200,
         "response" => "success", 
         "message" => "Successfully sent."
       ]);
-    } catch (Exeption $e){
-      DB::rollback();
-      return response()->json([
-        "status" => 500,
-        "response" => "Internal Server Error", 
-        "message" => "An internal server error occurred while processing the request."
-      ]);
-    } 
+    }
 
   }
 
