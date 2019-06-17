@@ -15,6 +15,7 @@ use Validator;
 use Carbon\Carbon;
 use App\Notifications\ReminderNotification;
 use App\Notifications\CaseNotification;
+use App\Case_repository;
 
 class ApiController extends Controller
 {
@@ -647,7 +648,7 @@ class ApiController extends Controller
 
       'oncall_personnel' => 'required',
       'oncall_personnel.oncall_staff' => 'required',
-      'oncall_personnel.oncall_staff.dochalo_ID' => 'required',
+      'oncall_personnel.oncall_staff.*.dochalo_ID' => 'required',
     ]);
 
  
@@ -752,12 +753,13 @@ class ApiController extends Controller
       //   }
       // }
 
+      //return var_dump($oncall_personnel);
       Case_participant::insert($oncall_personnel);
 
       /* Notification */
-      $message = str_replace("[case_id]",$request->case_id,__('notification.new_case'));
+      $message = str_replace("[case_id]",$case->id,__('notification.new_case'));
       $arr = array(
-          'case_id'     => $request->case_id,
+          'case_id'     => $case->id,
           'message'     =>    $message,
           'type'        =>  'new_case',
           'action_url'  => route('case',[$case->id])
