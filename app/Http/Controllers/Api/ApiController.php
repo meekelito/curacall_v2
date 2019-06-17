@@ -854,6 +854,8 @@ class ApiController extends Controller
       'client_id.exists'=>'Client ID does not exist.',
       'phone_main.required'=>'Main Number is required.',
       'oncall_type.required' => 'OnCall type is required.',
+      'oncall_type.oncall_staff.required' => 'OnCall type is required.',
+      'oncall_personnel.oncall_staff.*.dochalo_ID.required' => 'Dochalo ID is required.',
     ]);
  
     if( $validator->fails() ){
@@ -870,14 +872,20 @@ class ApiController extends Controller
     try{
 
       $case = Cases::where('case_id',$request->questionnaire_id)->select('id')->get();
-      $case_participants = Case_participant::where('case_id',$case[0]->id)->select('user_id')->get()->toArray();
+      $participants_id = Case_participant::where('case_id',$case[0]->id)->select('user_id')->get();
 
+      $participants = array();
+      $existing_participants = array();
+      foreach ($participants_id as $row) {
+        $participants[] = $row->user_id;
+      }
 
+      $pass = true;
       foreach ($request->oncall_personnel['oncall_staff'] as $participant) {
         if(isset($participant['dochalo_ID']) ){
           $str2 = substr($participant['dochalo_ID'], 2);
           $curacall_id = ltrim($str2, '0');
-          if (!in_array($curacall_id, $case_participants[0])){
+          if (!in_array($curacall_id, $participants)){
             $oncall_personnel[] = array(
               'case_id'=>$case[0]->id,
               'user_id'=>$curacall_id,
@@ -885,8 +893,18 @@ class ApiController extends Controller
               'created_at'=>$now,
               'updated_at'=>$now
             );
+          }else{
+            $existing_participants[] = $participant['dochalo_ID'];
+            $pass = false;
           }
         }
+      }
+      if($pass == false){
+        return response()->json([
+          "status" => 200,
+          "response" => "success", 
+          "message" => "This OnCall(s) is already a participant of this Case ". implode(', ', $existing_participants)
+        ]);
       }
 
       $res = Case_participant::insert($oncall_personnel);
