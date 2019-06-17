@@ -18,7 +18,7 @@ use Illuminate\Http\Request;
 //     return $request->user();
 // });
 
-Route::post('notification/remind', 'Api\ApiController@reminderNotification');
+
 
 Route::post('login_mobile', 'Api\AuthController@login');
 Route::post('check_email', 'Api\AuthController@check_email');
@@ -78,6 +78,8 @@ Route::get('/cases/{status?}/{user_id}', 'Api\ApiController@getCases' );
         Route::post('/integration/dynamics/send-case-to-oncall', 'Api\ApiController@sendCaseOncall' ); 
 
         Route::post('/integration/dynamics/add-oncall-backup', 'Api\ApiController@addOnCallBackUp' ); 
+
+        Route::post('notification/remind', 'Api\ApiController@reminderNotification');
     });
 
 

@@ -17,7 +17,7 @@
             <ul class="notification-list media-list dropdown-content-body width-350">
                <li v-for="notification in notifications" class="media" v-bind:class="[ notification.is_read == 0 ? 'new': '']">
                 <div class="media-left">
-                   <img class="img-circle" width="30" v-bind:src="'/storage/uploads/users/' + notification.prof_img"  alt="">
+                   <img class="img-circle" width="30" v-bind:src="notification.prof_img !== null ? '/storage/uploads/users/' + notification.prof_img : '/storage/uploads/users/default.png'"  alt="">
                 </div>
 
                 <div class="media-body">
