@@ -756,7 +756,21 @@ class ApiController extends Controller
       //return var_dump($oncall_personnel);
       Case_participant::insert($oncall_personnel);
 
-      /* Notification */
+     
+
+      $request->merge(array(
+        'call_information'=>json_encode($request->call_information),
+        'caller_information'=>json_encode($request->caller_information),
+        'caregiver_information'=>json_encode($request->caregiver_information),
+        'patient_information'=>json_encode($request->patient_information),
+        'oncall_personnel'=>json_encode($request->oncall_personnel)
+      ));
+
+      Case_repository::create($request->all());
+
+      DB::commit();
+
+       /* Notification */
       $message = str_replace("[case_id]",$case->id,__('notification.new_case'));
       $arr = array(
           'case_id'     => $case->id,
@@ -770,18 +784,7 @@ class ApiController extends Controller
        $user->notify(new CaseNotification($arr)); // Notify participant
       }
       /* END Notification */
-
-      $request->merge(array(
-        'call_information'=>json_encode($request->call_information),
-        'caller_information'=>json_encode($request->caller_information),
-        'caregiver_information'=>json_encode($request->caregiver_information),
-        'patient_information'=>json_encode($request->patient_information),
-        'oncall_personnel'=>json_encode($request->oncall_personnel)
-      ));
-
-      Case_repository::create($request->all());
-
-      DB::commit();
+      
       return response()->json([
         "status" => 200,
         "response" => "success", 
