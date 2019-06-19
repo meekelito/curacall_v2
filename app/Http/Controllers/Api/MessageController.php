@@ -111,6 +111,6 @@ class MessageController extends Controller
      */
     public function destroy($id)
     {
-        //
+        return MobMessage::destroy($id);
     }
 }
