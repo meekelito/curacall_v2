@@ -3,14 +3,14 @@
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="reminder-dropdown">
             <i class="icon-alarm"></i>
             <span class="visible-xs-inline-block position-right">Reminders</span>
-            <span id="reminder-notif2" class="bg-warning-400"></span>
+            <span id="reminder-notif" class="bg-warning-400"></span>
           </a>
           
           <div class="dropdown-menu dropdown-content">
             <div class="dropdown-content-heading">
               Reminders
               <ul class="icons-list">
-                <li><a v-on:click="fetchReminderNotifications()"><i class="icon-sync"></i></a></li>
+                <li><a v-on:click="fetchNotifications('reminder')"><i class="icon-sync"></i></a></li>
               </ul>
             </div>
 
@@ -49,8 +49,8 @@
                     $.pjax.reload('#content',{ url: notification.data.action_url });
                     
                     if(notification.is_read == 0){
-                        this.countReminderNotifications();
-                        this.fetchReminderNotifications();
+                        this.countNotifications('reminder');
+                        this.fetchNotifications('reminder');
                         this.notificationTitle();
                     }
                   
@@ -59,16 +59,16 @@
             notificationTitle(){
               this.$parent.notificationTitle();
             },
-            countReminderNotifications(){
-              this.$parent.countReminderNotifications();
+            countNotifications(type){
+              this.$parent.countNotifications(type);
             },
-            fetchReminderNotifications(){
-              this.$parent.fetchReminderNotifications();
-            },
+            fetchNotifications(type){
+              this.$parent.fetchNotifications(type);
+            }
 
         },
         mounted(){
-          $("#reminder-dropdown").on("show.bs.dropdown", this.fetchReminderNotifications);
+          $("#reminder-dropdown").on("show.bs.dropdown", this.fetchNotifications('reminder'));
         }
     }
 </script>

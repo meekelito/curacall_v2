@@ -3,14 +3,14 @@
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">
             <i class="icon-bell2"></i>
             <span class="visible-xs-inline-block position-right">Notifications</span>
-            <span id="case-notif2" class="bg-warning-400"></span>
+            <span id="case-notif" class="bg-warning-400"></span>
           </a>
           
           <div class="dropdown-menu dropdown-content">
             <div class="dropdown-content-heading">
               Notifications
               <ul class="icons-list">
-                <li><a v-on:click="fetchNotifications()"><i class="icon-sync"></i></a></li>
+                <li><a v-on:click="fetchNotifications('case')"><i class="icon-sync"></i></a></li>
               </ul>
             </div>
 
@@ -50,8 +50,8 @@
                     $.pjax.reload('#content',{ url: notification.data.action_url });
                     
                     if(notification.is_read == 0){
-                        this.countNotifications();
-                        this.fetchNotifications();
+                        this.countNotifications('case');
+                        this.fetchNotifications('case');
                         this.notificationTitle();
                     }
                   
@@ -60,16 +60,16 @@
             notificationTitle(){
               this.$parent.notificationTitle();
             },
-            countNotifications(){
-              this.$parent.countNotifications();
+            countNotifications(type){
+              this.$parent.countNotifications(type);
             },
-            fetchNotifications(){
-              this.$parent.fetchNotifications();
+            fetchNotifications(type){
+              this.$parent.fetchNotifications(type);
             }
             
         },
          mounted(){
-          $("#case-dropdown").on("show.bs.dropdown", this.fetchNotifications);
+          $("#case-dropdown").on("show.bs.dropdown", this.fetchNotifications('case'));
         }
     }
 </script>
