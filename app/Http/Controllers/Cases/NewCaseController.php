@@ -168,8 +168,6 @@ class NewCaseController extends Controller
           $message = str_replace("[case_id]",$request->case_id,$message);
           $arr = array(
               'from_id'     => Auth::user()->id,
-              'from_name'   => Auth::user()->fname . ' ' . Auth::user()->lname,
-              'from_image'  => Auth::user()->prof_img,
               'case_id'     => $request->case_id,
               'message'     =>    $message,
               'type'        =>  'accept_case',
@@ -326,8 +324,6 @@ class NewCaseController extends Controller
         $message = str_replace("[case_id]",$request->case_id,$message);
         $arr = array(
             'from_id'     => Auth::user()->id,
-            'from_name'   => Auth::user()->fname . ' ' . Auth::user()->lname,
-            'from_image'  => Auth::user()->prof_img,
             'case_id'     => $request->case_id,
             'message'     =>    $message,
             'type'        =>  'added_note',

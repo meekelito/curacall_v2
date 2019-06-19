@@ -1,6 +1,6 @@
 <template>
-<li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" v-on:click="MarkAllMessageRead()">
+<li class="dropdown" id="chat-dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">
             <i class="icon-bubbles4"></i>
             <span class="visible-xs-inline-block position-right">Messages</span>
             <span id="message-notif2" class="bg-warning-400"></span>
@@ -17,13 +17,13 @@
             <ul class="notification-list media-list dropdown-content-body width-350">
                <li v-for="notification in chatnotifications" class="media" v-bind:class="[ notification.is_read == 0 ? 'new': '']">
                 <div class="media-left">
-                   <img class="img-circle" width="30" v-bind:src="'/storage/uploads/users/' + notification.data.from_image"  alt="">
+                   <img class="img-circle" width="30" v-bind:src="notification.prof_img"  alt="">
                 </div>
 
                 <div class="media-body">
                  <a v-on:click="MarkAsRead(notification)">{{ notification.data.from_name }}</a> 
                  <div class="text-muted">{{ notification.data.message }}</div>
-                  <div class="media-annotation">{{ notification.created_at }}</div>
+                  <div class="media-annotation"><span v-bind:class="[ notification.is_read == 0 ? 'badge-notif': '']"></span> {{ notification.created_at }}</div>
                 </div>
               </li>
             </ul>
@@ -43,16 +43,29 @@
                 var data = {
                     id: notification.id
                 };
-                axios.post('/notification/chat/read', data).then(response => {
+                axios.post('/notification/read', data).then(response => {
                    //window.location.href = notification.data.action_url;
                    $.pjax.reload('#content',{ url: notification.data.action_url });
+
+                    if(notification.is_read == 0){
+                        this.countChatNotifications();
+                        this.fetchChatNotifications();
+                        this.notificationTitle();
+                    }
                 });
             },
-            MarkAllMessageRead: function() {
-                axios.post('/notification/chat/read').then(response => {
-                   $('#message-notif2').removeClass('badge-notif');
-                });
+            notificationTitle(){
+              this.$parent.notificationTitle();
+            },
+            countChatNotifications(){
+              this.$parent.countChatNotifications();
+            },
+            fetchChatNotifications(){
+              this.$parent.fetchChatNotifications();
             }
+        },
+        mounted(){
+          $("#chat-dropdown").on("show.bs.dropdown", this.fetchChatNotifications);
         }
     }
 </script>

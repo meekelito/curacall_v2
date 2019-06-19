@@ -3,6 +3,7 @@
 namespace App\Notifications;
 
 use Illuminate\Notifications\Notification;
+use Carbon\Carbon;
 
 class ReminderDbChannel 
 {
@@ -11,14 +12,15 @@ class ReminderDbChannel
   {
     $data = $notification->toDatabase($notifiable);
 
-    return $notifiable->routeNotificationFor('database')->create([
-        'id' => $notification->id,
-
-        //customize here
+    return $notifiable->routeNotificationFor('database')->updateOrCreate([
         'case_id'   => $data['case_id'],
+        'type' => 'App\Notifications\ReminderNotification', //<-- comes from toDatabase() Method below
+    ],[
+        'id' => $notification->id,
         'type' => get_class($notification),
         'data' => $data,
         'read_at' => null,
+        'created_at'  => Carbon::now()
     ]);
   }
 
