@@ -23,18 +23,17 @@ Route::group(['middleware' => ['nocache']], function () {
 });
 
 Route::group(['middleware' => array('auth','nocache')], function () {
-    Route::post('/notification/chat/get', 'NotificationController@chatget');
-    Route::post('/notification/chat/read', 'NotificationController@chatread');
+    // Route::post('/notification/chat/get', 'NotificationController@chatget');
     Route::post('/notification/chat/count', 'NotificationController@chatcount');
     //Route::get('/notification/chat', 'NotificationController@chatnotifications');
     //Route::get('/notification/create', 'NotificationController@addnotification');
 
     Route::post('/notification/get', 'NotificationController@get');
+    Route::get('/notification/get', 'NotificationController@get');
     Route::post('/notification/read', 'NotificationController@read');
     Route::post('/notification/count', 'NotificationController@count');
 
-    Route::post('/notification/reminder/get', 'NotificationController@reminderget');
-    Route::post('/notification/reminder/read', 'NotificationController@reminderread');
+    // Route::post('/notification/reminder/get', 'NotificationController@reminderget');
     Route::post('/notification/reminder/count', 'NotificationController@remindercount');
 
     Route::post('/notification/all/count', 'NotificationController@countall');

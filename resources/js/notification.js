@@ -40,9 +40,9 @@ const app = new Vue({
     created() {
         this.countNotifications();
         this.countChatNotifications();
-        this.fetchChatNotifications();
-        this.fetchNotifications();
-        this.fetchReminderNotifications();
+        // this.fetchChatNotifications();
+        // this.fetchNotifications();
+        //this.fetchReminderNotifications();
         this.countReminderNotifications();
        
         // var notification_count = 0;
@@ -166,8 +166,14 @@ const app = new Vue({
               $('#case-notif2').addClass('badge-notif');
               $('#case-notif2').html(response.data);
               this.case_count = response.data;
-              this.notificationTitle();
+           }else
+           {
+              $('#case-notif2').removeClass('badge-notif');
+              $('#case-notif2').html('');
+              this.case_count = 0;
            }
+
+           this.notificationTitle();
         });
       },
       countChatNotifications()
@@ -177,25 +183,31 @@ const app = new Vue({
               $('#message-notif2').addClass('badge-notif');
               $('#message-notif2').html(response.data);
               this.chat_count = response.data;
-              this.notificationTitle();
+           }else
+           {
+              $('#message-notif2').removeClass('badge-notif');
+              $('#message-notif2').html('');
+              this.chat_count = 0;
            }
+
+           this.notificationTitle();
         });
       },
 
       fetchNotifications() {  
-        axios.post(Laravel.baseUrl +'/notification/get').then(response => {
+        axios.post(Laravel.baseUrl +'/notification/get',{ type: 'case'}).then(response => {
             this.notifications = response.data;
         });
       },
 
       fetchChatNotifications() {
-        axios.post(Laravel.baseUrl +'/notification/chat/get').then(response => {
+        axios.post(Laravel.baseUrl +'/notification/get',{ type: 'chat'}).then(response => {
             this.chatnotifications = response.data;
         });
       },
 
       fetchReminderNotifications() {
-        axios.post(Laravel.baseUrl +'/notification/reminder/get').then(response => {
+        axios.post(Laravel.baseUrl +'/notification/get',{ type: 'reminder'}).then(response => {
             this.remindernotifications = response.data;
         });
       },
@@ -206,8 +218,14 @@ const app = new Vue({
               $('#reminder-notif2').addClass('badge-notif');
               $('#reminder-notif2').html(response.data);
               this.reminder_count = response.data;
-              this.notificationTitle();
+           }else
+           {
+              $('#reminder-notif2').removeClass('badge-notif');
+              $('#reminder-notif2').html('');
+              this.reminder_count = 0;
            }
+
+             this.notificationTitle();
         });
       },
         MarkAllReminderNotificationRead() {

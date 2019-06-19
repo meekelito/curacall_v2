@@ -12365,9 +12365,9 @@ var app = new Vue({
 
     this.countNotifications();
     this.countChatNotifications();
-    this.fetchChatNotifications();
-    this.fetchNotifications();
-    this.fetchReminderNotifications();
+    // this.fetchChatNotifications();
+    // this.fetchNotifications();
+    //this.fetchReminderNotifications();
     this.countReminderNotifications();
 
     // var notification_count = 0;
@@ -12477,8 +12477,13 @@ var app = new Vue({
           $('#case-notif2').addClass('badge-notif');
           $('#case-notif2').html(response.data);
           _this2.case_count = response.data;
-          _this2.notificationTitle();
+        } else {
+          $('#case-notif2').removeClass('badge-notif');
+          $('#case-notif2').html('');
+          _this2.case_count = 0;
         }
+
+        _this2.notificationTitle();
       });
     },
     countChatNotifications: function countChatNotifications() {
@@ -12489,28 +12494,33 @@ var app = new Vue({
           $('#message-notif2').addClass('badge-notif');
           $('#message-notif2').html(response.data);
           _this3.chat_count = response.data;
-          _this3.notificationTitle();
+        } else {
+          $('#message-notif2').removeClass('badge-notif');
+          $('#message-notif2').html('');
+          _this3.chat_count = 0;
         }
+
+        _this3.notificationTitle();
       });
     },
     fetchNotifications: function fetchNotifications() {
       var _this4 = this;
 
-      axios.post(Laravel.baseUrl + '/notification/get').then(function (response) {
+      axios.post(Laravel.baseUrl + '/notification/get', { type: 'case' }).then(function (response) {
         _this4.notifications = response.data;
       });
     },
     fetchChatNotifications: function fetchChatNotifications() {
       var _this5 = this;
 
-      axios.post(Laravel.baseUrl + '/notification/chat/get').then(function (response) {
+      axios.post(Laravel.baseUrl + '/notification/get', { type: 'chat' }).then(function (response) {
         _this5.chatnotifications = response.data;
       });
     },
     fetchReminderNotifications: function fetchReminderNotifications() {
       var _this6 = this;
 
-      axios.post(Laravel.baseUrl + '/notification/reminder/get').then(function (response) {
+      axios.post(Laravel.baseUrl + '/notification/get', { type: 'reminder' }).then(function (response) {
         _this6.remindernotifications = response.data;
       });
     },
@@ -12522,8 +12532,13 @@ var app = new Vue({
           $('#reminder-notif2').addClass('badge-notif');
           $('#reminder-notif2').html(response.data);
           _this7.reminder_count = response.data;
-          _this7.notificationTitle();
+        } else {
+          $('#reminder-notif2').removeClass('badge-notif');
+          $('#reminder-notif2').html('');
+          _this7.reminder_count = 0;
         }
+
+        _this7.notificationTitle();
       });
     },
     MarkAllReminderNotificationRead: function MarkAllReminderNotificationRead() {
@@ -43065,25 +43080,40 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['notifications'],
     methods: {
         MarkAsRead: function MarkAsRead(notification) {
+            var _this = this;
+
             var data = {
                 id: notification.id
             };
             axios.post('/notification/read', data).then(function (response) {
                 //window.location.href = notification.data.action_url;
                 $.pjax.reload('#content', { url: notification.data.action_url });
+
+                if (notification.is_read == 0) {
+                    _this.countNotifications();
+                    _this.fetchNotifications();
+                    _this.notificationTitle();
+                }
             });
         },
-        MarkAllNotificationRead: function MarkAllNotificationRead() {
-            axios.post('/notification/read').then(function (response) {
-                $('#case-notif2').removeClass('badge-notif');
-                $('#case-notif2').html('');
-            });
+        notificationTitle: function notificationTitle() {
+            this.$parent.notificationTitle();
+        },
+        countNotifications: function countNotifications() {
+            this.$parent.countNotifications();
+        },
+        fetchNotifications: function fetchNotifications() {
+            this.$parent.fetchNotifications();
         }
+    },
+    mounted: function mounted() {
+        $("#case-dropdown").on("show.bs.dropdown", this.fetchNotifications);
     }
 });
 
@@ -43095,34 +43125,28 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("li", { staticClass: "dropdown" }, [
-    _c(
-      "a",
-      {
-        staticClass: "dropdown-toggle",
-        attrs: { href: "#", "data-toggle": "dropdown" },
-        on: {
-          click: function($event) {
-            _vm.MarkAllNotificationRead()
-          }
-        }
-      },
-      [
-        _c("i", { staticClass: "icon-bell2" }),
-        _vm._v(" "),
-        _c("span", { staticClass: "visible-xs-inline-block position-right" }, [
-          _vm._v("Notifications")
-        ]),
-        _vm._v(" "),
-        _c("span", {
-          staticClass: "bg-warning-400",
-          attrs: { id: "case-notif2" }
-        })
-      ]
-    ),
+  return _c("li", { staticClass: "dropdown", attrs: { id: "case-dropdown" } }, [
+    _vm._m(0),
     _vm._v(" "),
     _c("div", { staticClass: "dropdown-menu dropdown-content" }, [
-      _vm._m(0),
+      _c("div", { staticClass: "dropdown-content-heading" }, [
+        _vm._v("\r\n              Notifications\r\n              "),
+        _c("ul", { staticClass: "icons-list" }, [
+          _c("li", [
+            _c(
+              "a",
+              {
+                on: {
+                  click: function($event) {
+                    _vm.fetchNotifications()
+                  }
+                }
+              },
+              [_c("i", { staticClass: "icon-sync" })]
+            )
+          ])
+        ])
+      ]),
       _vm._v(" "),
       _c(
         "ul",
@@ -43141,14 +43165,7 @@ var render = function() {
               _c("div", { staticClass: "media-left" }, [
                 _c("img", {
                   staticClass: "img-circle",
-                  attrs: {
-                    width: "30",
-                    src:
-                      notification.prof_img !== null
-                        ? "/storage/uploads/users/" + notification.prof_img
-                        : "/storage/uploads/users/default.png",
-                    alt: ""
-                  }
+                  attrs: { width: "30", src: notification.prof_img, alt: "" }
                 })
               ]),
               _vm._v(" "),
@@ -43168,7 +43185,10 @@ var render = function() {
                     ]),
                     _vm._v(" "),
                     _c("div", { staticClass: "media-annotation" }, [
-                      _vm._v(_vm._s(notification.created_at))
+                      _c("span", {
+                        class: [notification.is_read == 0 ? "badge-notif" : ""]
+                      }),
+                      _vm._v(" " + _vm._s(notification.created_at))
                     ])
                   ]
                 )
@@ -43187,16 +43207,25 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "dropdown-content-heading" }, [
-      _vm._v("\r\n              Notifications\r\n              "),
-      _c("ul", { staticClass: "icons-list" }, [
-        _c("li", [
-          _c("a", { attrs: { href: "#" } }, [
-            _c("i", { staticClass: "icon-sync" })
-          ])
-        ])
-      ])
-    ])
+    return _c(
+      "a",
+      {
+        staticClass: "dropdown-toggle",
+        attrs: { href: "#", "data-toggle": "dropdown" }
+      },
+      [
+        _c("i", { staticClass: "icon-bell2" }),
+        _vm._v(" "),
+        _c("span", { staticClass: "visible-xs-inline-block position-right" }, [
+          _vm._v("Notifications")
+        ]),
+        _vm._v(" "),
+        _c("span", {
+          staticClass: "bg-warning-400",
+          attrs: { id: "case-notif2" }
+        })
+      ]
+    )
   },
   function() {
     var _vm = this
@@ -43321,20 +43350,34 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     props: ['chatnotifications'],
     methods: {
         MarkAsRead: function MarkAsRead(notification) {
+            var _this = this;
+
             var data = {
                 id: notification.id
             };
-            axios.post('/notification/chat/read', data).then(function (response) {
+            axios.post('/notification/read', data).then(function (response) {
                 //window.location.href = notification.data.action_url;
                 $.pjax.reload('#content', { url: notification.data.action_url });
+
+                if (notification.is_read == 0) {
+                    _this.countChatNotifications();
+                    _this.fetchChatNotifications();
+                    _this.notificationTitle();
+                }
             });
         },
-        MarkAllMessageRead: function MarkAllMessageRead() {
-            axios.post('/notification/chat/read').then(function (response) {
-                $('#message-notif2').removeClass('badge-notif');
-                $('#message-notif2').html('');
-            });
+        notificationTitle: function notificationTitle() {
+            this.$parent.notificationTitle();
+        },
+        countChatNotifications: function countChatNotifications() {
+            this.$parent.countChatNotifications();
+        },
+        fetchChatNotifications: function fetchChatNotifications() {
+            this.$parent.fetchChatNotifications();
         }
+    },
+    mounted: function mounted() {
+        $("#chat-dropdown").on("show.bs.dropdown", this.fetchChatNotifications);
     }
 });
 
@@ -43346,34 +43389,11 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("li", { staticClass: "dropdown" }, [
-    _c(
-      "a",
-      {
-        staticClass: "dropdown-toggle",
-        attrs: { href: "#", "data-toggle": "dropdown" },
-        on: {
-          click: function($event) {
-            _vm.MarkAllMessageRead()
-          }
-        }
-      },
-      [
-        _c("i", { staticClass: "icon-bubbles4" }),
-        _vm._v(" "),
-        _c("span", { staticClass: "visible-xs-inline-block position-right" }, [
-          _vm._v("Messages")
-        ]),
-        _vm._v(" "),
-        _c("span", {
-          staticClass: "bg-warning-400",
-          attrs: { id: "message-notif2" }
-        })
-      ]
-    ),
+  return _c("li", { staticClass: "dropdown", attrs: { id: "chat-dropdown" } }, [
+    _vm._m(0),
     _vm._v(" "),
     _c("div", { staticClass: "dropdown-menu dropdown-content" }, [
-      _vm._m(0),
+      _vm._m(1),
       _vm._v(" "),
       _c(
         "ul",
@@ -43392,12 +43412,7 @@ var render = function() {
               _c("div", { staticClass: "media-left" }, [
                 _c("img", {
                   staticClass: "img-circle",
-                  attrs: {
-                    width: "30",
-                    src:
-                      "/storage/uploads/users/" + notification.data.from_image,
-                    alt: ""
-                  }
+                  attrs: { width: "30", src: notification.prof_img, alt: "" }
                 })
               ]),
               _vm._v(" "),
@@ -43419,7 +43434,10 @@ var render = function() {
                 ]),
                 _vm._v(" "),
                 _c("div", { staticClass: "media-annotation" }, [
-                  _vm._v(_vm._s(notification.created_at))
+                  _c("span", {
+                    class: [notification.is_read == 0 ? "badge-notif" : ""]
+                  }),
+                  _vm._v(" " + _vm._s(notification.created_at))
                 ])
               ])
             ]
@@ -43427,11 +43445,35 @@ var render = function() {
         })
       ),
       _vm._v(" "),
-      _vm._m(1)
+      _vm._m(2)
     ])
   ])
 }
 var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "a",
+      {
+        staticClass: "dropdown-toggle",
+        attrs: { href: "#", "data-toggle": "dropdown" }
+      },
+      [
+        _c("i", { staticClass: "icon-bubbles4" }),
+        _vm._v(" "),
+        _c("span", { staticClass: "visible-xs-inline-block position-right" }, [
+          _vm._v("Messages")
+        ]),
+        _vm._v(" "),
+        _c("span", {
+          staticClass: "bg-warning-400",
+          attrs: { id: "message-notif2" }
+        })
+      ]
+    )
+  },
   function() {
     var _vm = this
     var _h = _vm.$createElement
@@ -43567,20 +43609,34 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     props: ['remindernotifications'],
     methods: {
         MarkAsRead: function MarkAsRead(notification) {
+            var _this = this;
+
             var data = {
                 id: notification.id
             };
-            axios.post('/notification/reminder/read', data).then(function (response) {
+            axios.post('/notification/read', data).then(function (response) {
                 //window.location.href = notification.data.action_url;
                 $.pjax.reload('#content', { url: notification.data.action_url });
+
+                if (notification.is_read == 0) {
+                    _this.countReminderNotifications();
+                    _this.fetchReminderNotifications();
+                    _this.notificationTitle();
+                }
             });
         },
-        MarkAllNotificationRead: function MarkAllNotificationRead() {
-            axios.post('/notification/reminder/read').then(function (response) {
-                $('#reminder-notif2').removeClass('badge-notif');
-                $('#reminder-notif2').html('');
-            });
+        notificationTitle: function notificationTitle() {
+            this.$parent.notificationTitle();
+        },
+        countReminderNotifications: function countReminderNotifications() {
+            this.$parent.countReminderNotifications();
+        },
+        fetchReminderNotifications: function fetchReminderNotifications() {
+            this.$parent.fetchReminderNotifications();
         }
+    },
+    mounted: function mounted() {
+        $("#reminder-dropdown").on("show.bs.dropdown", this.fetchReminderNotifications);
     }
 });
 
@@ -43592,17 +43648,99 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("li", { staticClass: "dropdown" }, [
-    _c(
+  return _c(
+    "li",
+    { staticClass: "dropdown", attrs: { id: "reminder-dropdown" } },
+    [
+      _vm._m(0),
+      _vm._v(" "),
+      _c("div", { staticClass: "dropdown-menu dropdown-content" }, [
+        _c("div", { staticClass: "dropdown-content-heading" }, [
+          _vm._v("\r\n              Reminders\r\n              "),
+          _c("ul", { staticClass: "icons-list" }, [
+            _c("li", [
+              _c(
+                "a",
+                {
+                  on: {
+                    click: function($event) {
+                      _vm.fetchReminderNotifications()
+                    }
+                  }
+                },
+                [_c("i", { staticClass: "icon-sync" })]
+              )
+            ])
+          ])
+        ]),
+        _vm._v(" "),
+        _c(
+          "ul",
+          {
+            staticClass:
+              "notification-list media-list dropdown-content-body width-350"
+          },
+          _vm._l(_vm.remindernotifications, function(notification) {
+            return _c(
+              "li",
+              {
+                staticClass: "media",
+                class: [notification.is_read == 0 ? "new" : ""]
+              },
+              [
+                _c("div", { staticClass: "media-left" }, [
+                  _c("img", {
+                    staticClass: "img-circle",
+                    attrs: { width: "30", src: notification.prof_img, alt: "" }
+                  })
+                ]),
+                _vm._v(" "),
+                _c("div", { staticClass: "media-body" }, [
+                  _c(
+                    "a",
+                    {
+                      on: {
+                        click: function($event) {
+                          _vm.MarkAsRead(notification)
+                        }
+                      }
+                    },
+                    [
+                      _c("div", { staticClass: "text-muted" }, [
+                        _vm._v(_vm._s(notification.data.message))
+                      ]),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "media-annotation" }, [
+                        _c("span", {
+                          class: [
+                            notification.is_read == 0 ? "badge-notif" : ""
+                          ]
+                        }),
+                        _vm._v(" " + _vm._s(notification.created_at))
+                      ])
+                    ]
+                  )
+                ])
+              ]
+            )
+          })
+        ),
+        _vm._v(" "),
+        _vm._m(1)
+      ])
+    ]
+  )
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
       "a",
       {
         staticClass: "dropdown-toggle",
-        attrs: { href: "#", "data-toggle": "dropdown" },
-        on: {
-          click: function($event) {
-            _vm.MarkAllNotificationRead()
-          }
-        }
+        attrs: { href: "#", "data-toggle": "dropdown", id: "reminder-dropdown" }
       },
       [
         _c("i", { staticClass: "icon-alarm" }),
@@ -43616,81 +43754,7 @@ var render = function() {
           attrs: { id: "reminder-notif2" }
         })
       ]
-    ),
-    _vm._v(" "),
-    _c("div", { staticClass: "dropdown-menu dropdown-content" }, [
-      _vm._m(0),
-      _vm._v(" "),
-      _c(
-        "ul",
-        {
-          staticClass:
-            "notification-list media-list dropdown-content-body width-350"
-        },
-        _vm._l(_vm.remindernotifications, function(notification) {
-          return _c(
-            "li",
-            {
-              staticClass: "media",
-              class: [notification.is_read == 0 ? "new" : ""]
-            },
-            [
-              _c("div", { staticClass: "media-left" }, [
-                _c("img", {
-                  staticClass: "img-circle",
-                  attrs: {
-                    width: "30",
-                    src: "/storage/uploads/users/default.png",
-                    alt: ""
-                  }
-                })
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "media-body" }, [
-                _c(
-                  "a",
-                  {
-                    on: {
-                      click: function($event) {
-                        _vm.MarkAsRead(notification)
-                      }
-                    }
-                  },
-                  [
-                    _c("div", { staticClass: "text-muted" }, [
-                      _vm._v(_vm._s(notification.data.message))
-                    ]),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "media-annotation" }, [
-                      _vm._v(_vm._s(notification.created_at))
-                    ])
-                  ]
-                )
-              ])
-            ]
-          )
-        })
-      ),
-      _vm._v(" "),
-      _vm._m(1)
-    ])
-  ])
-}
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "dropdown-content-heading" }, [
-      _vm._v("\r\n              Reminders\r\n              "),
-      _c("ul", { staticClass: "icons-list" }, [
-        _c("li", [
-          _c("a", { attrs: { href: "#" } }, [
-            _c("i", { staticClass: "icon-sync" })
-          ])
-        ])
-      ])
-    ])
+    )
   },
   function() {
     var _vm = this

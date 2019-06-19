@@ -121,7 +121,7 @@
 
   <div id="notificationapp">
      <audio id="caseNotificationAudio">
-      <source src="{{ asset('assets/notification/sounds/facebook_notif.mp3') }}" type="audio/mpeg">
+      <source src="{{ asset('assets/notification/sounds/notification1.mp3') }}" type="audio/mpeg">
       Your browser does not support the audio element.
     </audio>
 

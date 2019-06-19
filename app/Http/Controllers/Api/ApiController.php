@@ -528,11 +528,9 @@ class ApiController extends Controller
         $user = User::findOrFail($request->notifiable_id);
         $message = str_replace("[case_id]",$request->case_id,__('notification.reminder'));
         $arr = array(
-            'from_id'   => $request->from_id,
-            'from_name'   => $request->from_name,
-            'from_image' => '1551097384photo.jpg',
-            'case_id'   => $request->case_id,
+            'case_id' => $request->case_id,
             'message' =>    $message,
+            'type'    => 'reminder',
             'action_url'    => route('case',[$request->case_id])
         );
         $user->notify(new ReminderNotification($arr));
