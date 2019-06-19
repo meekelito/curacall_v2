@@ -528,11 +528,9 @@ class ApiController extends Controller
         $user = User::findOrFail($request->notifiable_id);
         $message = str_replace("[case_id]",$request->case_id,__('notification.reminder'));
         $arr = array(
-            'from_id'   => $request->from_id,
-            'from_name'   => $request->from_name,
-            'from_image' => '1551097384photo.jpg',
-            'case_id'   => $request->case_id,
+            'case_id' => $request->case_id,
             'message' =>    $message,
+            'type'    => 'reminder',
             'action_url'    => route('case',[$request->case_id])
         );
         $user->notify(new ReminderNotification($arr));
@@ -656,6 +654,7 @@ class ApiController extends Controller
       'oncall_personnel' => 'required',
       'oncall_personnel.oncall_staff' => 'required',
       'oncall_personnel.oncall_staff.*.dochalo_ID' => 'required',
+      'oncall_personnel.silent_listener.*.dochalo_ID' => 'required_with:oncall_personnel.silent_listener',
     ]);
 
  
@@ -856,6 +855,7 @@ class ApiController extends Controller
       'oncall_personnel' => 'required',
       'oncall_personnel.oncall_staff' => 'required',
       'oncall_personnel.oncall_staff.*.dochalo_ID' => 'required',
+      'oncall_personnel.silent_listener.*.dochalo_ID' => 'required_with:oncall_personnel.silent_listener',
     ],[ 
       'questionnaire_id.exists'=>'Questionnaire ID does not exist.',
       'client_id.exists'=>'Client ID does not exist.',
@@ -863,6 +863,7 @@ class ApiController extends Controller
       'oncall_type.required' => 'OnCall type is required.',
       'oncall_type.oncall_staff.required' => 'OnCall type is required.',
       'oncall_personnel.oncall_staff.*.dochalo_ID.required' => 'Dochalo ID is required.',
+      'oncall_personnel.silent_listener.*.dochalo_ID.required_with' => 'Dochalo ID field is required when oncall personnel silent listener is present',
     ]);
  
     if( $validator->fails() ){

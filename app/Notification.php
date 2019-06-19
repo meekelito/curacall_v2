@@ -11,6 +11,7 @@ use Auth;
 class Notification extends Model
 {
      protected $casts = [
+     	'id'  => 'char',
         'data' => 'array'
     ];
 
@@ -23,9 +24,7 @@ class Notification extends Model
 	public static function notify_user($param = array(),$user,$type = "notification")
 	{
 		  $arr = array(
-		  	  'from_id'     => Auth::user()->id,
-	          'from_name'   => Auth::user()->fname . ' ' . Auth::user()->lname,
-	          'from_image'  => Auth::user()->prof_img,
+		  	  'from_id'     => Auth::user()->id
 	      );
 
 		  $arr = array_merge($arr,$param);

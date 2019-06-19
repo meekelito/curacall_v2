@@ -95,6 +95,10 @@
       display: inline-block;
       position:relative;
       top:-5px;
+      font-size:.7em;
+      text-align: center;
+      vertical-align: middle;
+      line-height: 14px;
     }
   </style>
 </head>
@@ -117,7 +121,7 @@
 
   <div id="notificationapp">
      <audio id="caseNotificationAudio">
-      <source src="{{ asset('assets/notification/sounds/facebook_notif.mp3') }}" type="audio/mpeg">
+      <source src="{{ asset('assets/notification/sounds/notification1.mp3') }}" type="audio/mpeg">
       Your browser does not support the audio element.
     </audio>
 
@@ -407,14 +411,7 @@
         hideLoader();
       });
 
-      var notification_count = 0;
-      var favicon = new Favico({
-          animation : 'popFade',
-          position : 'up'
-      });
-      
-      //intial value
-      favicon.badge(notification_count);
+  
 
     });
     count_case();
