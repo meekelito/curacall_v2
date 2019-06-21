@@ -80,6 +80,9 @@ Route::get('/cases/{status?}/{user_id}', 'Api\ApiController@getCases' );
         Route::post('/integration/dynamics/add-oncall-backup', 'Api\ApiController@addOnCallBackUp' ); 
 
         Route::post('notification/remind', 'Api\ApiController@reminderNotification');
+
+        //mobile app
+        Route::post('forward-case', 'Api\ApiController@forwardCase');
     });
 
 

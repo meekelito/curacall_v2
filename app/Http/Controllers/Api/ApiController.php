@@ -859,7 +859,6 @@ class ApiController extends Controller
     ],[ 
       'questionnaire_id.exists'=>'Questionnaire ID does not exist.',
       'client_id.exists'=>'Client ID does not exist.',
-      'phone_main.required'=>'Main Number is required.',
       'oncall_type.required' => 'OnCall type is required.',
       'oncall_type.oncall_staff.required' => 'OnCall type is required.',
       'oncall_personnel.oncall_staff.*.dochalo_ID.required' => 'Dochalo ID is required.',
@@ -948,6 +947,175 @@ class ApiController extends Controller
       ]);
     } 
 
+  }
+
+
+  public function forwardCase(Request $request)
+  {
+    $validator = Validator::make($request->all(), [
+      'questionnaire_id' => 'required|exists:cases,case_id',
+      'client_id' => 'bail|required|exists:accounts,account_id',
+      'user_id' => 'required|exists:users',
+      'oncall_personnel' => 'required',
+      'oncall_personnel.oncall_staff' => 'required',
+      'oncall_personnel.oncall_staff.*.dochalo_ID' => 'required'
+    ],[ 
+      'questionnaire_id.exists'=>'Questionnaire ID does not exist.',
+      'client_id.exists'=>'Client ID does not exist.',
+      'oncall_type.required' => 'OnCall type is required.',
+      'oncall_type.oncall_staff.required' => 'OnCall type is required.',
+      'oncall_personnel.oncall_staff.*.dochalo_ID.required' => 'Dochalo ID is required.',
+      'oncall_personnel.silent_listener.*.dochalo_ID.required_with' => 'Dochalo ID field is required when oncall personnel silent listener is present',
+    ]);
+
+    if ($validator->fails()) {
+      return response()->json([ 
+        "status"=> 400,
+        "response"=>"bad request", 
+        "message"=>$validator->errors()
+      ]);
+      
+    }else{
+
+      $oncall_personnel = array(); //list of oncall personnel
+      foreach ($request->oncall_personnel['oncall_staff'] as $participant) {
+        if(isset($participant['dochalo_ID'])){
+          $str2 = substr($participant['dochalo_ID'], 2);
+          $curacall_id = ltrim($str2, '0');
+          $oncall_personnel[] = array(
+            'case_id'=>$case->id,
+            'user_id'=>$curacall_id,
+            'oncall_personnel' => 'oncall',
+            'created_at'=>$now,
+            'updated_at'=>$now
+          );
+        }
+      }
+
+
+    }
+
+    
+
+    //checking if the user is still the owner of the case
+    $participation = Case_participant::where('case_id',$request->questionnaire_id)
+                    ->where('user_id',$request->user_id)
+                    ->get();
+
+    if( $participation[0]->ownership == 2 || $participation[0]->ownership == 5 ){
+
+    }else{
+      return json_encode(array(
+        "status"=>2,
+        "response"=>"warning",
+        "message"=>"Error while updating please refresh the page."
+      ));
+    }
+
+    
+    // compare the participants and recipients if existing update the ownership if not insert to participants 
+    // $participants_id = Case_participant::where("case_id",$request->case_id)
+    // ->select('user_id')
+    // ->get();
+    $participants_id = Case_participant::select('user_id')->where("case_id",$request->questionnaire_id)->where('user_id','!=',$request->user_id)->get();// jeric's update, exclude self for notification purposes
+    $participants = array();
+    //$update = array();
+    //$insert = array();
+     $forwarded_recipients = array(); // list of forwarded users
+    foreach ($participants_id as $row) {
+      $participants[] = $row->user_id;
+    }
+
+    /** Notification message template **/
+      $message = str_replace("[from_name]",Auth::user()->fname . ' ' . Auth::user()->lname,__('notification.forward_case'));
+      $message = str_replace("[case_id]",$request->questionnaire_id,$message);
+      $arr = array(
+          'case_id'     => $request->questionnaire_id,
+          //'message'     => $message,
+          'type'        => 'forward_case',
+          //'forward_to'  => $forwarded_recipients,
+          'action_url'  => route('case',[$request->questionnaire_id])
+      );
+    /** END Notification message template **/
+
+   
+    // update all participants ownership state to Forwarded
+    foreach ($request->recipient as $row) {
+      if (in_array($row, $participants)){ 
+        Case_participant::where('case_id', $request->questionnaire_id)
+        ->where('user_id', $row )
+        ->update(['ownership' => 1, 'is_read' => 0]); 
+      }else{ 
+        Case_participant::create( ["case_id" => $request->questionnaire_id,"user_id" => $row, 'ownership' => 1, 'is_read' => 0 ] ); 
+        $user = User::find($row);
+
+        $arr['forward_to'] = $user->fname . ' ' . $user->lname;
+        $arr['message'] = $message . "you";
+        Notification::notify_user($arr,$user);
+      } 
+
+      /** create recipients list for notification **/
+      $user = User::find($row);
+      $user_info = array(  
+                        "id"    =>  $user->id,
+                        "name"  =>  $user->fname . ' ' . $user->lname
+                      );
+
+      array_push($forwarded_recipients,$user_info); // add notifiable user info into array
+      /** end create recipients list for notification **/
+
+      Case_history::create( $request->all()+["is_visible" => 1,"status" => 2,"action_note" => "Case Forwarded","sent_to"=>$row, 'created_by' => $request->user_id ] ); 
+    }
+
+
+
+    /** Sending Notifcation part **/
+     $other_participant_count = count($request->recipient) - 1;
+    // Notify all participants of the case except you
+    foreach($participants as $row)
+    {
+         $user = User::find($row);
+        
+         if(in_array($user->id,$request->recipient))
+         {
+            $str_recipients = "You";
+            if(count($request->recipient) > 1){
+              $str_recipients = "You and " . $other_participant_count;
+              $str_recipients .= ($other_participant_count == 1) ? " Other" : " Others";
+            }
+         }else{
+              $str_recipients = $forwarded_recipients[0]['name'];
+              if(count($request->recipient) > 1){
+                $str_recipients = $forwarded_recipients[0]['name'] . " and " . $other_participant_count;
+                $str_recipients .= ($other_participant_count == 1) ? " Other" : " Others";
+              }
+         }
+         $arr['forward_to'] = $forwarded_recipients;
+         $arr['message'] = $message . $str_recipients;
+         //$user->notify(new CaseNotification($arr)); // Notify participant
+         Notification::notify_user($arr,$user);
+    }
+    /** End Sending Notification part **/
+
+    $res=Case_participant::where('case_id', $request->questionnaire_id)
+    ->where('user_id', Auth::user()->id  )
+    ->update(['ownership' => 5]); 
+   
+  
+    if($res){
+      return json_encode(array(
+        "status"=>1,
+        "response"=>"success",
+        "message"=>"Case successfully forwarded."
+      ));
+    }else{
+      return json_encode(array(
+        "status"=>0,
+        "response"=>"failed", 
+        "message"=>"Error in connection."
+      ));
+    }
+    
   }
 
 }
