@@ -81,7 +81,7 @@
             <td>
               <div class="media-body">
                 <div class="text-muted text-size-small"><span class="label label-primary">Active</span></div>
-                <a href="{{ url('/cases/case_id',$case['id']) }}" class="display-inline-block text-default text-semibold letter-icon-title" title="{{ rtrim($recipient_name,',') }}">{{ $case['participants'][0]['fname']." ".$case['participants'][0]['lname'] }}
+                <a href="{{ url('/cases/case_id',$case['id']) }}" class="display-inline-block text-default text-semibold letter-icon-title" title="{{ rtrim($recipient_name,',') }}">@if(isset($case['participants'][0])){{ $case['participants'][0]['fname']." ".$case['participants'][0]['lname'] }}@endif
                 @if( count($case['participants']) > 1)
                   and {{ count($case['participants'])-1 }} others
                 @endif

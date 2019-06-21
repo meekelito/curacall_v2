@@ -57,7 +57,6 @@ Route::group(['middleware' => array('auth','nocache')], function () {
 	Route::get('active-cases','Cases\ActiveCasesController@index')->middleware('permission:view-active-cases');
 	Route::get('pending-cases','Cases\PendingCasesController@index')->middleware('permission:view-pending-cases');
 	Route::get('closed-cases','Cases\ClosedCasesController@index')->middleware('permission:view-closed-cases');
-	Route::get('deleted-cases','Cases\DeletedCasesController@index');
     Route::get('silent-cases','Cases\SilentCasesController@index')->middleware('permission:view-silent-cases');
 
 
@@ -203,6 +202,14 @@ Route::group(['middleware' => array('auth','nocache')], function () {
         Route::get('admin/permissions/all','Admin\RoleManagementController@fetchPermissions')->name('admin.permissions.fetch');
         Route::get('admin/clients/all','Admin\RoleManagementController@fetchClients')->name('admin.clients.fetch');
         Route::get('admin/account/roles','Admin\RoleManagementController@editAccountRoles')->name('admin.account.roles');  
+
+        // escalation settings
+
+        Route::get('admin-console/escalation-settings', 'Admin\CalltypeNotificationController@index')->name('escalation-settings.index');
+        Route::get('admin-console/escalation-settings/show', 'Admin\CalltypeNotificationController@show')->name('escalation-settings.show');
+        Route::get('admin-console/escalation-settings/calltypes','Admin\CalltypeNotificationController@getdata')->name('escalation-settings.calltypes');
+        Route::put('admin-console/escalation-settings/update-interval', 'Admin\CalltypeNotificationController@updateinterval')->name('escalation-settings.updateinterval');
+        Route::put('admin-console/escalation-settings/update-cron', 'Admin\CalltypeNotificationController@updatecron')->name('escalation-settings.updatecron');
     });
     
     Route::group(['middleware' => array('App\Http\Middleware\AccountAdminMiddleware')], function () {
