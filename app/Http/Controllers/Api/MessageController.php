@@ -8,6 +8,7 @@ use App\Room;
 use App\User;
 use App\MobMessage;
 use App\Message;
+use App\RoomDeleteMessage;
 
 class MessageController extends Controller
 {
@@ -20,7 +21,7 @@ class MessageController extends Controller
     {
         $u = auth('api')->user();
         $rooms = Room::where('name', 'like', '%'.$u->id.'%')
-                ->latest()
+                ->orderBy('updated_at','DESC')
                 ->get();
 
         $formatted_rooms = [];
@@ -42,7 +43,22 @@ class MessageController extends Controller
             $room->contact_name = $contact_name; 
             $room->contacts = $contacts;
             $room->last_convo = Message::find($room->last_message);
-            $formatted_rooms[] = $room;
+
+
+            $lastDelete = RoomDeleteMessage::where('room_id', $room->id)->where('user_id', $u->id)
+            ->orderBy('updated_at','DESC')
+            ->first();
+            if ($lastDelete) {
+                $chatCount = MobMessage::where('room_id', $room->id)
+                ->where('created_at', '>', $lastDelete->created_at)
+                ->count();
+            } else {
+                $chatCount = MobMessage::where('room_id', $room->id)->count();
+            }
+
+            if($chatCount) {
+                $formatted_rooms[] = $room;
+            }
         }
         return ['rooms'=>$formatted_rooms, 'user'=>$u];
     }
@@ -56,7 +72,54 @@ class MessageController extends Controller
     public function store(Request $request)
     {
         $mess = MobMessage::create($request->input());
+        Room::find($request->input('room_id'))->update(['last_message'=>$mess->id]);
         return $mess;
+    }
+
+    /**
+     * get a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function recent(Request $request)
+    {
+        $user_id = $request->has('user_id') ? $request->input('user_id') : auth('api')->user()->id;
+        $rooms = Room::where('name', 'like', '%'.$user_id.'%')
+                ->orderBy('updated_at','DESC')
+                ->get();
+        $contacts = [];
+
+        $formatted_rooms = [];
+        foreach ($rooms as $room) {
+            $users = explode('-',$room->name);
+            $contact_name = '';
+            if (strlen($room->name) === 3) {
+                foreach($users as $user) {
+                    if ($user_id != $user){
+                        $userInfo = User::find($user);
+                        $userInfo->room_id = $room->id;
+                    }
+                }
+
+                $lastDelete = RoomDeleteMessage::where('room_id', $room->id)->where('user_id', $user_id)
+                ->orderBy('updated_at','DESC')
+                ->first();
+                if ($lastDelete) {
+                    $chatCount = MobMessage::where('room_id', $room->id)
+                    ->where('created_at', '>', $lastDelete->created_at)
+                    ->count();
+                } else {
+                    $chatCount = MobMessage::where('room_id', $room->id)->count();
+                }
+
+                if($chatCount) {
+                    $contacts[] = $userInfo;
+                }
+
+            }
+        }
+        return ['contacts'=>$contacts];
     }
 
     /**
@@ -86,7 +149,16 @@ class MessageController extends Controller
         }
         $room->contact_name = $contact_name; 
         $room->contacts = $contacts;
-        $room->conversations = MobMessage::where('room_id', $room->id)->get();
+        $lastDelete = RoomDeleteMessage::where('room_id', $id)->where('user_id', $u->id)
+                        ->orderBy('updated_at','DESC')
+                        ->first();
+        if ($lastDelete) {
+            $room->conversations = MobMessage::where('room_id', $room->id)
+            ->where('created_at', '>', $lastDelete->created_at)
+            ->get();
+        } else {
+            $room->conversations = MobMessage::where('room_id', $room->id)->get();
+        }
         return ['room'=>$room, 'user'=>$u];
 
     }

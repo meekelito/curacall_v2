@@ -34,11 +34,14 @@ Route::group([
     Route::put('contact/password/{id}', 'Api\UserController@password_update');
     Route::put('contact/pin/{id}', 'Api\UserController@pin_update');
     Route::put('contact/alert/{id}', 'Api\UserController@update_alert');
+    Route::get('contact/search', 'Api\UserController@search');
     Route::post('case-reopen', 'Api\CaseController@reopen_case');
     Route::post('case-read/{id}', 'Api\CaseController@read_case');
     Route::post('case-note/{id}', 'Api\CaseController@add_note');
     Route::post('case-forward/{id}', 'Api\CaseController@forward');
     Route::post('/report/average','Api\ApiController@getReportAverageTime');
+    Route::get('message/recent','Api\MessageController@recent');
+    Route::post('message/delete/all','Api\RoomDeleteMessageController@store');
 
     Route::apiResources([
         'case' => 'Api\CaseController',

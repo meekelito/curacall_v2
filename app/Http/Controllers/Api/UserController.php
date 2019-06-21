@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use App\User;
+use App\Room;
 
 class UserController extends Controller
 {
@@ -98,10 +99,49 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        return User::orderBy('lname')->get();
+        $user = auth('api')->user();
+
+        $text = $request->input('searchText');
+        if ($text) {
+            $contacts = User::orderBy('lname')
+            ->where('fname', 'like', '%'.$text.'%')
+            ->orWhere('lname', 'like', '%'.$text.'%')
+            ->get();
+        } else {
+            $contacts = User::orderBy('lname')->get();
+        }
+
+        // if($text) {
+        $formatted = [];
+
+        foreach($contacts as $contact) {
+            $room = Room::where('name', $user->id.'-'.$contact->id)->first();
+            if (!$room) {
+                $room = Room::where('name', $contact->id.'-'.$user->id)->first();
+            }
+
+            if ($room) {
+                $contact->room_id = $room->id;
+            } else {
+                $newRoom = Room::create([
+                    'name'=>$contact->id.'-'.$user->id,
+                    'user_id'=>$user->id,
+                    'participants_no'=>2,
+                    'status'=>'active',
+                ]);
+                $contact->room_id = $newRoom->id;
+            }
+
+            $formatted[] = $contact;
+        }
+        return $formatted;
+        // } else {
+        //     return $contacts;
+        // }
     }
+
 
     /**
      * Store a newly created resource in storage.
