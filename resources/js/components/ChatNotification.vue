@@ -3,7 +3,7 @@
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">
             <i class="icon-bubbles4"></i>
             <span class="visible-xs-inline-block position-right">Messages</span>
-            <span id="message-notif2" class="bg-warning-400"></span>
+            <span id="chat-notif" class="bg-warning-400"></span>
           </a>
           
           <div class="dropdown-menu dropdown-content">
@@ -48,8 +48,8 @@
                    $.pjax.reload('#content',{ url: notification.data.action_url });
 
                     if(notification.is_read == 0){
-                        this.countChatNotifications();
-                        this.fetchChatNotifications();
+                        this.countNotifications('chat');
+                        this.fetchNotifications('chat');
                         this.notificationTitle();
                     }
                 });
@@ -57,15 +57,15 @@
             notificationTitle(){
               this.$parent.notificationTitle();
             },
-            countChatNotifications(){
-              this.$parent.countChatNotifications();
+            countNotifications(type){
+              this.$parent.countNotifications(type);
             },
-            fetchChatNotifications(){
-              this.$parent.fetchChatNotifications();
+            fetchNotifications(type){
+              this.$parent.fetchNotifications(type);
             }
         },
         mounted(){
-          $("#chat-dropdown").on("show.bs.dropdown", this.fetchChatNotifications);
+          $("#chat-dropdown").on("show.bs.dropdown", this.fetchNotifications('chat'));
         }
     }
 </script>
