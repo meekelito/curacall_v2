@@ -77,6 +77,21 @@ class MessageController extends Controller
     }
 
     /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function create_room(Request $request)
+    {
+        $room = Room::where('name', $request->input('name'))->first();
+        if (!$room) {
+            $room = Room::create($request->input());
+        }
+        return $room;
+    }
+
+    /**
      * get a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -183,6 +198,9 @@ class MessageController extends Controller
      */
     public function destroy($id)
     {
-        return MobMessage::destroy($id);
+        MobMessage::find($id)->update([
+            'message'=>''
+        ]);
+        return $id;
     }
 }

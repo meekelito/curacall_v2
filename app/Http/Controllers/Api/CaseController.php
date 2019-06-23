@@ -238,9 +238,17 @@ class CaseController extends Controller
             Case_history::updateOrCreate( [
                 "is_visible"=>1,
                 "status"=>1,
-                "case_id" => $formattedCase->id,"action_note" => "Case Read",
+                "case_id" => $formattedCase->id,
+                "action_note" => "Case Read",
                 'created_by' => $user_id
             ]); 
+
+            $formattedCase->readData = Case_history::where('case_id', $formattedCase->id)
+            ->where('case_id', $formattedCase->id)
+            ->where('action_note', 'Case Read')
+            ->where('created_by', $user_id)
+            ->first();
+
             Case_participant::where('case_id', $formattedCase->id)->where('user_id', $user_id)->update(['is_read' => 1]); 
 
         }
