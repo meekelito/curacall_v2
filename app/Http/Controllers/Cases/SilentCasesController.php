@@ -19,7 +19,7 @@ class SilentCasesController extends Controller
                   ->orWhere('cases.status',2);
               })
               ->orderBy('cases.id','DESC')
-              ->select('cases.id','cases.case_id','cases.sender_fullname','cases.status','cases.created_at')
+              ->select('cases.id','cases.case_id','cases.created_by','cases.status','cases.created_at')
               ->get();
 
     $active_count = Cases::Join('case_participants AS b','cases.id','=','b.case_id')
