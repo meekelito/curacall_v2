@@ -641,7 +641,7 @@ class ReportsController extends Controller
   public function reportsBilling(Request $request)
   {
     $accounts = Account::all();
-    return view( 'admin-console-reports',['accounts'=>$accounts]);
+    return view( 'admin-console-reports-billing',['accounts'=>$accounts]);
   }
 
   public function reportsBillingTable(Request $request)
@@ -669,5 +669,32 @@ class ReportsController extends Controller
     }
     
   }
+
+  public function reportsAllMessages(Request $request)
+  {
+    $accounts = Account::all();
+    return view( 'admin-console-reports-all-messages',['accounts'=>$accounts]);
+  }
+
+  public function reportsAllMessagesTable(Request $request)
+  {  
+    $from = date_create($request->month_from);
+    $to = date_create($request->month_to);
+    $from = date_format($from,"Y-m-d H:i:s");
+    $to = date_format($to,"Y-m-d H:i:s");
+
+    $cases = Cases::where('account_id',$request->account_id)
+                  ->whereBetween('cases.created_at', array($from, $to))
+                  ->get();
+    return view('components.reports.report-all-messages',['cases' => $cases]);
+  }
+  
+  public function reportsEscalatedTickets(Request $request)
+  {
+    $accounts = Account::all();
+    return view( 'admin-console-reports-escalated-tickets',['accounts'=>$accounts]);
+  }
+
+
 
 }

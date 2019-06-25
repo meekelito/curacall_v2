@@ -300,15 +300,26 @@
 
                   @can('manage-billing')
                     <li class="menu-admin-console-billing"><a href="{{ url('/admin-console/billing') }}"><i class="icon-coins"></i> <span>Billing</span></a></li>
-                    <li class="menu-admin-console-reports"><a href="{{ url('/admin-console/reports') }}"><i class="icon-graph"></i> <span>Reports</span></a></li>
+                    <!-- <li class="menu-admin-console-reports"><a href="{{ url('/admin-console/reports') }}"><i class="icon-graph"></i> <span>Reports</span></a></li> -->
+                    <li class="menu-admin-console-reports">
+                      <a href="#"><i class="icon-graph"></i> <span>Reports</span></a>
+                      <ul>
+                        <li class="menu-reports-billing"><a href="{{ url('/admin-console/reports-billing') }}">Billing</a></li>
+                        <li class="menu-reports-all-messages"><a href="{{ url('/admin-console/reports-all-messages') }}">All messages</a></li>
+                        <li class="menu-reports-escalated-tickets"><a href="{{ url('/admin-console/reports-escalated-tickets') }}">Escalated Tickets</a></li>
+                        <li><a href="#">Cancelled Shifts</a></li>
+                        <li><a href="#">No Show</a></li>
+                        <li><a href="#">Repeat Callers</a></li>
+                        <li><a href="#">Call Type</a></li>
+                      </ul>
+                    </li>
                   @endif
 
                   @hasrole('account-admin')
-                  <li class="navigation-header"><span>Admin Console</span> <i class="icon-menu" title="Admin Console"></i></li>
+                    <li class="navigation-header"><span>Admin Console</span> <i class="icon-menu" title="Admin Console"></i></li>
                   @endhasrole
 
                   @can('manage-account-general-info')
-
                     <li class="menu-account-general-info"><a href="{{ url('/account/general-info') }}"><i class="icon-hammer-wrench"></i> <span>General Information</span></a></li>
                   @endcan
 

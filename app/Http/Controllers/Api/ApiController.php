@@ -548,7 +548,7 @@ class ApiController extends Controller
   {
     $validator = Validator::make($request->all(),[ 
       'questionnaire_id' => 'bail|required|unique:cases,case_id',
-      'client_id' => 'bail|required|exists:accounts,account_id',
+      'account_id' => 'bail|required|exists:accounts,account_id',
       'caller_information' => 'required',
       'caller_information.caller_id' => 'nullable|string',
       'caller_information.caller_first_name' => 'required|string',
@@ -570,6 +570,7 @@ class ApiController extends Controller
       'caller_information.caller_patient_telephone' => 'nullable|string',
       'caller_information.telephone_number' => 'nullable|string',
       'caller_information.caller_relationship_with_field_worker' => 'nullable|string',
+
       'call_information' => 'required',
       'call_information.call_typology' => 'required|in:Normal Call,Collect Call,Public Payphone Call',
       'call_information.number_of_calls' => 'required|in:1st Time,2nd Time,3rd Time,4th Time,5th Time +',
@@ -620,7 +621,8 @@ class ApiController extends Controller
       'call_information.call_outside_escalation_hours' => 'nullable|boolean',
       'call_information.call_outside_escalation_interval' => 'nullable|boolean',
       'call_information.compare_date' => 'nullable|string',
-      'call_informationstart_compare_date' => 'nullable|string',
+      'call_information.start_compare_date' => 'nullable|string',
+      'call_information.actions_taken' => 'nullable|string',
 
       'caregiver_information' => 'required',
       'caregiver_information.caregiver_type' => 'required|in:Certified Nursing Assistant (CNA),Coordinator,Doctor (MD),Home Health Aide (HHA),Nurse Registered (RN) Licensed (LPN) Practitioner (NP),Personal Care Aide (PCA),Physical Therapist (PT) Pharmacist',
@@ -668,7 +670,7 @@ class ApiController extends Controller
 
   
 
-    $res = Account::where('account_id', $request->client_id)->firstOrFail();
+    $res = Account::where('account_id', $request->account_id)->firstOrFail();
   
 
     $array_holder = array(
@@ -975,25 +977,25 @@ class ApiController extends Controller
         "message"=>$validator->errors()
       ]);
       
-    }else{
-
-      $oncall_personnel = array(); //list of oncall personnel
-      foreach ($request->oncall_personnel['oncall_staff'] as $participant) {
-        if(isset($participant['dochalo_ID'])){
-          $str2 = substr($participant['dochalo_ID'], 2);
-          $curacall_id = ltrim($str2, '0');
-          $oncall_personnel[] = array(
-            'case_id'=>$case->id,
-            'user_id'=>$curacall_id,
-            'oncall_personnel' => 'oncall',
-            'created_at'=>$now,
-            'updated_at'=>$now
-          );
-        }
-      }
-
-
     }
+
+    $oncall_personnel = array(); //list of oncall personnel
+    foreach ($request->oncall_personnel['oncall_staff'] as $participant) {
+      if(isset($participant['dochalo_ID'])){
+        $str2 = substr($participant['dochalo_ID'], 2);
+        $curacall_id = ltrim($str2, '0');
+        $oncall_personnel[] = array(
+          'case_id'=>$case->id,
+          'user_id'=>$curacall_id,
+          'oncall_personnel' => 'oncall',
+          'created_at'=>$now,
+          'updated_at'=>$now
+        );
+      }
+    }
+
+    $user_info = User::find($request->user_id);
+
 
     
 
@@ -1027,7 +1029,7 @@ class ApiController extends Controller
     }
 
     /** Notification message template **/
-      $message = str_replace("[from_name]",Auth::user()->fname . ' ' . Auth::user()->lname,__('notification.forward_case'));
+      $message = str_replace("[from_name]",$user_info->fname . ' ' . $user_info->lname,__('notification.forward_case'));
       $message = str_replace("[case_id]",$request->questionnaire_id,$message);
       $arr = array(
           'case_id'     => $request->questionnaire_id,

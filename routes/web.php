@@ -181,7 +181,13 @@ Route::group(['middleware' => array('auth','nocache')], function () {
         //admin console - accounts END.
 
         //reports
-        Route::get('admin-console/reports','Reports\ReportsController@reportsBilling');
+        Route::get('admin-console/reports-billing','Reports\ReportsController@reportsBilling');
+
+        Route::get('admin-console/reports-all-messages','Reports\ReportsController@reportsAllMessages');
+        Route::post('admin-console/reports-all-messages-table','Reports\ReportsController@reportsAllMessagesTable');
+
+        Route::get('admin-console/reports-escalated-tickets','Reports\ReportsController@reportsEscalatedTickets');
+
         Route::post('admin-console/reports-billing','Reports\ReportsController@reportsBillingTable');
         //reports end
 
