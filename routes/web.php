@@ -90,7 +90,7 @@ Route::group(['middleware' => array('auth','nocache')], function () {
     Route::post('view-note-md','Cases\NewCaseController@getModalViewNote');
 
 	Route::get('contacts','Contacts\ContactsController@index')->middleware('permission:view-contacts');
-	Route::get('contacts/fetch-contacts','Contacts\ContactsController@fetchContacts');
+	Route::get('contacts/fetch-contacts','Contacts\ContactsController@fetchContacts')->middleware('permission:view-contacts');
 
     //Reports
     Route::post('report-account','Reports\ReportsController@getReportAccount');
@@ -108,10 +108,11 @@ Route::group(['middleware' => array('auth','nocache')], function () {
     Route::post('report-closed-case-list','Reports\ReportsController@getReportClosedCase');
     Route::post('report-by-calltypes','Reports\ReportsController@getReportByCalltypes');
 
+
 	//Accounts Settings
 	Route::get('user-account-settings','UserAccountSettings\UserAccountSettingsController@index');
-	Route::post('user-account-settings/update-user-info','UserAccountSettings\UserAccountSettingsController@updateUser');
-	Route::post('user-account-settings/update-user-credentials','UserAccountSettings\UserAccountSettingsController@updateUserCredentials'); 
+	Route::post('user-account-settings/update-user-info','UserAccountSettings\UserAccountSettingsController@updateUser')->middleware('permission:profile-setting');
+	Route::post('user-account-settings/update-user-credentials','UserAccountSettings\UserAccountSettingsController@updateUserCredentials')->middleware('permission:security-login'); 
 	//accounts settings END
 
     Route::group(['middleware' => array('App\Http\Middleware\CuraCallAdminMiddleware')], function () {
@@ -128,6 +129,7 @@ Route::group(['middleware' => array('auth','nocache')], function () {
         // Route::post('admin/update-client-role','Admin\AdminRolesController@updateClientRole'); 
         //admin console - roles END
 
+        Route::group(['middleware' => array('permission:manage-users')], function () {
         //Admin Console - Users
         //index
         Route::get('admin-console/users','Admin\AdminUsersController@index');
@@ -150,7 +152,9 @@ Route::group(['middleware' => array('auth','nocache')], function () {
         Route::post('admin/update-status','Admin\AdminUsersController@updateStatus');
         Route::post('admin/reset-password','Admin\AdminUsersController@resetPassword');
         //admin console - users END 
+        });
 
+        Route::group(['middleware' => array('permission:manage-accounts')], function () {
         //Admin Console - Accounts
         //index
         Route::get('admin-console/accounts','Admin\AdminAccountsController@index');
@@ -170,8 +174,10 @@ Route::group(['middleware' => array('auth','nocache')], function () {
         Route::post('admin/update-group-account','Admin\AdminAccountsController@updateGroupAccount');
         Route::post('admin/update-account','Admin\AdminAccountsController@updateAccount');
         //admin console - accounts END.
+        });
 
-        //Admin Console - Accounts
+        Route::group(['middleware' => array('permission:manage-billing')], function () {
+        //Admin Console - Billing
         //index
         Route::get('admin-console/billing','Admin\AdminBillingController@index');
         Route::post('admin-console/update-billing-md','Admin\AdminBillingController@getModallUpdateBilling');
@@ -183,12 +189,15 @@ Route::group(['middleware' => array('auth','nocache')], function () {
         Route::get('admin-console/reports','Reports\ReportsController@reportsBilling');
         Route::post('admin-console/reports-billing','Reports\ReportsController@reportsBillingTable');
         //reports end
+        });
 
+        Route::group(['middleware' => array('permission:case-repository')], function () {
         Route::get('repository-cases','Cases\RepositoryCasesController@index'); 
         Route::get('review-case/case_id/{id}','Cases\RepositoryCasesController@review_index');
-
         Route::post('review-case','Cases\RepositoryCasesController@reviewCase');
+        });
 
+        Route::group(['middleware' => array('permission:manage-roles')], function () {
         // new admin role management
         Route::get('admin/roles','Admin\RoleManagementController@index');
         Route::get('admin/roles/all','Admin\RoleManagementController@fetchRoles')->name('admin.roles.fetch');
@@ -202,14 +211,16 @@ Route::group(['middleware' => array('auth','nocache')], function () {
         Route::get('admin/permissions/all','Admin\RoleManagementController@fetchPermissions')->name('admin.permissions.fetch');
         Route::get('admin/clients/all','Admin\RoleManagementController@fetchClients')->name('admin.clients.fetch');
         Route::get('admin/account/roles','Admin\RoleManagementController@editAccountRoles')->name('admin.account.roles');  
+        });
 
+        Route::group(['middleware' => array('permission:escalation-setting')], function () {
         // escalation settings
-
         Route::get('admin-console/escalation-settings', 'Admin\CalltypeNotificationController@index')->name('escalation-settings.index');
         Route::get('admin-console/escalation-settings/show', 'Admin\CalltypeNotificationController@show')->name('escalation-settings.show');
         Route::get('admin-console/escalation-settings/calltypes','Admin\CalltypeNotificationController@getdata')->name('escalation-settings.calltypes');
         Route::put('admin-console/escalation-settings/update-interval', 'Admin\CalltypeNotificationController@updateinterval')->name('escalation-settings.updateinterval');
         Route::put('admin-console/escalation-settings/update-cron', 'Admin\CalltypeNotificationController@updatecron')->name('escalation-settings.updatecron');
+        });
     });
     
     Route::group(['middleware' => array('App\Http\Middleware\AccountAdminMiddleware')], function () {
@@ -234,9 +245,10 @@ Route::group(['middleware' => array('auth','nocache')], function () {
 	Route::get('directory','Directory\DirectoryController@index');
 	Route::get('broadcast','Broadcast\BroadcastController@index');
 
+    Route::group(['middleware' => array('permission:archived-closed-case')], function () {
 	Route::get('archived-cases','Cases\ArchivedCasesController@index');
 	Route::get('archived-cases/all','Cases\ArchivedCasesController@fetchArchiveMessages');  
-    
+    });
     
 
 

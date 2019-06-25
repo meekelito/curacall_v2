@@ -57,6 +57,7 @@ class PermissionTableSeeder extends Seeder
               ['name'  => 'manage-users',                       'description'  =>  'Manage Users', 'module' => 'admin console'],
               ['name'  => 'manage-accounts',                    'description'  =>  'Manage Accounts', 'module' => 'admin console'],
               ['name'  => 'manage-billing',                     'description'  =>  'Manage Billing', 'module' => 'admin console'],
+              ['name'  => 'escalation-setting',                 'description'  =>  'Escalation Settings', 'module' => 'admin console'],
               //Account Admin Console
               ['name'  => 'manage-account-general-info',        'description'  =>  'Manage Account General Information', 'module' => 'account console'],
               ['name'  => 'case-management',                    'description'  =>  'Case Management', 'module' => 'account console'],

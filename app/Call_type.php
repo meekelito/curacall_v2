@@ -12,4 +12,8 @@ class Call_type extends Model
         'name'
     ];
 
+    public function calltype_notification()
+    {
+        return $this->hasOne('App\Calltype_notification','calltype_id');
+    }
 }

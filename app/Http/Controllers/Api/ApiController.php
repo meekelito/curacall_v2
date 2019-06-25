@@ -16,6 +16,9 @@ use Carbon\Carbon;
 use App\Notifications\ReminderNotification;
 use App\Notifications\CaseNotification;
 use App\Case_repository;
+use App\ApiCron;
+use App\Call_type;
+use App\Calltype_notification;
 
 class ApiController extends Controller
 {
@@ -537,7 +540,7 @@ class ApiController extends Controller
 
         if($user)
           return response()->json([
-              "status" => 200,
+              "status" => 1,
               "response" => "success", 
               "message" => "Successfully sent."
           ]);
@@ -666,7 +669,7 @@ class ApiController extends Controller
       ]);
     }
 
-  
+    $calltype = $request->call_information['call_type']; // use for cron
 
     $res = Account::where('account_id', $request->client_id)->firstOrFail();
   
@@ -701,7 +704,7 @@ class ApiController extends Controller
 
       $now = Carbon::now()->toDateTimeString();
       $oncall_personnel = array(); //list of oncall personnel
-
+      $reminder_participants = array();
       foreach ($request->oncall_personnel['oncall_staff'] as $participant) {
         if(isset($participant['dochalo_ID'])){
           $str2 = substr($participant['dochalo_ID'], 2);
@@ -713,6 +716,8 @@ class ApiController extends Controller
             'created_at'=>$now,
             'updated_at'=>$now
           );
+
+          $reminder_participants[] = $curacall_id;
         }
       }
 
@@ -791,6 +796,17 @@ class ApiController extends Controller
       }
       /* END Notification */
       
+      /* Reminder Cron */
+      $cron = new ApiCron;
+      $interval_minutes = 15;//default interval if calltype not in database
+      $calltype1 = Call_type::where('name',$calltype)->first();
+      if($calltype1)
+       $interval_minutes = $calltype1->calltype_notification()->first()->interval_minutes ?? $interval;
+
+      $cron->remind($case->id,$interval_minutes,$reminder_participants);
+
+
+      /* End Reminder Cron */
       return response()->json([
         "status" => 200,
         "response" => "success", 
@@ -1116,6 +1132,21 @@ class ApiController extends Controller
       ));
     }
     
+  }
+
+  public function testcron()
+  {
+    $cron = new ApiCron;
+    // $result = $cron->read("123");
+    //$result = $cron->remind("31",2,array(4));
+    //$result = $cron->login();
+    //return json_encode($result);
+      $interval = 15;
+      $calltype = Call_type::where('name',"Medical")->first();
+      if($calltype)
+       $interval = $calltype->calltype_notification()->first()->interval_minutes ?? $interval;
+
+      return $interval;
   }
 
 }
