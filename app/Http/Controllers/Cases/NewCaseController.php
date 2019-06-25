@@ -14,6 +14,7 @@ use PDF;
 use Validator;
 use App\Notifications\CaseNotification;
 use App\Notification;
+use App\ApiCron;
 
 class NewCaseController extends Controller
 {
@@ -29,9 +30,13 @@ class NewCaseController extends Controller
         }
     }
 
-    $case_info = Cases::where('id',$case_id)->get();
+    $case_info = Cases::findOrFail($case_id);
 
-    if( !$participation->isEmpty() && $case_info[0]->status == 1 ){
+    /* Cron on Read remove from queue */
+    $cron = new ApiCron;
+    $cron->read($case_id);
+
+    if( !$participation->isEmpty() && $case_info->status == 1 ){
       Case_history::updateOrCreate( ["is_visible"=>1,"status"=>1,"case_id" => $case_id,"action_note" => "Case Read", 'created_by' => Auth::user()->id ] ); 
     }
 

@@ -68,7 +68,11 @@
 
         },
         mounted(){
-          $("#reminder-dropdown").on("show.bs.dropdown", this.fetchNotifications('reminder'));
+         $('#reminder-dropdown').click(function () {
+              if(!$(this).hasClass('open')) {
+                  window.app.fetchNotifications('reminder')
+              }
+          });
         }
     }
 </script>

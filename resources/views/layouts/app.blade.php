@@ -327,8 +327,9 @@
                     <li class="menu-account-case-management"><a href="{{ url('account/case-management') }}"><i class="icon-files-empty2"></i> <span>Case Management</span></a></li>
                   @endcan
 
+                  @can('escalation-setting')
                   <li class="menu-escalation-settings"><a href="{{ route('escalation-settings.index') }}"><i class="icon-alarm-add"></i> <span>Escalation Settings</span></a></li>
-
+                  @endcan
                    
                 
               </ul>

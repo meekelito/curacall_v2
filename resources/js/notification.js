@@ -25,7 +25,7 @@ Vue.component('notification', require('./components/Notification.vue'));
 Vue.component('chatnotification', require('./components/ChatNotification.vue'));
 Vue.component('remindernotification', require('./components/ReminderNotification.vue'));
 
-const app = new Vue({
+window.app = new Vue({
     el: '#notificationapp',
     data: {
         notifications: '',
@@ -69,7 +69,7 @@ const app = new Vue({
                     
                     document.getElementById('chatNotificationAudio').play();
                 }else if(notification.type == NOTIFICATION_TYPES.reminders){
-                     var playPromise = document.getElementById('reminderNotificationAudio').play();
+                    // var playPromise = document.getElementById('reminderNotificationAudio').play();
                       this.countNotifications('reminder');
                       this.fetchNotifications('reminder');
                      
