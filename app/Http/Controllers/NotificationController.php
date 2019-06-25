@@ -8,151 +8,104 @@ use Auth;
 use DB;
 use App\Notifications\CaseNotification;
 use App\User;
+use Validator;
 
 class NotificationController extends Controller
 {
-
-    // public function addnotification(Request $request)
-    // {
-    //     $user = User::findOrFail($request->notifiable_id);
-    //     $message = str_replace("[from_name]",$request->from_name,__('notification.'.$request->type));
-    //     $message = str_replace("[case_id]",$request->case_id,$message);
-    //     $arr = array(
-    //         'from_id'   => $request->from_id,
-    //         'from_name'   => $request->from_name,
-    //         'from_image' => '1551097384photo.jpg',
-    //         'case_id'   => $request->case_id,
-    //         'message' =>    $message,
-    //         'action_url'    => route('case',[$request->case_id])
-    //     );
-    //     $user->notify(new CaseNotification($arr));
-    // }
-
-
-    public function get() {
-
-        //$notification = Auth::user()->unreadNotifications;
-        $notification = Notification::select('b.prof_img','notifications.data','notifications.created_at',DB::raw("(CASE WHEN ISNULL(notifications.read_at) THEN 0 ELSE 1 END) as is_read"))
+    public function get(Request $request) {
+        $notification = Notification::select('notifications.id',DB::raw('CONCAT("'. asset('/storage/uploads/users/').'","/",COALESCE(b.prof_img, "default.png")) as prof_img'),'notifications.data','notifications.created_at',DB::raw("(CASE WHEN ISNULL(notifications.read_at) THEN 0 ELSE 1 END) as is_read"))
                             ->leftJoin('users as b','notifications.notified_by','=','b.id')
         					->where('notifications.notifiable_id',Auth::user()->id)
-        					->where('notifications.type','App\Notifications\CaseNotification')
-        					->latest()
+                              ->when(request('type'), function ($query) {
+                                  if(request('type') == "case")
+                                        return $query->where('notifications.type','App\Notifications\CaseNotification');
+                                  elseif(request('type') == 'chat')
+                                        return $query->where('notifications.type','App\Notifications\MessageNotification')->groupBy('notifications.room_id');
+                                  elseif(request('type') == 'reminder')
+                                      return $query->where('type','App\Notifications\ReminderNotification')->groupBy('notifications.case_id');
+                              })
+        					->orderByRaw('is_read asc, created_at desc')
         					->take(10)
         					->get()->toJson(JSON_PRETTY_PRINT);
 
         return $notification;
     }
 
-    public function read(Request $request) {
-        //Auth::user()->unreadNotifications()->find($request->id)->markAsRead();
-        $result = Notification::where('notifiable_id',Auth::user()->id)
-        ->where('type','App\Notifications\CaseNotification')
-        ->whereNull('read_at')
-        ->update(['read_at' => \Carbon\Carbon::now()]);
-
-        return $result;
-    }
-
     public function count()
     {
-             //$notification = Auth::user()->unreadNotifications;
-             $notification = Notification::where('notifiable_id',Auth::user()->id)
-             ->where('type','App\Notifications\CaseNotification')
+          $notification = Notification::where('notifiable_id',Auth::user()->id)
+              ->when(request('type'), function ($query) {
+                  if(request('type') == "case")
+                        return $query->where('notifications.type','App\Notifications\CaseNotification');
+                  elseif(request('type') == 'chat')
+                        return $query->where('notifications.type','App\Notifications\MessageNotification');
+                  elseif(request('type') == 'reminder')
+                      return $query->where('type','App\Notifications\ReminderNotification');
+              })
              ->whereNull('read_at')
-             ->take(10)
              ->count();
 
             return $notification;
     }
 
-    public function chatcount()
-    {
-             //$notification = Auth::user()->unreadNotifications;
-             $notification = Notification::where('notifiable_id',Auth::user()->id)
-             ->where('type','App\Notifications\MessageNotification')
-             ->whereNull('read_at')
-             ->take(10)
-             ->count();
-
-            return $notification;
-    }
-
-    /** 
-     * Chat / messaging below
-     */
-    public function chatget() {
-
-        //$notification = Auth::user()->unreadNotifications;
-        $notification = Notification::select('data','created_at')
-        					->where('notifiable_id',Auth::user()->id)
-        					->where('type','App\Notifications\MessageNotification')
-        					->groupBy('room_id')
-                            ->orderBy('created_at','desc')
-        					->get()->toJson(JSON_PRETTY_PRINT);
-
-        return $notification;
-    }
-
-    public function chatread(Request $request) {
-        //Auth::user()->unreadNotifications()->find($request->id)->markAsRead();
-        $result = Notification::where('notifiable_id',Auth::user()->id)
-        ->where('type','App\Notifications\MessageNotification')
-        ->whereNull('read_at')
-        ->update(['read_at' => \Carbon\Carbon::now()]);
-
-        return $result;
-    }
-
-    /* Reminder Notifications */
-
-    public function remindercount()
-    {
-               //$notification = Auth::user()->unreadNotifications;
-             $notification = Notification::where('notifiable_id',Auth::user()->id)
-             ->where('type','App\Notifications\ReminderNotification')
-             ->whereNull('read_at')
-             ->take(10)
-             ->count();
-
-            return $notification;
-    }
-
-    public function reminderget() {
-
-        //$notification = Auth::user()->unreadNotifications;
-        $notification = Notification::select('data','created_at',DB::raw("(CASE WHEN ISNULL(read_at) THEN 0 ELSE 1 END) as is_read"))
-                            ->where('notifiable_id',Auth::user()->id)
-                            ->where('type','App\Notifications\ReminderNotification')
-                            ->latest()
-                            ->take(10)
-                            ->get()->toJson(JSON_PRETTY_PRINT);
-
-        return $notification;
-    }
-
-    public function reminderread(Request $request) {
-        //Auth::user()->unreadNotifications()->find($request->id)->markAsRead();
-        $result = Notification::where('notifiable_id',Auth::user()->id)
-        ->where('type','App\Notifications\ReminderNotification')
-        ->whereNull('read_at')
-        ->update(['read_at' => \Carbon\Carbon::now()]);
-
-        return $result;
-    }
-
-
-
-    // public function chatnotifications()
+    // public function count()
     // {
     //          //$notification = Auth::user()->unreadNotifications;
-    //          $notification = Notification::select('data','created_at',DB::raw("(CASE WHEN ISNULL(read_at) THEN 0 ELSE 1 END) as is_read"))
-    //          ->where('notifiable_id',Auth::user()->id)
-    //          ->where('type','App\Notifications\MessageNotification')
+    //          $notification = Notification::where('notifiable_id',Auth::user()->id)
+    //          ->where('type','App\Notifications\CaseNotification')
     //          ->whereNull('read_at')
-    //          ->latest()
     //          ->take(10)
     //          ->count();
 
     //         return $notification;
     // }
+
+    // public function chatcount()
+    // {
+    //          //$notification = Auth::user()->unreadNotifications;
+    //          $notification = Notification::where('notifiable_id',Auth::user()->id)
+    //          ->where('type','App\Notifications\MessageNotification')
+    //          ->whereNull('read_at')
+    //          ->take(10)
+    //          ->count();
+
+    //         return $notification;
+    // }
+
+    // public function remindercount()
+    // {
+    //            //$notification = Auth::user()->unreadNotifications;
+    //          $notification = Notification::where('notifiable_id',Auth::user()->id)
+    //          ->where('type','App\Notifications\ReminderNotification')
+    //          ->whereNull('read_at')
+    //          ->take(10)
+    //          ->count();
+
+    //         return $notification;
+    // }
+
+    public function read(Request $request) {
+
+        $validator = Validator::make($request->all(),[ 
+              'id' => 'required'
+            ]);
+
+        if( $validator->fails() ){
+          return response()->json([ 
+            "response"=>"Invalid parameters", 
+            "message"=>$validator->errors()
+          ],406);
+        }
+
+        $userUnreadNotification = auth()->user()
+                            ->unreadNotifications()
+                            ->where('id', $request->id)
+                            ->first();
+
+            if($userUnreadNotification) {
+               $result =  $userUnreadNotification->markAsRead();
+               return $result;
+            }
+    }
+
 }

@@ -31,47 +31,55 @@ const app = new Vue({
         notifications: '',
         chatnotifications: '',
         remindernotifications: '',
+        all_count:0,
+        case_count:0,
+        chat_count:0,
+        reminder_count:0,
+        favicon: ''
     },
     created() {
-        this.countNotifications();
-        this.countChatNotifications();
-        this.fetchChatNotifications();
-        this.fetchNotifications();
-        this.fetchReminderNotifications();
-        this.countReminderNotifications();
+        this.countNotifications('case');
+        this.countNotifications('chat');
+        // this.fetchChatNotifications();
+        // this.fetchNotifications();
+        //this.fetchReminderNotifications();
+        this.countNotifications('reminder');
        
+        // var notification_count = 0;
+                this.favicon = new Favico({
+                    animation : 'popFade',
+                    position : 'up'
+                });
+                
+
 
         var userId = $('meta[name="userId"]').attr('content');
         Echo.private('App.User.' + userId).notification((notification) => {
 
-                document.title = document.title + ' (1)';
                 var current_url = window.location.pathname + window.location.search;
                 console.log(current_url);
                 if(notification.type == NOTIFICATION_TYPES.chat)
                 {
-                    //this.chatnotifications.unshift(notification);
-                      $('#message-notif2').addClass('badge-notif');
-                      if(notification.data.room_id == $('#room').val()){
-                        $('#message-notif2').removeClass('badge-notif');
-                        this.MarkAllMessageRead();
-                      }
-                         
+                      if(notification.data.room_id != $('#room').val()){
+                        this.countNotifications('chat');
+                        this.fetchNotifications('chat');
+                      }else
+                        this.MarkChatAsRead(notification.id);
 
-                      this.fetchChatNotifications();
                     
                     document.getElementById('chatNotificationAudio').play();
                 }else if(notification.type == NOTIFICATION_TYPES.reminders){
                      var playPromise = document.getElementById('reminderNotificationAudio').play();
-                      $('#reminder-notif2').addClass('badge-notif');
-                      this.fetchReminderNotifications();
+                      this.countNotifications('reminder');
+                      this.fetchNotifications('reminder');
                      
                 }else if(notification.type == NOTIFICATION_TYPES.case){
                   //case notifications below
 
                     //this.notifications.unshift(notification);
-                     $('#case-notif2').addClass('badge-notif');
-                     this.fetchNotifications();
-                    
+                     this.countNotifications('case');
+                     this.fetchNotifications('case');
+                      
                     //console.log(window.location.pathname + window.location.search);
                  
                     if(current_url == "/cases/case_id/"+notification.data.case_id){
@@ -140,67 +148,60 @@ const app = new Vue({
 
                 }
             
+              
+
               //console.log(notification.type);
         });
     },
     methods: {
-      countNotifications()
+      countNotifications(type)
       {
-         axios.post(Laravel.baseUrl +'/notification/count').then(response => {
-           if(response.data > 0)
-              $('#case-notif2').addClass('badge-notif');
-        });
-      },
-      countChatNotifications()
-      {
-         axios.post(Laravel.baseUrl +'/notification/chat/count').then(response => {
-           if(response.data > 0)
-              $('#message-notif2').addClass('badge-notif');
-        });
-      },
+         axios.post(Laravel.baseUrl +'/notification/count',{ type: type}).then(response => {
+           if(response.data > 0){
+              $('#'+ type +'-notif').addClass('badge-notif');
+              $('#'+ type +'-notif').html(response.data);
+           }else
+           {
+              $('#'+ type +'-notif').removeClass('badge-notif');
+              $('#'+ type +'-notif').html('');
+   
+           }
 
-      fetchNotifications() {  
-        axios.post(Laravel.baseUrl +'/notification/get').then(response => {
+           if(type == 'case')
+            this.case_count = response.data;
+          
+           if(type == 'chat')
+              this.chat_count = response.data;
+          
+           if (type == 'reminder')
+              this.reminder_count = response.data;
+
+           this.notificationTitle();
+        });
+      },
+      fetchNotifications(type) {  
+        axios.post(Laravel.baseUrl +'/notification/get',{ type: type}).then(response => {
+
+           if(type == 'case')
             this.notifications = response.data;
-        });
-      },
+          
+           if(type == 'chat')
+              this.chatnotifications = response.data;
+          
+           if (type == 'reminder')
+              this.remindernotifications = response.data;
 
-      fetchChatNotifications() {
-        axios.post(Laravel.baseUrl +'/notification/chat/get').then(response => {
-            this.chatnotifications = response.data;
         });
       },
-
-      fetchReminderNotifications() {
-        axios.post(Laravel.baseUrl +'/notification/reminder/get').then(response => {
-            this.remindernotifications = response.data;
+      MarkChatAsRead(id){
+        axios.post('/notification/read', { id : id }).then(response => {
+                this.fetchNotifications('chat');
         });
       },
-      countReminderNotifications()
-      {
-         axios.post(Laravel.baseUrl +'/notification/reminder/count').then(response => {
-           if(response.data > 0)
-              $('#reminder-notif2').addClass('badge-notif');
-        });
-      },
-        MarkAllReminderNotificationRead() {
-            axios.post('/notification/reminder/read').then(response => {
-               $('#reminder-notif2').removeClass('badge-notif');
-            });
-        },
-
-       MarkAllMessageRead(){
-            axios.post('/notification/chat/read').then(response => {
-               $('#message-notif2').removeClass('badge-notif');
-            });
-        },
-      MarkAllNotificationRead() {
-            axios.post('/notification/read').then(response => {
-               $('#case-notif2').removeClass('badge-notif');
-            });
-        },
-      test(){
-          alert('a');
+      notificationTitle(){
+          this.all_count = this.case_count + this.chat_count + this.reminder_count;
+          
+          this.favicon.badge(this.all_count);
       }
      
     }
