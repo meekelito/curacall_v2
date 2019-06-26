@@ -587,7 +587,7 @@ class ApiController extends Controller
       'call_information.pin_number' => 'required_if:call_information.contacted_translation_company,==,Yes',
       'call_information.full_message' => 'required|string',
       'call_information.direct_deposit_or_receive_a_check' => 'nullable|boolean',
-      'call_information.lab_doctor_notification' => 'required|boolean',
+      'call_information.lab_doctor_notification' => 'nullable|boolean',
       'call_information.hospital_related' => 'nullable|boolean',
       'call_information.medical_emergency' => 'nullable|boolean',
       'call_information.time_of_call' => 'required|string|in:After Hours/Holiday Hours,During Hours',
