@@ -556,7 +556,7 @@ class ApiController extends Controller
       'caller_information.caller_id' => 'nullable|string',
       'caller_information.caller_first_name' => 'required|string',
       'caller_information.caller_last_name' => 'required|string',
-      'caller_information.caller_email_address' => 'required|email',
+      'caller_information.caller_email_address' => 'nullable|email',
       'caller_information.caller_type' => 'required|string',
       'caller_information.caller_type_details' => 'nullable|string',
       'caller_information.caller_details' => 'nullable|string',
@@ -593,7 +593,7 @@ class ApiController extends Controller
       'call_information.time_of_call' => 'required|string|in:After Hours/Holiday Hours,During Hours',
       'call_information.name_of_compliance_officer' => 'nullable|string',
       'call_information.name_of_insurance_company' => 'nullable|string',
-      'call_information.name_of_oncall_staff' => 'required|string',
+      'call_information.name_of_oncall_staff' => 'nullable|string',
       'call_information.name_of_the_home_health_agency' => 'nullable|string',
       'call_information.hospital_id' => 'nullable|string',
       'call_information.name_of_the_hospital' => 'nullable|string',
@@ -868,7 +868,7 @@ class ApiController extends Controller
   {
     $validator = Validator::make($request->all(),[ 
       'questionnaire_id' => 'required|exists:cases,case_id',
-      'client_id' => '|exists:accounts,account_id',
+      'account_id' => '|exists:accounts,account_id',
       'oncall_type' => 'required|in:backup_1,backup_2,silent_listener',
       'oncall_personnel' => 'required',
       'oncall_personnel.oncall_staff' => 'required',
@@ -876,7 +876,7 @@ class ApiController extends Controller
       'oncall_personnel.silent_listener.*.dochalo_ID' => 'required_with:oncall_personnel.silent_listener',
     ],[ 
       'questionnaire_id.exists'=>'Questionnaire ID does not exist.',
-      'client_id.exists'=>'Client ID does not exist.',
+      'account_id.exists'=>'Account ID does not exist.',
       'oncall_type.required' => 'OnCall type is required.',
       'oncall_type.oncall_staff.required' => 'OnCall type is required.',
       'oncall_personnel.oncall_staff.*.dochalo_ID.required' => 'Dochalo ID is required.',
@@ -972,14 +972,14 @@ class ApiController extends Controller
   {
     $validator = Validator::make($request->all(), [
       'questionnaire_id' => 'required|exists:cases,case_id',
-      'client_id' => 'bail|required|exists:accounts,account_id',
+      'account_id' => 'bail|required|exists:accounts,account_id',
       'user_id' => 'required|exists:users',
       'oncall_personnel' => 'required',
       'oncall_personnel.oncall_staff' => 'required',
       'oncall_personnel.oncall_staff.*.dochalo_ID' => 'required'
     ],[ 
       'questionnaire_id.exists'=>'Questionnaire ID does not exist.',
-      'client_id.exists'=>'Client ID does not exist.',
+      'account_id.exists'=>'Account ID does not exist.',
       'oncall_type.required' => 'OnCall type is required.',
       'oncall_type.oncall_staff.required' => 'OnCall type is required.',
       'oncall_personnel.oncall_staff.*.dochalo_ID.required' => 'Dochalo ID is required.',
