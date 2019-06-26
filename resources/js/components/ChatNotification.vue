@@ -65,7 +65,13 @@
             }
         },
         mounted(){
-          $("#chat-dropdown").on("show.bs.dropdown", this.fetchNotifications('chat'));
+
+         $('#chat-dropdown').click(function () {
+              if(!$(this).hasClass('open')) {
+                  window.app.fetchNotifications('chat')
+              }
+          });
+
         }
     }
 </script>
