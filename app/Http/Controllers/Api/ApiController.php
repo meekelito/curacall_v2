@@ -654,7 +654,7 @@ class ApiController extends Controller
       'patient_information.provided_patient_last_name' => 'nullable|in:Does not Know,Refuse to provide,Yes',
       'patient_information.patient_telephone_number' => 'nullable|string',
       'patient_information.confirmed_patient_telephone' => 'nullable|boolean',
-      'patient_information.patient_telephone_number_confirmation' => 'nullable|in:Does not Know,Refuse to provide,Yes',
+      'patient_information.patient_telephone_number_confirmation' => 'nullable|in:Does not have,Refuse to provide,Yes',
 
       'oncall_personnel' => 'required',
       'oncall_personnel.oncall_staff' => 'required',
