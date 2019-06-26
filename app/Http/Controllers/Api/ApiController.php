@@ -633,8 +633,8 @@ class ApiController extends Controller
       'caregiver_information.employee_first_name' => 'nullable|string',
       'caregiver_information.employee_last_name' => 'nullable|string',
       'caregiver_information.information_confirmed' => 'nullable|boolean',
-      'caregiver_information.provided_caregiver_first_name' => 'nullable|in:Does not have,Refuse to provide,Yes',
-      'caregiver_information.provided_caregiver_last_name' => 'nullable|in:Does not have,Refuse to provide,Yes',
+      'caregiver_information.provided_caregiver_first_name' => 'nullable|in:Does not Know,Refuse to provide,Yes',
+      'caregiver_information.provided_caregiver_last_name' => 'nullable|in:Does not Know,Refuse to provide,Yes',
       'caregiver_information.confirmed_caregiver_first_name' => 'nullable|boolean',
       'caregiver_information.confirmed_caregiver_last_name' => 'nullable|boolean',
       'caregiver_information.absent_or_late' => 'nullable|in:Absent,Late',
@@ -650,16 +650,16 @@ class ApiController extends Controller
       'patient_information.patient_last_name' => 'nullable|string',
       'patient_information.confirmed_patient_first_name' => 'nullable|boolean',
       'patient_information.confirmed_patient_last_name' => 'nullable|boolean',
-      'patient_information.provided_patient_first_name' => 'nullable|in:Does not have,Refuse to provide,Yes',
-      'patient_information.provided_patient_last_name' => 'nullable|in:Does not have,Refuse to provide,Yes',
+      'patient_information.provided_patient_first_name' => 'nullable|in:Does not Know,Refuse to provide,Yes',
+      'patient_information.provided_patient_last_name' => 'nullable|in:Does not Know,Refuse to provide,Yes',
       'patient_information.patient_telephone_number' => 'nullable|string',
       'patient_information.confirmed_patient_telephone' => 'nullable|boolean',
-      'patient_information.patient_telephone_number_confirmation' => 'nullable|in:Does not have,Refuse to provide,Yes',
+      'patient_information.patient_telephone_number_confirmation' => 'nullable|in:Does not Know,Refuse to provide,Yes',
 
       'oncall_personnel' => 'required',
       'oncall_personnel.oncall_staff' => 'required',
       'oncall_personnel.oncall_staff.*.dochalo_ID' => 'required',
-      'oncall_personnel.silent_listener.*.dochalo_ID' => 'required_with:oncall_personnel.silent_listener',
+      'oncall_personnel.silent_listener.*.dochalo_ID' => 'required_with:oncall_personnel.silent_listener', 
     ]);
 
  
