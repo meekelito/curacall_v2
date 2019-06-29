@@ -72,14 +72,14 @@ window.app = new Vue({
                     // var playPromise = document.getElementById('reminderNotificationAudio').play();
                       this.countNotifications('reminder');
                       this.fetchNotifications('reminder');
-                     
+                      window.doNotification('Hey! a new notification for you',notification.data.message);
                 }else if(notification.type == NOTIFICATION_TYPES.case){
                   //case notifications below
 
                     //this.notifications.unshift(notification);
                      this.countNotifications('case');
                      this.fetchNotifications('case');
-                      
+                     window.doNotification('Hey! a new notification for you',notification.data.message);
                     //console.log(window.location.pathname + window.location.search);
                  
                     if(current_url == "/cases/case_id/"+notification.data.case_id){

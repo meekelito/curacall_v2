@@ -12392,13 +12392,14 @@ window.app = new Vue({
         // var playPromise = document.getElementById('reminderNotificationAudio').play();
         _this.countNotifications('reminder');
         _this.fetchNotifications('reminder');
+        window.doNotification('Hey! a new notification for you', notification.data.message);
       } else if (notification.type == NOTIFICATION_TYPES.case) {
         //case notifications below
 
         //this.notifications.unshift(notification);
         _this.countNotifications('case');
         _this.fetchNotifications('case');
-
+        window.doNotification('Hey! a new notification for you', notification.data.message);
         //console.log(window.location.pathname + window.location.search);
 
         if (current_url == "/cases/case_id/" + notification.data.case_id) {
