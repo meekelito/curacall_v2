@@ -59,7 +59,7 @@ Route::get('/cases/{status?}/{user_id}', 'Api\ApiController@getCases' );
         'middleware' => 'jwt.auth',
     ], function ($router) {
         
-        Route::get('/cases/{status?}/{user_id}', 'Api\ApiController@getCases' ); 
+        Route::post('/cases', 'Api\ApiController@getCases' ); 
 
         Route::get('/case-preview', 'Api\ApiController@getCaseSpecific' ); 
 
