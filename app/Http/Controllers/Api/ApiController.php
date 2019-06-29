@@ -100,32 +100,28 @@ class ApiController extends Controller
 
   }
 
-  public function getCases($status = 'all',$user_id)
+  public function getCases(Request $request)
   {
-    if($status=='all'){
-      $cases = Cases::Join('case_participants AS b','cases.id','=','b.case_id')
-              ->where('b.user_id',$user_id)
-              ->where('cases.status','!=',4)
-              ->select('cases.id','cases.case_id','cases.account_id','cases.call_type','cases.subcall_type','cases.case_message','cases.status','cases.created_at','cases.updated_at')
-              ->get();
-    }elseif($status=='active'){
-      $cases = Cases::Join('case_participants AS b','cases.id','=','b.case_id')
-              ->where('b.user_id',$user_id)
-              ->where('cases.status',1)
-              ->select('cases.id','cases.case_id','cases.account_id','cases.call_type','cases.subcall_type','cases.case_message','cases.status','cases.created_at','cases.updated_at')
-              ->get();
-    }elseif($status=='pending'){
-      $cases = Cases::Join('case_participants AS b','cases.id','=','b.case_id')
-              ->where('b.user_id',$user_id)
-              ->where('cases.status',2)
-              ->select('cases.id','cases.case_id','cases.account_id','cases.call_type','cases.subcall_type','cases.case_message','cases.status','cases.created_at','cases.updated_at')
-              ->get();
-    }elseif($status=='closed'){
-      $cases = Cases::Join('case_participants AS b','cases.id','=','b.case_id')
-              ->where('b.user_id',$user_id)
-              ->where('cases.status',3)
-              ->select('cases.id','cases.case_id','cases.account_id','cases.call_type','cases.subcall_type','cases.case_message','cases.status','cases.created_at','cases.updated_at')
-              ->get();
+    $user_cases = Case_participant::where( 'user_id', $request->user_id )
+      ->select('case_id')
+      ->get();
+
+    if($request->status=='all'){
+      $cases = Cases::with("participant.user")->where("status","!=",4)
+      ->whereIn('id',$user_cases)
+      ->get();
+    }elseif($request->status=='active'){
+      $cases = Cases::with("participant.user")->where("status","=",1)
+      ->whereIn('id',$user_cases)
+      ->get();
+    }elseif($request->status=='pending'){
+      $cases = Cases::with("participant.user")->where("status","=",2)
+      ->whereIn('id',$user_cases)
+      ->get();
+    }elseif($request->status=='closed'){
+      $cases = Cases::with("participant.user")->where("status","=",3)
+      ->whereIn('id',$user_cases)
+      ->get();
     }
 
     
