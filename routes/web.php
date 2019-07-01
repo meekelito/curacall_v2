@@ -43,6 +43,7 @@ Route::group(['middleware' => array('auth','nocache')], function () {
 	Route::get('new-message','Messages\NewMessageController@index');
 	Route::post('new-message','Messages\NewMessageController@createMessage');
 	Route::post('create-room','Messages\NewMessageController@createRoom');
+    Route::post('add-chat-participant','Messages\NewMessageController@addparticipant')->name('add-chat-participant');
 
 	Route::post('close-message','Messages\ClosedMessagesController@closeMessage');
 
