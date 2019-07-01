@@ -68,7 +68,7 @@ class ChatsController extends Controller
 	public function fetchMessages(Request $request)
 	{ 
 	  // return Message::with('user')->get();
-	  return Message::where('room_id', $request->input('room') )->with('user')->get();
+	  return Message::where('room_id', $request->input('room') )->with('user')->latest()->paginate(10);
 	}
 
 	/**
