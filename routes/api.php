@@ -24,6 +24,7 @@ Route::post('login_mobile', 'Api\AuthController@login');
 Route::post('check_email', 'Api\AuthController@check_email');
 Route::post('forgot/password', 'Api\Auth\ForgotPasswordController')->name('forgot.password');
 Route::apiResource('support', 'Api\SupportTicketController');
+Route::get('notification', 'Api\NotificationController@index');
 
 Route::group([
     'middleware' => 'jwt.auth',
