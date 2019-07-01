@@ -191,9 +191,23 @@ Route::group(['middleware' => array('auth','nocache')], function () {
         Route::get('admin-console/reports-all-messages','Reports\ReportsController@reportsAllMessages');
         Route::post('admin-console/reports-all-messages-table','Reports\ReportsController@reportsAllMessagesTable');
 
+
         Route::get('admin-console/reports-escalated-tickets','Reports\ReportsController@reportsEscalatedTickets');
 
+        Route::get('admin-console/reports-cancelled-shifts','Reports\ReportsController@reportsCancelledShifts');
+        Route::post('admin-console/reports-cancelled-shifts-table','Reports\ReportsController@reportsCancelledShiftsTable');
+
+        Route::get('admin-console/reports-no-show','Reports\ReportsController@reportsNoShow');
+
+        Route::get('admin-console/reports-repeat-callers','Reports\ReportsController@reportsRepeatCallers');
+        Route::post('admin-console/reports-repeat-callers-table','Reports\ReportsController@reportsRepeatCallersTable');
+
+        Route::get('admin-console/reports-call-type','Reports\ReportsController@reportsCallType');
+        Route::post('admin-console/reports-call-type-table','Reports\ReportsController@reportsCallTypeTable');
+
+
         Route::post('admin-console/reports-billing','Reports\ReportsController@reportsBillingTable');
+
         //reports end
         });
 

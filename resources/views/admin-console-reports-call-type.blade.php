@@ -12,13 +12,13 @@
   <div class="page-header page-header-default">
       <div class="page-header-content">
           <div class="page-title">
-              <h4><i class="icon-arrow-left52 position-left"></i> <span class="text-semibold">Reports</span> - Excalated Tickets</h4>
+              <h4><i class="icon-arrow-left52 position-left"></i> <span class="text-semibold">Reports</span> - Call Type</h4>
           </div>
       </div>
       <div class="breadcrumb-line">
           <ul class="breadcrumb">
               <li><a href="#"><i class="icon-home2 position-left"></i> Home</a></li>
-              <li class="active">Excalated Tickets</li>
+              <li class="active">Call Type</li>
           </ul>
       </div>
   </div>
@@ -27,11 +27,19 @@
     <div class="panel panel-flat">
       <div class="panel-body"> 
         <div class="row">
-          <div class="col-sm-5 multi-select-full">
+          <div class="col-sm-4">
             <select class="form-control account_list" required> 
-              <option>Select Account</option>
+              <option value="">Select Account</option>
               @foreach($accounts as $account)
               <option value="{{ $account->id }}">{{ $account->account_name }}</option>
+              @endforeach
+            </select> 
+          </div>
+          <div class="col-sm-3">
+            <select class="form-control call_type" required> 
+              <option value="">Select Call Type</option>
+              @foreach($call_types as $call_type)
+              <option value="{{ $call_type->call_type }}">{{ $call_type->call_type }}</option>
               @endforeach
             </select> 
           </div>
@@ -44,8 +52,8 @@
           <button type="button" class="btn btn-primary btn-icon btn-search"><i class="icon-search4"></i></button>
         </div>
         <div class="row">
-          <div class="col-sm-12 content-data-reports-all-messages pre-scrollable">
-            <table class="table scrollable " style="margin-top: 40px; ">
+          <div class="col-sm-12 content-data-reports-all-messages pre-scrollable" style="margin-top: 40px; min-height: 500px;">
+            <table class="table scrollable" >
               <tr class="bg-primary">
                 <td>Case Link</td>
                 <td>Call Received On</td>
@@ -86,7 +94,7 @@
                 <td>Shift End</td>
                 <td>Services Requested</td>
               </tr>
-              <tr><td colspan="9">No data found.</td></tr>
+              <tr><td colspan="38">No data found.</td></tr>
             </table>
 
           </div>
@@ -119,10 +127,38 @@
   $(document).ready(function () {
     $(".menu-curacall li").removeClass("active");
     $(".menu-admin-console-reports").addClass('active');
-    $(".menu-reports-escalated-tickets").addClass('active'); 
+    $(".menu-reports-all-messages").addClass('active'); 
+    
 
     $(".btn-search").click(function(){
-      alert("wee");
+        $.ajax({ 
+          type: "POST", 
+          url: "{{ url('admin-console/reports-call-type-table') }}", 
+          data: { 
+            _token : '{{ csrf_token() }}',
+            account_id: $('.account_list').val(),
+            call_type: $('.call_type').val(),
+            month_from: $('#date_from').val(),
+            month_to: $('#date_to').val()
+          },
+          beforeSend: function(){
+              $('body').addClass('wait-pointer');
+            },
+          complete: function(){
+              $('body').removeClass('wait-pointer');
+            },
+          success: function (data) {  
+            $(".content-data-reports-all-messages").html( data );
+          },
+          error: function (data){ 
+            swal({
+              title: "Oops..!",
+              text: "No connection could be made because the target machine actively refused it. Please refresh the browser and try again.",
+              confirmButtonColor: "#EF5350",
+              type: "error"
+            });
+          }
+        });
     });
    
   });
