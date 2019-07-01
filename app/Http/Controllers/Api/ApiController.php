@@ -16,6 +16,9 @@ use Carbon\Carbon;
 use App\Notifications\ReminderNotification;
 use App\Notifications\CaseNotification;
 use App\Case_repository;
+use App\ApiCron;
+use App\Call_type;
+use App\Calltype_notification;
 
 class ApiController extends Controller
 {
@@ -97,32 +100,28 @@ class ApiController extends Controller
 
   }
 
-  public function getCases($status = 'all',$user_id)
+  public function getCases(Request $request)
   {
-    if($status=='all'){
-      $cases = Cases::Join('case_participants AS b','cases.id','=','b.case_id')
-              ->where('b.user_id',$user_id)
-              ->where('cases.status','!=',4)
-              ->select('cases.id','cases.case_id','cases.account_id','cases.call_type','cases.subcall_type','cases.case_message','cases.status','cases.created_at','cases.updated_at')
-              ->get();
-    }elseif($status=='active'){
-      $cases = Cases::Join('case_participants AS b','cases.id','=','b.case_id')
-              ->where('b.user_id',$user_id)
-              ->where('cases.status',1)
-              ->select('cases.id','cases.case_id','cases.account_id','cases.call_type','cases.subcall_type','cases.case_message','cases.status','cases.created_at','cases.updated_at')
-              ->get();
-    }elseif($status=='pending'){
-      $cases = Cases::Join('case_participants AS b','cases.id','=','b.case_id')
-              ->where('b.user_id',$user_id)
-              ->where('cases.status',2)
-              ->select('cases.id','cases.case_id','cases.account_id','cases.call_type','cases.subcall_type','cases.case_message','cases.status','cases.created_at','cases.updated_at')
-              ->get();
-    }elseif($status=='closed'){
-      $cases = Cases::Join('case_participants AS b','cases.id','=','b.case_id')
-              ->where('b.user_id',$user_id)
-              ->where('cases.status',3)
-              ->select('cases.id','cases.case_id','cases.account_id','cases.call_type','cases.subcall_type','cases.case_message','cases.status','cases.created_at','cases.updated_at')
-              ->get();
+    $user_cases = Case_participant::where( 'user_id', $request->user_id )
+      ->select('case_id')
+      ->get();
+
+    if($request->status=='all'){
+      $cases = Cases::with("participant.user")->where("status","!=",4)
+      ->whereIn('id',$user_cases)
+      ->get();
+    }elseif($request->status=='active'){
+      $cases = Cases::with("participant.user")->where("status","=",1)
+      ->whereIn('id',$user_cases)
+      ->get();
+    }elseif($request->status=='pending'){
+      $cases = Cases::with("participant.user")->where("status","=",2)
+      ->whereIn('id',$user_cases)
+      ->get();
+    }elseif($request->status=='closed'){
+      $cases = Cases::with("participant.user")->where("status","=",3)
+      ->whereIn('id',$user_cases)
+      ->get();
     }
 
     
@@ -537,7 +536,7 @@ class ApiController extends Controller
 
         if($user)
           return response()->json([
-              "status" => 200,
+              "status" => 1,
               "response" => "success", 
               "message" => "Successfully sent."
           ]);
@@ -548,12 +547,12 @@ class ApiController extends Controller
   {
     $validator = Validator::make($request->all(),[ 
       'questionnaire_id' => 'bail|required|unique:cases,case_id',
-      'client_id' => 'bail|required|exists:accounts,account_id',
+      'account_id' => 'bail|required|exists:accounts,account_id',
       'caller_information' => 'required',
       'caller_information.caller_id' => 'nullable|string',
       'caller_information.caller_first_name' => 'required|string',
       'caller_information.caller_last_name' => 'required|string',
-      'caller_information.caller_email_address' => 'required|email',
+      'caller_information.caller_email_address' => 'nullable|email',
       'caller_information.caller_type' => 'required|string',
       'caller_information.caller_type_details' => 'nullable|string',
       'caller_information.caller_details' => 'nullable|string',
@@ -570,6 +569,7 @@ class ApiController extends Controller
       'caller_information.caller_patient_telephone' => 'nullable|string',
       'caller_information.telephone_number' => 'nullable|string',
       'caller_information.caller_relationship_with_field_worker' => 'nullable|string',
+
       'call_information' => 'required',
       'call_information.call_typology' => 'required|in:Normal Call,Collect Call,Public Payphone Call',
       'call_information.number_of_calls' => 'required|in:1st Time,2nd Time,3rd Time,4th Time,5th Time +',
@@ -583,13 +583,13 @@ class ApiController extends Controller
       'call_information.pin_number' => 'required_if:call_information.contacted_translation_company,==,Yes',
       'call_information.full_message' => 'required|string',
       'call_information.direct_deposit_or_receive_a_check' => 'nullable|boolean',
-      'call_information.lab_doctor_notification' => 'required|boolean',
+      'call_information.lab_doctor_notification' => 'nullable|boolean',
       'call_information.hospital_related' => 'nullable|boolean',
       'call_information.medical_emergency' => 'nullable|boolean',
       'call_information.time_of_call' => 'required|string|in:After Hours/Holiday Hours,During Hours',
       'call_information.name_of_compliance_officer' => 'nullable|string',
       'call_information.name_of_insurance_company' => 'nullable|string',
-      'call_information.name_of_oncall_staff' => 'required|string',
+      'call_information.name_of_oncall_staff' => 'nullable|string',
       'call_information.name_of_the_home_health_agency' => 'nullable|string',
       'call_information.hospital_id' => 'nullable|string',
       'call_information.name_of_the_hospital' => 'nullable|string',
@@ -620,7 +620,8 @@ class ApiController extends Controller
       'call_information.call_outside_escalation_hours' => 'nullable|boolean',
       'call_information.call_outside_escalation_interval' => 'nullable|boolean',
       'call_information.compare_date' => 'nullable|string',
-      'call_informationstart_compare_date' => 'nullable|string',
+      'call_information.start_compare_date' => 'nullable|string',
+      'call_information.actions_taken' => 'nullable|string',
 
       'caregiver_information' => 'required',
       'caregiver_information.caregiver_type' => 'required|in:Certified Nursing Assistant (CNA),Coordinator,Doctor (MD),Home Health Aide (HHA),Nurse Registered (RN) Licensed (LPN) Practitioner (NP),Personal Care Aide (PCA),Physical Therapist (PT) Pharmacist',
@@ -628,8 +629,8 @@ class ApiController extends Controller
       'caregiver_information.employee_first_name' => 'nullable|string',
       'caregiver_information.employee_last_name' => 'nullable|string',
       'caregiver_information.information_confirmed' => 'nullable|boolean',
-      'caregiver_information.provided_caregiver_first_name' => 'nullable|in:Does not have,Refuse to provide,Yes',
-      'caregiver_information.provided_caregiver_last_name' => 'nullable|in:Does not have,Refuse to provide,Yes',
+      'caregiver_information.provided_caregiver_first_name' => 'nullable|in:Does not Know,Refuse to provide,Yes',
+      'caregiver_information.provided_caregiver_last_name' => 'nullable|in:Does not Know,Refuse to provide,Yes',
       'caregiver_information.confirmed_caregiver_first_name' => 'nullable|boolean',
       'caregiver_information.confirmed_caregiver_last_name' => 'nullable|boolean',
       'caregiver_information.absent_or_late' => 'nullable|in:Absent,Late',
@@ -645,8 +646,8 @@ class ApiController extends Controller
       'patient_information.patient_last_name' => 'nullable|string',
       'patient_information.confirmed_patient_first_name' => 'nullable|boolean',
       'patient_information.confirmed_patient_last_name' => 'nullable|boolean',
-      'patient_information.provided_patient_first_name' => 'nullable|in:Does not have,Refuse to provide,Yes',
-      'patient_information.provided_patient_last_name' => 'nullable|in:Does not have,Refuse to provide,Yes',
+      'patient_information.provided_patient_first_name' => 'nullable|in:Does not Know,Refuse to provide,Yes',
+      'patient_information.provided_patient_last_name' => 'nullable|in:Does not Know,Refuse to provide,Yes',
       'patient_information.patient_telephone_number' => 'nullable|string',
       'patient_information.confirmed_patient_telephone' => 'nullable|boolean',
       'patient_information.patient_telephone_number_confirmation' => 'nullable|in:Does not have,Refuse to provide,Yes',
@@ -654,7 +655,7 @@ class ApiController extends Controller
       'oncall_personnel' => 'required',
       'oncall_personnel.oncall_staff' => 'required',
       'oncall_personnel.oncall_staff.*.dochalo_ID' => 'required',
-      'oncall_personnel.silent_listener.*.dochalo_ID' => 'required_with:oncall_personnel.silent_listener',
+      'oncall_personnel.silent_listener.*.dochalo_ID' => 'required_with:oncall_personnel.silent_listener', 
     ]);
 
  
@@ -666,9 +667,9 @@ class ApiController extends Controller
       ]);
     }
 
-  
+    $calltype = $request->call_information['call_type']; // use for cron
 
-    $res = Account::where('account_id', $request->client_id)->firstOrFail();
+    $res = Account::where('account_id', $request->account_id)->firstOrFail();
   
 
     $array_holder = array(
@@ -701,7 +702,7 @@ class ApiController extends Controller
 
       $now = Carbon::now()->toDateTimeString();
       $oncall_personnel = array(); //list of oncall personnel
-
+      $reminder_participants = array();
       foreach ($request->oncall_personnel['oncall_staff'] as $participant) {
         if(isset($participant['dochalo_ID'])){
           $str2 = substr($participant['dochalo_ID'], 2);
@@ -713,6 +714,8 @@ class ApiController extends Controller
             'created_at'=>$now,
             'updated_at'=>$now
           );
+
+          $reminder_participants[] = $curacall_id;
         }
       }
 
@@ -791,6 +794,17 @@ class ApiController extends Controller
       }
       /* END Notification */
       
+      /* Reminder Cron */
+      $cron = new ApiCron;
+      $interval_minutes = 15;//default interval if calltype not in database
+      $calltype1 = Call_type::where('name',$calltype)->first();
+      if($calltype1)
+       $interval_minutes = $calltype1->calltype_notification()->first()->interval_minutes ?? $interval;
+
+      $cron->remind($case->id,$interval_minutes,$reminder_participants);
+
+
+      /* End Reminder Cron */
       return response()->json([
         "status" => 200,
         "response" => "success", 
@@ -850,7 +864,7 @@ class ApiController extends Controller
   {
     $validator = Validator::make($request->all(),[ 
       'questionnaire_id' => 'required|exists:cases,case_id',
-      'client_id' => '|exists:accounts,account_id',
+      'account_id' => '|exists:accounts,account_id',
       'oncall_type' => 'required|in:backup_1,backup_2,silent_listener',
       'oncall_personnel' => 'required',
       'oncall_personnel.oncall_staff' => 'required',
@@ -858,7 +872,7 @@ class ApiController extends Controller
       'oncall_personnel.silent_listener.*.dochalo_ID' => 'required_with:oncall_personnel.silent_listener',
     ],[ 
       'questionnaire_id.exists'=>'Questionnaire ID does not exist.',
-      'client_id.exists'=>'Client ID does not exist.',
+      'account_id.exists'=>'Account ID does not exist.',
       'oncall_type.required' => 'OnCall type is required.',
       'oncall_type.oncall_staff.required' => 'OnCall type is required.',
       'oncall_personnel.oncall_staff.*.dochalo_ID.required' => 'Dochalo ID is required.',
@@ -954,14 +968,14 @@ class ApiController extends Controller
   {
     $validator = Validator::make($request->all(), [
       'questionnaire_id' => 'required|exists:cases,case_id',
-      'client_id' => 'bail|required|exists:accounts,account_id',
+      'account_id' => 'bail|required|exists:accounts,account_id',
       'user_id' => 'required|exists:users',
       'oncall_personnel' => 'required',
       'oncall_personnel.oncall_staff' => 'required',
       'oncall_personnel.oncall_staff.*.dochalo_ID' => 'required'
     ],[ 
       'questionnaire_id.exists'=>'Questionnaire ID does not exist.',
-      'client_id.exists'=>'Client ID does not exist.',
+      'account_id.exists'=>'Account ID does not exist.',
       'oncall_type.required' => 'OnCall type is required.',
       'oncall_type.oncall_staff.required' => 'OnCall type is required.',
       'oncall_personnel.oncall_staff.*.dochalo_ID.required' => 'Dochalo ID is required.',
@@ -975,25 +989,25 @@ class ApiController extends Controller
         "message"=>$validator->errors()
       ]);
       
-    }else{
-
-      $oncall_personnel = array(); //list of oncall personnel
-      foreach ($request->oncall_personnel['oncall_staff'] as $participant) {
-        if(isset($participant['dochalo_ID'])){
-          $str2 = substr($participant['dochalo_ID'], 2);
-          $curacall_id = ltrim($str2, '0');
-          $oncall_personnel[] = array(
-            'case_id'=>$case->id,
-            'user_id'=>$curacall_id,
-            'oncall_personnel' => 'oncall',
-            'created_at'=>$now,
-            'updated_at'=>$now
-          );
-        }
-      }
-
-
     }
+
+    $oncall_personnel = array(); //list of oncall personnel
+    foreach ($request->oncall_personnel['oncall_staff'] as $participant) {
+      if(isset($participant['dochalo_ID'])){
+        $str2 = substr($participant['dochalo_ID'], 2);
+        $curacall_id = ltrim($str2, '0');
+        $oncall_personnel[] = array(
+          'case_id'=>$case->id,
+          'user_id'=>$curacall_id,
+          'oncall_personnel' => 'oncall',
+          'created_at'=>$now,
+          'updated_at'=>$now
+        );
+      }
+    }
+
+    $user_info = User::find($request->user_id);
+
 
     
 
@@ -1027,7 +1041,7 @@ class ApiController extends Controller
     }
 
     /** Notification message template **/
-      $message = str_replace("[from_name]",Auth::user()->fname . ' ' . Auth::user()->lname,__('notification.forward_case'));
+      $message = str_replace("[from_name]",$user_info->fname . ' ' . $user_info->lname,__('notification.forward_case'));
       $message = str_replace("[case_id]",$request->questionnaire_id,$message);
       $arr = array(
           'case_id'     => $request->questionnaire_id,
@@ -1116,6 +1130,21 @@ class ApiController extends Controller
       ));
     }
     
+  }
+
+  public function testcron()
+  {
+    $cron = new ApiCron;
+    // $result = $cron->read("123");
+    //$result = $cron->remind("31",2,array(4));
+    //$result = $cron->login();
+    //return json_encode($result);
+      $interval = 15;
+      $calltype = Call_type::where('name',"Medical")->first();
+      if($calltype)
+       $interval = $calltype->calltype_notification()->first()->interval_minutes ?? $interval;
+
+      return $interval;
   }
 
 }

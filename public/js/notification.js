@@ -12348,7 +12348,7 @@ Vue.component('notification', __webpack_require__(50));
 Vue.component('chatnotification', __webpack_require__(53));
 Vue.component('remindernotification', __webpack_require__(56));
 
-var app = new Vue({
+window.app = new Vue({
   el: '#notificationapp',
   data: {
     notifications: '',
@@ -12389,16 +12389,17 @@ var app = new Vue({
 
         document.getElementById('chatNotificationAudio').play();
       } else if (notification.type == NOTIFICATION_TYPES.reminders) {
-        var playPromise = document.getElementById('reminderNotificationAudio').play();
+        // var playPromise = document.getElementById('reminderNotificationAudio').play();
         _this.countNotifications('reminder');
         _this.fetchNotifications('reminder');
+        window.doNotification('Hey! a new notification for you', notification.data.message);
       } else if (notification.type == NOTIFICATION_TYPES.case) {
         //case notifications below
 
         //this.notifications.unshift(notification);
         _this.countNotifications('case');
         _this.fetchNotifications('case');
-
+        window.doNotification('Hey! a new notification for you', notification.data.message);
         //console.log(window.location.pathname + window.location.search);
 
         if (current_url == "/cases/case_id/" + notification.data.case_id) {
@@ -43057,7 +43058,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         }
     },
     mounted: function mounted() {
-        $("#case-dropdown").on("show.bs.dropdown", this.fetchNotifications('case'));
+        $('#case-dropdown').click(function () {
+            if (!$(this).hasClass('open')) {
+                window.app.fetchNotifications('case');
+            }
+        });
     }
 });
 
@@ -43321,7 +43326,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         }
     },
     mounted: function mounted() {
-        $("#chat-dropdown").on("show.bs.dropdown", this.fetchNotifications('chat'));
+        $('#chat-dropdown').click(function () {
+            if (!$(this).hasClass('open')) {
+                window.app.fetchNotifications('chat');
+            }
+        });
     }
 });
 
@@ -43580,7 +43589,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         }
     },
     mounted: function mounted() {
-        $("#reminder-dropdown").on("show.bs.dropdown", this.fetchNotifications('reminder'));
+        $('#reminder-dropdown').click(function () {
+            if (!$(this).hasClass('open')) {
+                window.app.fetchNotifications('reminder');
+            }
+        });
     }
 });
 

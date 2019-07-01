@@ -18,6 +18,8 @@
 	<link href="{{ asset('assets/css/core.css') }}" rel="stylesheet" type="text/css">
 	<link href="{{ asset('assets/css/components.css') }}" rel="stylesheet" type="text/css">
 	<link href="{{ asset('assets/css/colors.css') }}" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="{{ asset('assets/js/plugins/notifications/notify.js') }}" ></script> 
+
 	<!-- /global stylesheets -->
 
 	<!-- Core JS files -->
@@ -300,21 +302,37 @@
 
                   @can('manage-billing')
                     <li class="menu-admin-console-billing"><a href="{{ url('/admin-console/billing') }}"><i class="icon-coins"></i> <span>Billing</span></a></li>
-                    <li class="menu-admin-console-reports"><a href="{{ url('/admin-console/reports') }}"><i class="icon-graph"></i> <span>Reports</span></a></li>
+                    <!-- <li class="menu-admin-console-reports"><a href="{{ url('/admin-console/reports') }}"><i class="icon-graph"></i> <span>Reports</span></a></li> -->
+                    <li class="menu-admin-console-reports">
+                      <a href="#"><i class="icon-graph"></i> <span>Reports</span></a>
+                      <ul>
+                        <li class="menu-reports-billing"><a href="{{ url('/admin-console/reports-billing') }}">Billing</a></li>
+                        <li class="menu-reports-all-messages"><a href="{{ url('/admin-console/reports-all-messages') }}">All messages</a></li>
+                        <li class="menu-reports-escalated-tickets"><a href="{{ url('/admin-console/reports-escalated-tickets') }}">Escalated Tickets</a></li>
+                        <li><a href="#">Cancelled Shifts</a></li>
+                        <li><a href="#">No Show</a></li>
+                        <li><a href="#">Repeat Callers</a></li>
+                        <li><a href="#">Call Type</a></li>
+                      </ul>
+                    </li>
                   @endif
 
                   @hasrole('account-admin')
-                  <li class="navigation-header"><span>Admin Console</span> <i class="icon-menu" title="Admin Console"></i></li>
+                    <li class="navigation-header"><span>Admin Console</span> <i class="icon-menu" title="Admin Console"></i></li>
                   @endhasrole
 
                   @can('manage-account-general-info')
-
                     <li class="menu-account-general-info"><a href="{{ url('/account/general-info') }}"><i class="icon-hammer-wrench"></i> <span>General Information</span></a></li>
                   @endcan
 
                   @can('case-management')
                     <li class="menu-account-case-management"><a href="{{ url('account/case-management') }}"><i class="icon-files-empty2"></i> <span>Case Management</span></a></li>
                   @endcan
+
+                  @can('escalation-setting')
+                  <li class="menu-escalation-settings"><a href="{{ route('escalation-settings.index') }}"><i class="icon-alarm-add"></i> <span>Escalation Settings</span></a></li>
+                  @endcan
+                   
                 
               </ul>
             </div>
@@ -496,6 +514,46 @@
          });
 
       }, 8000);
+
+        function onShowNotification () {
+            console.log('notification is shown!');
+        }
+        function onCloseNotification () {
+            console.log('notification is closed!');
+        }
+        function onClickNotification () {
+            console.log('notification was clicked!');
+        }
+        function onErrorNotification () {
+            console.error('Error showing notification. You may need to request permission.');
+        }
+        function onPermissionGranted () {
+            console.log('Permission has been granted by the user');
+            doNotification();
+        }
+        function onPermissionDenied () {
+            console.warn('Permission has been denied by the user');
+        }
+        function doNotification (title,body) {
+            var myNotification = new Notify(title, {
+                body: body,
+                tag: 'My unique id',
+                notifyShow: onShowNotification,
+                notifyClose: onCloseNotification,
+                notifyClick: onClickNotification,
+                notifyError: onErrorNotification,
+                timeout: 4
+            });
+            console.log('notify');
+            myNotification.show();
+
+        }
+        if (!Notify.needsPermission) {
+            doNotification();
+        } else if (Notify.isSupported()) {
+            Notify.requestPermission(onPermissionGranted, onPermissionDenied);
+        }
+
   </script>
 </html>
 

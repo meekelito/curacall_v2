@@ -21,12 +21,19 @@
     <div class="panel-body"> 
       <div class="tabbable">
         <ul class="nav nav-tabs nav-tabs-highlight">
+          @can('profile-setting')
           <li class="active"><a href="#highlighted-justified-tab1" data-toggle="tab" id="tab1">Profile Information</a></li>
+          @endcan
+          @can('security-login')
           <li><a href="#highlighted-justified-tab2" data-toggle="tab" id="tab2">Security and Login</a></li>
+          @endcan
+          @can('message-setting')
           <li><a href="#highlighted-justified-tab3" data-toggle="tab" id="tab3">Message Settings</a></li>
+          @endcan
         </ul>
 
         <div class="tab-content">
+          @can('profile-setting')
           <div class="tab-pane active" id="highlighted-justified-tab1">
             <form class="form-horizontal" id="form-user-info" enctype="multipart/form-data">
               <div class="col-lg-8">
@@ -103,6 +110,9 @@
             </form>
 
           </div>
+          @endcan
+
+          @can('security-login')
           <div class="tab-pane" id="highlighted-justified-tab2">
             <div class="col-lg-7">
               <form class="form-horizontal" id="form-user-credentials">
@@ -143,6 +153,8 @@
               <p id="val_5">One (1) special character.</p> 
             </div>
           </div>
+          @endcan
+          @can('message-setting')
           <div class="tab-pane" id="highlighted-justified-tab3">
             <div class="checkbox checkbox-switch">
               <label>
@@ -151,6 +163,7 @@
               </label>
             </div>
           </div>
+          @endcan
           <!-- accounts -->
         </div>
       </div>

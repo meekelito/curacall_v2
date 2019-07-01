@@ -63,7 +63,7 @@ Route::get('/cases/{status?}/{user_id}', 'Api\ApiController@getCases' );
         'middleware' => 'jwt.auth',
     ], function ($router) {
         
-        Route::get('/cases/{status?}/{user_id}', 'Api\ApiController@getCases' ); 
+        Route::post('/cases', 'Api\ApiController@getCases' ); 
 
         Route::get('/case-preview', 'Api\ApiController@getCaseSpecific' ); 
 
@@ -83,13 +83,13 @@ Route::get('/cases/{status?}/{user_id}', 'Api\ApiController@getCases' );
 
         Route::post('/integration/dynamics/add-oncall-backup', 'Api\ApiController@addOnCallBackUp' ); 
 
-        Route::post('notification/remind', 'Api\ApiController@reminderNotification');
+        
 
         //mobile app
         Route::post('forward-case', 'Api\ApiController@forwardCase');
     });
 
-
+Route::post('notification/remind', 'Api\ApiController@reminderNotification');
 // Route::fallback(function(){ 
 //     return response()->json([
 //         'message' => 'Page Not Found. If error persists, contact info@website.com'], 404);
@@ -99,7 +99,7 @@ Route::middleware('jwt.auth')->get('users', function () {
 });
 
 
-
+Route::get('test', 'Api\ApiController@testcron');
 
 
 // Route::fallback(function(){

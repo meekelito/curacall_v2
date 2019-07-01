@@ -29,8 +29,11 @@
     <div class="panel panel-flat">
       <div class="panel-body" id="message-container"> 
           <input type="hidden" id="room" value="{{ $room_id }}">
+          <input type="hidden" id="currentpage" value="1" />
+          <input type="hidden" id="lastpage" value="" />
+
           <div style="min-height: 400px;">
-          <chat-messages :messages="messages" :user="{{ Auth::user()->id }}" :room_id="{{ $room_id }}"></chat-messages>
+          <chat-messages :messages="messages" :user="{{ Auth::user()->id }}" :room_id="{{ $room_id }}" ref="chatmessages"></chat-messages>
           </div>
           <div style="height: 20px;">
           <span  class="help-block" v-bind:class="[ typing && room == {{$room_id}} ? 'show': '']" style="font-style: italic;display:none">

@@ -23,6 +23,13 @@ class Cases extends Model
   }
 
 
+  public function participant()
+  {
+    return $this->hasMany('App\Case_participant','case_id','id');
+    // return $this->hasMany('App\Case_participant','case_id','id')->orderBy('ownership');
+
+  }
+
   public function participants()
 	{
 	  return $this->hasMany('App\Case_participant','case_id','id')->orderBy('ownership');

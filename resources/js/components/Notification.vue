@@ -69,7 +69,11 @@
             
         },
          mounted(){
-          $("#case-dropdown").on("show.bs.dropdown", this.fetchNotifications('case'));
+          $('#case-dropdown').click(function () {
+              if(!$(this).hasClass('open')) {
+                  window.app.fetchNotifications('case')
+              }
+          });
         }
     }
 </script>
