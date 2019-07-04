@@ -12128,6 +12128,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
           typing: true
         });
       }, 300);
+    },
+    selectFile: function selectFile() {
+      $('#files').click();
     }
   }
 });
@@ -12182,7 +12185,91 @@ var render = function() {
     }),
     _vm._v(" "),
     _c("div", { staticClass: "row" }, [
-      _vm._m(0),
+      _c("div", { staticClass: "col-xs-6" }, [
+        _c("ul", { staticClass: "icons-list icons-list-extended mt-10" }, [
+          _c("li", [
+            _c(
+              "a",
+              {
+                attrs: {
+                  "data-popup": "tooltip",
+                  title: "Send photo",
+                  "data-container": "body"
+                },
+                on: {
+                  click: function($event) {
+                    _vm.selectFile()
+                  }
+                }
+              },
+              [_c("i", { staticClass: "icon-file-picture" })]
+            )
+          ]),
+          _vm._v(" "),
+          _c("li", [
+            _c(
+              "a",
+              {
+                attrs: {
+                  "data-popup": "tooltip",
+                  title: "Send video",
+                  "data-container": "body"
+                },
+                on: {
+                  click: function($event) {
+                    _vm.selectFile()
+                  }
+                }
+              },
+              [_c("i", { staticClass: "icon-file-video" })]
+            )
+          ]),
+          _vm._v(" "),
+          _c("li", [
+            _c(
+              "a",
+              {
+                attrs: {
+                  "data-popup": "tooltip",
+                  title: "Send file",
+                  "data-container": "body"
+                },
+                on: {
+                  click: function($event) {
+                    _vm.selectFile()
+                  }
+                }
+              },
+              [_c("i", { staticClass: "icon-file-plus" })]
+            )
+          ]),
+          _vm._v(" "),
+          _c("li", [
+            _c(
+              "a",
+              {
+                attrs: {
+                  "data-popup": "tooltip",
+                  title: "Mark as urgent",
+                  "data-container": "body"
+                },
+                on: {
+                  click: function($event) {
+                    _vm.selectFile()
+                  }
+                }
+              },
+              [_c("i", { staticClass: "icon-bubble-notification" })]
+            )
+          ])
+        ])
+      ]),
+      _vm._v(" "),
+      _c("input", {
+        ref: "files",
+        staticClass: "hidden",
+        attrs: { type: "file", id: "files", multiple: "" }
+      }),
       _vm._v(" "),
       _c("div", { staticClass: "col-xs-6 text-right" }, [
         _c(
@@ -12192,81 +12279,13 @@ var render = function() {
             attrs: { id: "btn-chat" },
             on: { click: _vm.sendMessage }
           },
-          [_vm._m(1), _vm._v(" Send")]
+          [_vm._m(0), _vm._v(" Send")]
         )
       ])
     ])
   ])
 }
 var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "col-xs-6" }, [
-      _c("ul", { staticClass: "icons-list icons-list-extended mt-10" }, [
-        _c("li", [
-          _c(
-            "a",
-            {
-              attrs: {
-                href: "#",
-                "data-popup": "tooltip",
-                title: "Send photo",
-                "data-container": "body"
-              }
-            },
-            [_c("i", { staticClass: "icon-file-picture" })]
-          )
-        ]),
-        _vm._v(" "),
-        _c("li", [
-          _c(
-            "a",
-            {
-              attrs: {
-                href: "#",
-                "data-popup": "tooltip",
-                title: "Send video",
-                "data-container": "body"
-              }
-            },
-            [_c("i", { staticClass: "icon-file-video" })]
-          )
-        ]),
-        _vm._v(" "),
-        _c("li", [
-          _c(
-            "a",
-            {
-              attrs: {
-                href: "#",
-                "data-popup": "tooltip",
-                title: "Send file",
-                "data-container": "body"
-              }
-            },
-            [_c("i", { staticClass: "icon-file-plus" })]
-          )
-        ]),
-        _vm._v(" "),
-        _c("li", [
-          _c(
-            "a",
-            {
-              attrs: {
-                href: "#",
-                "data-popup": "tooltip",
-                title: "Mark as urgent",
-                "data-container": "body"
-              }
-            },
-            [_c("i", { staticClass: "icon-bubble-notification" })]
-          )
-        ])
-      ])
-    ])
-  },
   function() {
     var _vm = this
     var _h = _vm.$createElement

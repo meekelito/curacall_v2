@@ -247,7 +247,9 @@
                     'view-oncall-reports']))
                     <li  class="menu-dashboard"><a href="{{ url('/dashboard') }}"><i class="icon-home4"></i> <span>Dashboard</span></a></li>
                 @endif
-         
+                
+                <li class="menu-messageboard"><a href="{{ url('/all-cases') }}"><i class="icon-clipboard3"></i> <span>Message Board</span></a></li>
+
                  
                   @if(auth()->user()->hasAnyPermission([    
                     'view-all-cases',                  
@@ -539,6 +541,7 @@
         function doNotification (title,body) {
             var myNotification = new Notify(title, {
                 body: body,
+                icon: "{{ asset('assets/images/curacall_logo.jpg') }}",
                 tag: 'My unique id',
                 notifyShow: onShowNotification,
                 notifyClose: onCloseNotification,
