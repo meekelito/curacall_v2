@@ -124,7 +124,7 @@
     <tr><td>First Name:</td><td>{{ $case_info[0]->patient_first_name }}</td></tr>
     @endif
     @if( !empty($case_info[0]->patient_last_name) )
-    <tr><td>Last Name:</td><td>{{ $case_info[0]->patient_last_name }}<</td></tr>
+    <tr><td>Last Name:</td><td>{{ $case_info[0]->patient_last_name }}</td></tr>
     @endif
     @if( !empty($case_info[0]->patient_telephone_number_confirmation) )
     <tr><td>Provided telephone number:</td><td>{{ $case_info[0]->patient_telephone_number_confirmation }}</td></tr>
@@ -138,7 +138,7 @@
     <tr><td>First Name:</td><td>{{ $case_info[0]->employee_first_name }}</td></tr>
     @endif
     @if( !empty($case_info[0]->employee_last_name) )
-    <tr><td>Last Name:</td><td>{{ $case_info[0]->employee_last_name }}<</td></tr>
+    <tr><td>Last Name:</td><td>{{ $case_info[0]->employee_last_name }}</td></tr>
     @endif
     @if( !empty($case_info[0]->caregiver_type) )
     <tr><td>Speciality/Title:</td><td>{{ $case_info[0]->caregiver_type }}</td></tr>
