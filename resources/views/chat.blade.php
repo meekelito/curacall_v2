@@ -4,6 +4,9 @@
   .show{
     display: block;
   }
+     .select2-results__option[aria-selected=true] {
+      display: none;
+    }
 </style>
 @endsection
 @section('content')
@@ -29,8 +32,11 @@
     <div class="panel panel-flat">
       <div class="panel-body" id="message-container"> 
           <input type="hidden" id="room" value="{{ $room_id }}">
+          <input type="hidden" id="currentpage" value="1" />
+          <input type="hidden" id="lastpage" value="" />
+
           <div style="min-height: 400px;">
-          <chat-messages :messages="messages" :user="{{ Auth::user()->id }}" :room_id="{{ $room_id }}"></chat-messages>
+          <chat-messages :messages="messages" :user="{{ Auth::user()->id }}" :room_id="{{ $room_id }}" ref="chatmessages"></chat-messages>
           </div>
           <div style="height: 20px;">
           <span  class="help-block" v-bind:class="[ typing && room == {{$room_id}} ? 'show': '']" style="font-style: italic;display:none">
@@ -75,8 +81,38 @@
         </li>
         @endforeach
       </ul>
+
+      <a id="btnAddParticipant" href="javascript:showAddParticipant()" class="btn btn-xs btn-default" style="margin:15px"><i class="icon-user-plus"></i> Add Participant/s</a>
+
+       <div id="divNewParticipant" style="display:none" class="panel-body">
+        <div class="row col-sm-12">
+            <form class="form-horizontal" id="form-message"  method="POST" action="{{ route('add-chat-participant') }}">
+             {{ csrf_field() }}
+             <input type="hidden" name="room_id" value="{{ $room_id }}" />
+            <div class="form-group">
+              <div class="col-sm-12">
+                <select name="recipients[]"  multiple="multiple" class="select2" style="width:100%">
+                  @foreach($users as $row)
+                    <option value="{{ $row->id }}">{{ $row->fname.' '.$row->lname }}</option>
+                  @endforeach
+                </select>
+              </div>
+             
+            </div>
+            
+            <div class="form-group">
+             <div class="col-sm-12">
+                <button type="submit" class="btn bg-teal-400 btn-labeled btn-labeled-right btn-new-message"><b><i class="icon-user-plus"></i></b> Add</button>
+                <button onclick="cancelAddParticipant()" type="button" class="btn btn-danger">Cancel</button>
+              </div>
+            </div>
+          </form>
+        </div>
+        </div>
     </div>
     <!-- /collapsible list -->
+
+
   </div>
   </div>
 </div>
@@ -88,14 +124,27 @@
   $(".submenu-curacall li").removeClass("active");
 
   $.getScripts({
-  urls: ["{{ asset('js/app.js') }}"],
-  cache: true,  // Default
-  async: false, // Default
-  success: function(response) {
-      
+    urls: ["{{ asset('js/app.js') }}"],
+    cache: true,  // Default
+    async: false, // Default
+    success: function(response) {
+            $('.select2').select2();
 
+    }
+  });
+
+  function showAddParticipant()
+  {
+     $("#divNewParticipant").show();
+     $('#btnAddParticipant').hide();
+     $('.select2').focus();
   }
-});
+
+  function cancelAddParticipant()
+  {
+     $("#divNewParticipant").hide();
+     $('#btnAddParticipant').show();
+  }
 </script>
 
 

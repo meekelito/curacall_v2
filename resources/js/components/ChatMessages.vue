@@ -1,5 +1,5 @@
 <template>
-    <ul class="chat media-list chat-list content-group" v-chat-scroll>
+    <ul ref="chatlists" class="chat media-list chat-list content-group" v-on:scroll.passive="onScroll(this)">
         <li v-for="message in messages" v-bind:class="{'media reversed' : (message.user.id == user )}">
           <div v-if="message.user.id == user">
             <div class="media-body"> 
@@ -44,7 +44,24 @@
             //let previousTime = moment(time,'YYYY-MM-DD HH:mm:ss').format('x');
             let timeDifference = moment(local_date,'x').fromNow();
             return timeDifference;
+        },
+        onScroll(){
+            var page = parseInt($('#currentpage').val());
+            var lastpage = $('#lastpage').val();
+            if(this.$el.scrollTop == 0 && lastpage != page)
+            {
+              page += 1;
+              $('#currentpage').val(page);
+             
+              this.$parent.fetchMessages();
+            }
+        },
+        scrollToBottom()
+        {
+            var elem = this.$refs.chatlists;
+            elem.scrollTop = elem.scrollHeight;
         }
+      
     }
   };
 

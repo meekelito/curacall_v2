@@ -86,33 +86,95 @@
   <div style="height: 600px !important; overflow-y: scroll;">
 
   <table class="table"> 
-    <tr class="active"><td colspan="2">Caller Information</td></tr>
-    <tr><td width="200">First Name:</td><td>Tara</td></tr>
-    <tr><td>Last Name:</td><td>Davis</td></tr>
-    <tr><td>Caller Type:</td><td>Caregiver</td></tr>
-    <tr class="active"><td colspan="2">Type of Caregiver Home Health Aide (HHA)</td></tr>
-    <tr><td>Caller Telephone Number:</td><td>212-098-7654</td></tr>
-    <tr><td>Is Hospital Related:</td><td>No</td></tr>
-    <tr><td>Is Clock-in Code Available:</td><td>Does Not Know</td></tr>
     <tr class="active"><td colspan="2">Call Information</td></tr>
-    <tr><td>Call Type:</td><td>Office; Payroll</td></tr>
-    <tr><td>Payroll concern:</td><td>Was not paid Correct Amount</td></tr>
-    <tr><td>Action:</td><td>Take a Message and Send Email</td></tr>
-    <tr class="active"><td colspan="2">Caregiver Information</td></tr>
-    <tr><td>Type of Caregiver:</td><td>Home Health Aide (HHA)</td></tr>
-    <tr><td>First Name:</td><td>Tara</td></tr>
-    <tr><td>Last Name:</td><td>Davis</td></tr>
-    <tr><td>Telephone Number:</td><td>212-098-7654</td></tr>
-    <tr><td>Provide start time of shift:</td><td>Not Applicable</td></tr>
+    <tr><td>Call Type:</td><td>{{ $case_info[0]->call_type.'; '.$case_info[0]->subcall_type }}</td></tr>
+    @if( !empty($case_info[0]->hospital_related) )
+    <tr><td>Hospital Related:</td><td>{{ $case_info[0]->hospital_related }}</td></tr>
+    @endif
+    @if( !empty($case_info[0]->actions_taken) )
+    <tr><td>Action:</td><td>{{ $case_info[0]->actions_taken }}</td></tr>
+    @endif
+
+    <tr class="active"><td colspan="2">Caller Information</td></tr>
+    @if( !empty($case_info[0]->caller_first_name) )
+    <tr><td>First Name:</td><td>{{ $case_info[0]->caller_first_name }}</td></tr>
+    @endif
+    @if( !empty($case_info[0]->caller_last_name) )
+    <tr><td>Last Name:</td><td>{{ $case_info[0]->caller_last_name }}</td></tr>
+    @endif
+    @if( !empty($case_info[0]->caller_email_address) )
+    <tr><td>Email:</td><td>{{ $case_info[0]->caller_email_address }}<</td></tr>
+    @endif
+    @if( !empty($case_info[0]->caller_type) )
+    <tr><td>Caller Type:</td><td>{{ $case_info[0]->caller_type }}</td></tr>
+    @endif
+    @if( !empty($case_info[0]->number_of_calls) )
+    <tr><td>Number of Calls:</td><td>{{ $case_info[0]->number_of_calls }}</td></tr>
+    @endif
+    @if( !empty($case_info[0]->patient_telephone_number_confirmation) )
+    <tr><td>Provided telephone number:</td><td>{{ $case_info[0]->patient_telephone_number_confirmation }}</td></tr>
+    @endif
+    @if( !empty($case_info[0]->caller_telephone_number) )
+    <tr><td>Telephone Number:</td><td>{{ $case_info[0]->caller_telephone_number }}</td></tr>
+    @endif
+    
+
+    <tr class="active"><td colspan="2">Patient</td></tr>
+    @if( !empty($case_info[0]->patient_first_name) )
+    <tr><td>First Name:</td><td>{{ $case_info[0]->patient_first_name }}</td></tr>
+    @endif
+    @if( !empty($case_info[0]->patient_last_name) )
+    <tr><td>Last Name:</td><td>{{ $case_info[0]->patient_last_name }}<</td></tr>
+    @endif
+    @if( !empty($case_info[0]->patient_telephone_number_confirmation) )
+    <tr><td>Provided telephone number:</td><td>{{ $case_info[0]->patient_telephone_number_confirmation }}</td></tr>
+    @endif
+    @if( !empty($case_info[0]->patient_telephone_number) )
+    <tr><td>Telephone Number:</td><td>{{ $case_info[0]->patient_telephone_number }}</td></tr>
+    @endif
+
+    <tr class="active"><td colspan="2">Field Worker:</td></tr>
+    @if( !empty($case_info[0]->employee_first_name) )
+    <tr><td>First Name:</td><td>{{ $case_info[0]->employee_first_name }}</td></tr>
+    @endif
+    @if( !empty($case_info[0]->employee_last_name) )
+    <tr><td>Last Name:</td><td>{{ $case_info[0]->employee_last_name }}<</td></tr>
+    @endif
+    @if( !empty($case_info[0]->caregiver_type) )
+    <tr><td>Speciality/Title:</td><td>{{ $case_info[0]->caregiver_type }}</td></tr>
+    @endif
+    @if( !empty($case_info[0]->employee_date_time_of_shift_start) )
+    <tr><td>Shift Start:</td><td>{{ $case_info[0]->employee_date_time_of_shift_start }}</td></tr>
+    @endif
+    @if( !empty($case_info[0]->employee_date_time_of_shift_end) )
+    <tr><td>Shift End:</td><td>{{ $case_info[0]->employee_date_time_of_shift_end }}</td></tr>
+    @endif
+
     <tr class="active"><td colspan="2">Other Information</td></tr>
-    <tr><td>Full Message:</td><td>HHA called and wants to speak with Payroll in regards to incorrect amount on her paycheck Please give her a call back as soon as possible as she is currently in the bank.</td></tr>
-    <tr><td>Call Language:</td><td>Russian</td></tr>
-    <tr><td>Contact Translation Company:</td><td>Yes</td></tr>
-    <tr><td>Number of Calls:</td><td>1st Time</td></tr>
-    <tr class="active"><td colspan="2">Case Create</td></tr>
-    <tr><td>Date/Time:</td><td>11/30/2018 02:27 PM</td></tr>
-    <tr><td>Created By:</td><td>Kristina Valerio</td></tr>
-    <tr><td>Case Sent Date/Time:</td><td>11/30/2018 02:37 PM</td></tr>
+    @if( !empty($case_info[0]->full_message) )
+    <tr><td>Full Message:</td><td>{{ $case_info[0]->full_message }}</td></tr>
+    @endif
+    @if( !empty($case_info[0]->call_language) )
+    <tr><td>Call Language:</td><td>{{ $case_info[0]->call_language }}</td></tr>
+    @endif
+
+    <tr class="active"><td colspan="2">Account</td></tr>
+    <tr><td>Company Information:</td><td>Account Name</td></tr>
+    @if( !empty($case_info[0]->team) )
+    <tr><td>Team:</td><td>{{ $case_info[0]->team }}</td></tr>
+    @endif
+    @if( !empty($case_info[0]->call_handled_by_initials) )
+    <tr><td>Call Handled By (Initials:</td><td>{{ $case_info[0]->call_handled_by_initials }}</td></tr>
+    @endif
+
+    <tr class="active"><td colspan="2">Case Created</td></tr> 
+    @if( !empty($case_info[0]->created_on) )
+    <tr><td>Date/Time:</td><td>{{ $case_info[0]->created_on }}</td></tr>
+    @endif
+    @if( !empty($case_info[0]->created_at) )
+    <tr><td>Case Sent Date/Time:</td><td>{{ $case_info[0]->created_at }}</td></tr>
+    @endif
+
   </table>
   </div>
 </div>

@@ -23,7 +23,7 @@ const app = new Vue({
 
     created() {
       this.fetchMessages(); 
-      
+      var self = this;
       Echo.private('chat')
 		  .listen('MessageSent', (e) => {
         var current_chat_room_id = $('#room').val();
@@ -34,6 +34,10 @@ const app = new Vue({
               user: e.user,
               created_at: e.message.created_at
             });
+
+           setTimeout(function(){ 
+               self.$refs.chatmessages.scrollToBottom();
+           }, 100);
         }
 		  });
 
@@ -55,19 +59,29 @@ const app = new Vue({
 
     methods: {
       fetchMessages() {
-
+        var current_page = $('#currentpage').val();
+        var self = this;
         const room_id = document.getElementById('room').value;
-        axios.get(Laravel.baseUrl +'/messages?room='+room_id).then(response => {
-            this.messages = response.data;
+        axios.get(Laravel.baseUrl +'/messages?room='+room_id+'&page='+current_page).then(response => {
+            this.messages = response.data.data.reverse().concat(this.messages);
+            $('#lastpage').val(response.data.last_page);
+
+            if(current_page == 1){
+              setTimeout(function(){ 
+                   self.$refs.chatmessages.scrollToBottom();
+               }, 100);
+            }
         });
       },
 
       addMessage(message) {
+          var self = this;
           this.messages.push(message);
           axios.post(Laravel.baseUrl +'/messages', message).then(response => {
-            // console.log(response.data);
+                setTimeout(function(){ 
+                   self.$refs.chatmessages.scrollToBottom();
+               }, 100);
           });
-      },
-     
+      }     
     }
 });

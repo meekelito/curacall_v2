@@ -11668,7 +11668,7 @@ var app = new __WEBPACK_IMPORTED_MODULE_0_vue___default.a({
         var _this2 = this;
 
         this.fetchMessages();
-
+        var self = this;
         Echo.private('chat').listen('MessageSent', function (e) {
             var current_chat_room_id = $('#room').val();
 
@@ -11678,6 +11678,10 @@ var app = new __WEBPACK_IMPORTED_MODULE_0_vue___default.a({
                     user: e.user,
                     created_at: e.message.created_at
                 });
+
+                setTimeout(function () {
+                    self.$refs.chatmessages.scrollToBottom();
+                }, 100);
             }
         });
 
@@ -11700,15 +11704,27 @@ var app = new __WEBPACK_IMPORTED_MODULE_0_vue___default.a({
         fetchMessages: function fetchMessages() {
             var _this3 = this;
 
+            var current_page = $('#currentpage').val();
+            var self = this;
             var room_id = document.getElementById('room').value;
-            axios.get(Laravel.baseUrl + '/messages?room=' + room_id).then(function (response) {
-                _this3.messages = response.data;
+            axios.get(Laravel.baseUrl + '/messages?room=' + room_id + '&page=' + current_page).then(function (response) {
+                _this3.messages = response.data.data.reverse().concat(_this3.messages);
+                $('#lastpage').val(response.data.last_page);
+
+                if (current_page == 1) {
+                    setTimeout(function () {
+                        self.$refs.chatmessages.scrollToBottom();
+                    }, 100);
+                }
             });
         },
         addMessage: function addMessage(message) {
+            var self = this;
             this.messages.push(message);
             axios.post(Laravel.baseUrl + '/messages', message).then(function (response) {
-                // console.log(response.data);
+                setTimeout(function () {
+                    self.$refs.chatmessages.scrollToBottom();
+                }, 100);
             });
         }
     }
@@ -11877,6 +11893,20 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
       //let previousTime = moment(time,'YYYY-MM-DD HH:mm:ss').format('x');
       var timeDifference = moment(local_date, 'x').fromNow();
       return timeDifference;
+    },
+    onScroll: function onScroll() {
+      var page = parseInt($('#currentpage').val());
+      var lastpage = $('#lastpage').val();
+      if (this.$el.scrollTop == 0 && lastpage != page) {
+        page += 1;
+        $('#currentpage').val(page);
+
+        this.$parent.fetchMessages();
+      }
+    },
+    scrollToBottom: function scrollToBottom() {
+      var elem = this.$refs.chatlists;
+      elem.scrollTop = elem.scrollHeight;
     }
   }
 });
@@ -11892,8 +11922,13 @@ var render = function() {
   return _c(
     "ul",
     {
-      directives: [{ name: "chat-scroll", rawName: "v-chat-scroll" }],
-      staticClass: "chat media-list chat-list content-group"
+      ref: "chatlists",
+      staticClass: "chat media-list chat-list content-group",
+      on: {
+        "&scroll": function($event) {
+          _vm.onScroll(this)
+        }
+      }
     },
     _vm._l(_vm.messages, function(message) {
       return _c(
@@ -12093,6 +12128,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
           typing: true
         });
       }, 300);
+    },
+    selectFile: function selectFile() {
+      $('#files').click();
     }
   }
 });
@@ -12147,7 +12185,91 @@ var render = function() {
     }),
     _vm._v(" "),
     _c("div", { staticClass: "row" }, [
-      _vm._m(0),
+      _c("div", { staticClass: "col-xs-6" }, [
+        _c("ul", { staticClass: "icons-list icons-list-extended mt-10" }, [
+          _c("li", [
+            _c(
+              "a",
+              {
+                attrs: {
+                  "data-popup": "tooltip",
+                  title: "Send photo",
+                  "data-container": "body"
+                },
+                on: {
+                  click: function($event) {
+                    _vm.selectFile()
+                  }
+                }
+              },
+              [_c("i", { staticClass: "icon-file-picture" })]
+            )
+          ]),
+          _vm._v(" "),
+          _c("li", [
+            _c(
+              "a",
+              {
+                attrs: {
+                  "data-popup": "tooltip",
+                  title: "Send video",
+                  "data-container": "body"
+                },
+                on: {
+                  click: function($event) {
+                    _vm.selectFile()
+                  }
+                }
+              },
+              [_c("i", { staticClass: "icon-file-video" })]
+            )
+          ]),
+          _vm._v(" "),
+          _c("li", [
+            _c(
+              "a",
+              {
+                attrs: {
+                  "data-popup": "tooltip",
+                  title: "Send file",
+                  "data-container": "body"
+                },
+                on: {
+                  click: function($event) {
+                    _vm.selectFile()
+                  }
+                }
+              },
+              [_c("i", { staticClass: "icon-file-plus" })]
+            )
+          ]),
+          _vm._v(" "),
+          _c("li", [
+            _c(
+              "a",
+              {
+                attrs: {
+                  "data-popup": "tooltip",
+                  title: "Mark as urgent",
+                  "data-container": "body"
+                },
+                on: {
+                  click: function($event) {
+                    _vm.selectFile()
+                  }
+                }
+              },
+              [_c("i", { staticClass: "icon-bubble-notification" })]
+            )
+          ])
+        ])
+      ]),
+      _vm._v(" "),
+      _c("input", {
+        ref: "files",
+        staticClass: "hidden",
+        attrs: { type: "file", id: "files", multiple: "" }
+      }),
       _vm._v(" "),
       _c("div", { staticClass: "col-xs-6 text-right" }, [
         _c(
@@ -12157,81 +12279,13 @@ var render = function() {
             attrs: { id: "btn-chat" },
             on: { click: _vm.sendMessage }
           },
-          [_vm._m(1), _vm._v(" Send")]
+          [_vm._m(0), _vm._v(" Send")]
         )
       ])
     ])
   ])
 }
 var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "col-xs-6" }, [
-      _c("ul", { staticClass: "icons-list icons-list-extended mt-10" }, [
-        _c("li", [
-          _c(
-            "a",
-            {
-              attrs: {
-                href: "#",
-                "data-popup": "tooltip",
-                title: "Send photo",
-                "data-container": "body"
-              }
-            },
-            [_c("i", { staticClass: "icon-file-picture" })]
-          )
-        ]),
-        _vm._v(" "),
-        _c("li", [
-          _c(
-            "a",
-            {
-              attrs: {
-                href: "#",
-                "data-popup": "tooltip",
-                title: "Send video",
-                "data-container": "body"
-              }
-            },
-            [_c("i", { staticClass: "icon-file-video" })]
-          )
-        ]),
-        _vm._v(" "),
-        _c("li", [
-          _c(
-            "a",
-            {
-              attrs: {
-                href: "#",
-                "data-popup": "tooltip",
-                title: "Send file",
-                "data-container": "body"
-              }
-            },
-            [_c("i", { staticClass: "icon-file-plus" })]
-          )
-        ]),
-        _vm._v(" "),
-        _c("li", [
-          _c(
-            "a",
-            {
-              attrs: {
-                href: "#",
-                "data-popup": "tooltip",
-                title: "Mark as urgent",
-                "data-container": "body"
-              }
-            },
-            [_c("i", { staticClass: "icon-bubble-notification" })]
-          )
-        ])
-      ])
-    ])
-  },
   function() {
     var _vm = this
     var _h = _vm.$createElement
