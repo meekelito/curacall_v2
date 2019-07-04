@@ -47,7 +47,7 @@
           <div class="col-sm-12 content-data-reports-all-messages pre-scrollable" style="margin-top: 40px; min-height: 500px;">
             <table class="table scrollable" >
               <tr class="bg-primary">
-                <td>CRM Link</td>
+                <td>Case Link</td>
                 <td>Call Received On</td>
                 <td>Date Time Delivered</td>
                 <td>Message Read By</td>

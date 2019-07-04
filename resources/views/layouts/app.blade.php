@@ -85,8 +85,9 @@
     }
 
     body.wait-pointer * {cursor: wait !important;}
+
     .page-container{
-      margin-top: 47px;
+      /*margin-top: 47px;*/
     }
     
     .badge-notif{
@@ -107,8 +108,9 @@
 
 <body class="sidebar-xs">
 	<!-- Main navbar -->
-	<div class="navbar navbar-inverse" style="position: fixed;
-      top: 0;width: 100%;z-index: 999;">
+	<!-- <div class="navbar navbar-inverse" style="position: fixed;
+      top: 0;width: 100%;z-index: 999;"> -->
+  <div class="navbar navbar-inverse">
 		<div class="navbar-header">
 			<!-- <a class="navbar-brand" href="#" style="font-size: 26px;">CuraCall
       </a> --> 
@@ -311,10 +313,10 @@
                         <li class="menu-reports-billing"><a href="{{ url('/admin-console/reports-billing') }}">Billing</a></li>
                         <li class="menu-reports-all-messages"><a href="{{ url('/admin-console/reports-all-messages') }}">All messages</a></li>
                         <li class="menu-reports-escalated-tickets"><a href="{{ url('/admin-console/reports-escalated-tickets') }}">Escalated Tickets</a></li>
-                        <li><a href="#">Cancelled Shifts</a></li>
-                        <li><a href="#">No Show</a></li>
-                        <li><a href="#">Repeat Callers</a></li>
-                        <li><a href="#">Call Type</a></li>
+                        <li class="menu-reports-cancelled-shifts"><a href="{{ url('/admin-console/reports-cancelled-shifts') }}">Cancelled Shifts</a></li>
+                        <li class="menu-reports-no-show"><a href="{{ url('/admin-console/reports-no-show') }}">No Show</a></li>
+                        <li class="menu-reports-repeat-callers"><a href="{{ url('/admin-console/reports-repeat-callers') }}">Repeat Callers</a></li>
+                        <li class="menu-reports-call-type"><a href="{{ url('/admin-console/reports-call-type') }}">Call Type</a></li>
                       </ul>
                     </li>
                   @endif

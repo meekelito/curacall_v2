@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('css')
 <style type="text/css">
-  .content-data-reports-all-messages tr td {
+  .content-data-reports-repeat-callers tr td {
     white-space: nowrap;
   }
 </style>
@@ -12,13 +12,13 @@
   <div class="page-header page-header-default">
       <div class="page-header-content">
           <div class="page-title">
-              <h4><i class="icon-arrow-left52 position-left"></i> <span class="text-semibold">Reports</span> - Excalated Tickets</h4>
+              <h4><i class="icon-arrow-left52 position-left"></i> <span class="text-semibold">Reports</span> - Reapeat Callers</h4>
           </div>
       </div>
       <div class="breadcrumb-line">
           <ul class="breadcrumb">
               <li><a href="#"><i class="icon-home2 position-left"></i> Home</a></li>
-              <li class="active">Excalated Tickets</li>
+              <li class="active">Reapeat Callers</li>
           </ul>
       </div>
   </div>
@@ -27,9 +27,9 @@
     <div class="panel panel-flat">
       <div class="panel-body"> 
         <div class="row">
-          <div class="col-sm-5 multi-select-full">
+          <div class="col-sm-5">
             <select class="form-control account_list" required> 
-              <option>Select Account</option>
+              <option value="">Select Account</option>
               @foreach($accounts as $account)
               <option value="{{ $account->id }}">{{ $account->account_name }}</option>
               @endforeach
@@ -44,9 +44,10 @@
           <button type="button" class="btn btn-primary btn-icon btn-search"><i class="icon-search4"></i></button>
         </div>
         <div class="row">
-          <div class="col-sm-12 content-data-reports-all-messages pre-scrollable">
-            <table class="table scrollable " style="margin-top: 40px; ">
+          <div class="col-sm-12 content-data-reports-repeat-callers pre-scrollable" style="margin-top: 40px; min-height: 500px;">
+            <table class="table scrollable" >
               <tr class="bg-primary">
+                <td>Full Name</td>
                 <td>Case Link</td>
                 <td>Call Received On</td>
                 <td>Date Time Delivered</td>
@@ -86,7 +87,7 @@
                 <td>Shift End</td>
                 <td>Services Requested</td>
               </tr>
-              <tr><td colspan="9">No data found.</td></tr>
+              <tr><td colspan="38">No data found.</td></tr>
             </table>
 
           </div>
@@ -119,10 +120,37 @@
   $(document).ready(function () {
     $(".menu-curacall li").removeClass("active");
     $(".menu-admin-console-reports").addClass('active');
-    $(".menu-reports-escalated-tickets").addClass('active'); 
+    $(".menu-reports-repeat-callers").addClass('active'); 
+    
 
     $(".btn-search").click(function(){
-      alert("wee");
+        $.ajax({ 
+          type: "POST", 
+          url: "{{ url('admin-console/reports-repeat-callers-table') }}", 
+          data: { 
+            _token : '{{ csrf_token() }}',
+            account_id: $('.account_list').val(),
+            month_from: $('#date_from').val(),
+            month_to: $('#date_to').val()
+          },
+          beforeSend: function(){
+              $('body').addClass('wait-pointer');
+            },
+          complete: function(){
+              $('body').removeClass('wait-pointer');
+            },
+          success: function (data) {  
+            $(".content-data-reports-repeat-callers").html( data );
+          },
+          error: function (data){ 
+            swal({
+              title: "Oops..!",
+              text: "No connection could be made because the target machine actively refused it. Please refresh the browser and try again.",
+              confirmButtonColor: "#EF5350",
+              type: "error"
+            });
+          }
+        });
     });
    
   });
