@@ -8,6 +8,9 @@ use App\MobCase;
 use App\MobNote;
 use App\Case_history;
 use App\Case_participant;
+use App\User;
+use App\Cases;
+use App\Notification;
 use Validator;
 
 class CaseController extends Controller
@@ -95,6 +98,9 @@ class CaseController extends Controller
             $user = Case_participant::where('case_id', $case->id)
             ->where('user_id', $user_id)->first();
 
+            $case->sender_fullname = 'CuraCall';
+            $case->avatar = '';
+
             $case->is_read = false;
             if ($user) {
                 $case->is_read = ($user->is_read == 1) ? true : false;
@@ -103,20 +109,40 @@ class CaseController extends Controller
 
             $case->forwardee = '';
             if ($case->ownership_text === 'Forwarded' && count($case->forwarded)) {
-                $case->forwardee = $case->forwarded[0]->user->fname.' '.$case->forwarded[0]->user->lname;
+                $countFwd = 1;
+                foreach($case->forwarded as $fwd) {
+                    $case->forwardee .= $fwd->user->fname.' '.$fwd->user->lname;
+                    if ($countFwd < count($case->forwarded)) {
+                        $case->forwardee .=', ';
+                    }
+                    $countFwd++;
+                }
             }
             
             $case->acceptee = '';
             if ($case->ownership_text === 'Accepted' && count($case->accepted)) {
                 $case->isAccepted = ($case->accepted[0]->user_id == $user_id && $case->status_text != 'Active') ? true : false;
                 $case->acceptee = $case->accepted[0]->user->fname.' '.$case->accepted[0]->user->lname;
+                $case->sender_fullname = $case->acceptee;
+                $case->avatar = $case->accepted[0]->user->avatar;
+
             }
             
             $case->ownee = '';
             if ($case->ownership_text === 'Forwarded' && count($case->accepted)) {
                 $case->isAccepted = ($case->accepted[0]->user_id == $user_id && $case->status_text != 'Active') ? true : false;
                 $case->ownee = $case->accepted[0]->user->fname.' '.$case->accepted[0]->user->lname;
+                $case->sender_fullname = $case->ownee;
+                $case->avatar = $case->accepted[0]->user->avatar;
             }
+
+            if ($case->status === '3' && count($case->accepted)) {
+                // $case->isAccepted = ($case->accepted[0]->user_id == $user_id && $case->status_text != 'Active') ? true : false;
+                $userClosed = $case->accepted[0]->user->fname.' '.$case->accepted[0]->user->lname;
+                $case->sender_fullname = $userClosed;
+                $case->avatar = $case->accepted[0]->user->avatar;
+            }
+
 
             $formatted = $case;
         }
@@ -297,36 +323,249 @@ class CaseController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function forward(Request $request, $id)
+    // public function forward(Request $request, $id)
+    // {
+    //     $recipients = $request->input('recipients');
+    //     $user_id = $request->input('user_id');
+    //     $note = $request->input('note');
+
+    //     foreach($recipients as $rec) {
+    //         Case_history::create( [
+    //             "is_visible"=>1,
+    //             "status"=>2,
+    //             "case_id" => $id,
+    //             "note" => $note,
+    //             "action_note" => "Case Forwarded",
+    //             'created_by' => $user_id,
+    //             'sent_to'=>$rec['id'] 
+    //         ]);
+            
+    //         $parti = Case_participant::where('case_id', $id)
+    //         ->where('user_id', $rec['id'])->update(['ownership'=>1]);
+
+    //         if(!$parti) {
+    //             Case_participant::create([
+    //                 'ownership'=>1,
+    //                 'case_id'=>$id,
+    //                 'user_id'=>$rec['id']
+    //             ]);
+    //         }
+            
+    //     }
+
+    //     return $request->all();
+    // }
+
+    public function forwardCase(Request $request)
     {
-        $recipients = $request->input('recipients');
-        $user_id = $request->input('user_id');
-        $note = $request->input('note');
-
-        foreach($recipients as $rec) {
-            Case_history::create( [
-                "is_visible"=>1,
-                "status"=>2,
-                "case_id" => $id,
-                "note" => $note,
-                "action_note" => "Case Forwarded",
-                'created_by' => $user_id,
-                'sent_to'=>$rec['id'] 
-            ]);
-            
-            $parti = Case_participant::where('case_id', $id)
-            ->where('user_id', $rec['id'])->update(['ownership'=>1]);
-
-            if(!$parti) {
-                Case_participant::create([
-                    'ownership'=>1,
-                    'case_id'=>$id,
-                    'user_id'=>$rec['id']
-                ]);
-            }
-            
+        $userInfo = auth('api')->user();
+        $validator = Validator::make($request->all(), [
+            'case_id' => 'required',
+            'note' => 'required',
+            'recipient' => 'required'
+        ]);
+        if ($validator->fails()) {
+            return json_encode(array(
+            "status"=>2,
+            "response"=>"error",
+            "message"=>$validator->errors()
+            ));
         }
+    
+        //checking if the user is still the owner of the case
+        $participation = Case_participant::where('case_id',$request->case_id)
+                        ->where('user_id',$userInfo->id)
+                        ->get();
+    
+        if( $participation[0]->ownership == 2 || $participation[0]->ownership == 5 ){
+    
+        }else{
+            return json_encode(array(
+            "status"=>2,
+            "response"=>"warning",
+            "message"=>"Error while updating please refresh the page."
+            ));
+        }
+    
+        
+        // compare the participants and recipients if existing update the ownership if not insert to participants 
+        // $participants_id = Case_participant::where("case_id",$request->case_id)
+        // ->select('user_id')
+        // ->get();
+        $participants_id = Case_participant::select('user_id')->where("case_id",$request->case_id)->where('user_id','!=',$userInfo->id)->get();// jeric's update, exclude self for notification purposes
+        $participants = array();
+        //$update = array();
+        //$insert = array();
+        $forwarded_recipients = array(); // list of forwarded users
+        foreach ($participants_id as $row) {
+            $participants[] = $row->user_id;
+        }
+    
+        /** Notification message template **/
+            $message = str_replace("[from_name]",$userInfo->fname . ' ' . $userInfo->lname,__('notification.forward_case'));
+            $message = str_replace("[case_id]",$request->case_id,$message);
+            $arr = array(
+                'case_id'     => $request->case_id,
+                //'message'     => $message,
+                'type'        => 'forward_case',
+                //'forward_to'  => $forwarded_recipients,
+                'action_url'  => route('case',[$request->case_id])
+            );
+        /** END Notification message template **/
+    
+        
+        // update all participants ownership state to Forwarded
+        foreach ($request->recipient as $row) {
+            if (in_array($row, $participants)){ 
+            Case_participant::where('case_id', $request->case_id)
+            ->where('user_id', $row )
+            ->update(['ownership' => 1, 'is_read' => 0]); 
+            }else{ 
+            Case_participant::create( ["case_id" => $request->case_id,"user_id" => $row, 'ownership' => 1, 'is_read' => 0 ] ); 
+            $user = User::find($row);
+    
+            $arr['forward_to'] = $user->fname . ' ' . $user->lname;
+            $arr['message'] = $message . "you";
+            Notification::notify_user($arr,$user);
+            } 
+    
+            /** create recipients list for notification **/
+            $user = User::find($row);
+            $user_info = array(  
+                            "id"    =>  $user->id,
+                            "name"  =>  $user->fname . ' ' . $user->lname
+                            );
+    
+            array_push($forwarded_recipients,$user_info); // add notifiable user info into array
+            /** end create recipients list for notification **/
+    
+            Case_history::create( $request->all()+["is_visible" => 1,"status" => 2,"action_note" => "Case Forwarded","sent_to"=>$row, 'created_by' => $userInfo->id ] ); 
+        }
+    
+    
+    
+        /** Sending Notifcation part **/
+        $other_participant_count = count($request->recipient) - 1;
+        // Notify all participants of the case except you
+        foreach($participants as $row)
+        {
+            $user = User::find($row);
+            
+            if(in_array($user->id,$request->recipient))
+            {
+                $str_recipients = "You";
+                if(count($request->recipient) > 1){
+                    $str_recipients = "You and " . $other_participant_count;
+                    $str_recipients .= ($other_participant_count == 1) ? " Other" : " Others";
+                }
+            }else{
+                    $str_recipients = $forwarded_recipients[0]['name'];
+                    if(count($request->recipient) > 1){
+                    $str_recipients = $forwarded_recipients[0]['name'] . " and " . $other_participant_count;
+                    $str_recipients .= ($other_participant_count == 1) ? " Other" : " Others";
+                    }
+            }
+            $arr['forward_to'] = $forwarded_recipients;
+            $arr['message'] = $message . $str_recipients;
+            //$user->notify(new CaseNotification($arr)); // Notify participant
+            Notification::notify_user($arr,$user);
+        }
+        /** End Sending Notification part **/
+    
+        $res=Case_participant::where('case_id', $request->case_id)
+        ->where('user_id', $userInfo->id  )
+        ->update(['ownership' => 5]); 
+        
+        
+        if($res){
+            return json_encode(array(
+            "status"=>1,
+            "response"=>"success",
+            "message"=>"Case successfully forwarded."
+            ));
+        }else{
+            return json_encode(array(
+            "status"=>0,
+            "response"=>"failed", 
+            "message"=>"Error in connection."
+            ));
+        }
+      
+    }
 
-        return $request->all();
+    public function acceptCase(Request $request) 
+    { 
+        $userInfo = auth('api')->user();
+        $validator = Validator::make($request->all(), [
+            'case_id' => 'required'
+        ]);
+        if ($validator->fails()) {
+            return json_encode(array(
+            "status"=>2,
+            "response"=>"error",
+            "message"=>$validator->errors()
+            ));
+        }
+        
+        $state = Case_participant::leftJoin('users AS b','case_participants.user_id','=','b.id')
+        ->where("case_participants.case_id",$request->case_id)
+        ->where('case_participants.ownership',2)
+        ->select('b.fname','b.lname')
+        ->get(); 
+        
+        if(!$state->isEmpty()){
+            $name = $state[0]->fname.' '.$state[0]->lname;
+            return json_encode(array(
+            "status"=>2,
+            "response"=>"warning",
+            "message"=>"This case is already taken by ".$name
+            ));
+        }
+    
+        $res = Cases::find($request->case_id);
+        $res->status = 2;
+        $res->save();
+    
+            
+        $update_res = Case_participant::where('case_id', $request->case_id)
+        ->update(['ownership' => 4,'is_read' => 1]); 
+        $update_res = Case_participant::where('case_id', $request->case_id)
+        ->where('user_id', $userInfo->id )
+        ->update(['ownership' => 2]);
+    
+        $res = Case_history::create( ["is_visible"=>1,"status"=>2,"case_id" => $request->case_id,"action_note" => "Case Accepted", 'created_by' => $userInfo->id ] ); 
+        if($res){
+            /** Notify case participants that the case was accepted **/
+                $participants = Case_participant::where("case_id",$request->case_id)->where('user_id','!=',$userInfo->id)->get();
+    
+                $message = str_replace("[from_name]",$userInfo->fname . ' ' . $userInfo->lname,__('notification.accept_case'));
+                $message = str_replace("[case_id]",$request->case_id,$message);
+                $arr = array(
+                    'from_id'     => $userInfo->id,
+                    'case_id'     => $request->case_id,
+                    'message'     =>    $message,
+                    'type'        =>  'accept_case',
+                    'action_url'  => route('case',[$request->case_id])
+                );
+    
+                foreach($participants as $row)
+                {
+                $user = User::find($row->user_id);
+                $user->notify(new CaseNotification($arr)); // Notify participant
+                }
+            /** End notifcation **/
+    
+            return json_encode(array(
+            "status"=>1,
+            "response"=>"success",
+            "message"=>"Case status updated successfully."
+            ));
+        }else{
+            return json_encode(array(
+            "status"=>0,
+            "response"=>"failed", 
+            "message"=>"Error in connection."
+            ));
+        }
     }
 }

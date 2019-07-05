@@ -39,7 +39,9 @@ Route::group([
     Route::post('case-reopen', 'Api\CaseController@reopen_case');
     Route::post('case-read/{id}', 'Api\CaseController@read_case');
     Route::post('case-note/{id}', 'Api\CaseController@add_note');
-    Route::post('case-forward/{id}', 'Api\CaseController@forward');
+    Route::post('case-forward', 'Api\CaseController@forwardCase');
+    Route::post('case-to-accept', 'Api\CaseController@acceptCase');
+    Route::get('case-counter/{user_id}', 'Api\CaseController@caseCounter');
     Route::post('/report/average','Api\ApiController@getReportAverageTime');
     Route::get('message/recent','Api\MessageController@recent');
     Route::post('message/create/room','Api\MessageController@create_room');

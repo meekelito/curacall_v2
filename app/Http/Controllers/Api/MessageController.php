@@ -154,12 +154,30 @@ class MessageController extends Controller
         foreach($users as $user) {
             if ($u->id != $user){
                 $userInfo = User::find($user);
-                $contacts[] = $userInfo;
                 if (!$contact_name) {
                     $contact_name = $userInfo->fname;
                 } else {
                     $contact_name .= ', '.$userInfo->fname;
                 }
+
+                $roomCheck = Room::where('name', $user.'-'.$u->id)->first();
+                if (!$roomCheck) {
+                    $roomCheck = Room::where('name', $u->id.'-'.$user)->first();
+                }
+    
+                if ($roomCheck) {
+                    $userInfo->room_id = $roomCheck->id;
+                } else {
+                    $newRoom = Room::create([
+                        'name'=>$u->id.'-'.$user,
+                        'user_id'=>$user,
+                        'participants_no'=>2,
+                        'status'=>'active',
+                    ]);
+                    $userInfo->room_id = $newRoom->id;
+                }
+                $contacts[] = $userInfo;
+
             }
         }
         $room->contact_name = $contact_name; 
