@@ -143,9 +143,9 @@
 		<div class="navbar-collapse collapse" id="navbar-mobile"> 
 			<ul class="nav navbar-nav">
         <li><a class="sidebar-control sidebar-main-toggle hidden-xs"><i class="icon-transmission"></i></a></li>
-         <chatnotification v-bind:chatnotifications="chatnotifications"></chatnotification>
+         <chatnotification ref="chatnotification" v-bind:chatnotifications="chatnotifications"></chatnotification>
          <notification ref="notification" v-bind:notifications="notifications"></notification>
-         <remindernotification v-bind:remindernotifications="remindernotifications"></remindernotification>
+         <remindernotification ref="remindernotification" v-bind:remindernotifications="remindernotifications"></remindernotification>
 			</ul>
 			<p class="navbar-text">
 				<span class="label bg-success">Online</span>

@@ -48,7 +48,9 @@ window.app = new Vue({
         // this.fetchChatNotifications();
         // this.fetchNotifications();
         //this.fetchReminderNotifications();
-         this.fetchDesktopNotifications('case');
+        this.fetchDesktopNotifications('case');
+        this.fetchDesktopNotifications('reminder');
+        this.fetchDesktopNotifications('chat');
         this.countNotifications('reminder');
        
         // var notification_count = 0;
@@ -74,18 +76,20 @@ window.app = new Vue({
 
                     
                     document.getElementById('chatNotificationAudio').play();
+                    console.log(notification);
+                    this.doNotification(notification.id,'Hey! a new chat notification for you',notification.data.from_name + ": " +notification.data.message,notification.data.action_url,'chat',notification.prof_img);
                 }else if(notification.type == NOTIFICATION_TYPES.reminders){
                     // var playPromise = document.getElementById('reminderNotificationAudio').play();
                       this.countNotifications('reminder');
                       this.fetchNotifications('reminder');
-                      
+                      this.doNotification(notification.id,'Hey! a new reminder notification for you',notification.data.message,notification.data.action_url,'reminder');
                 }else if(notification.type == NOTIFICATION_TYPES.case){
                   //case notifications below
                     var self = this;
                     //this.notifications.unshift(notification);
-                     this.countNotifications('case');
-                     this.fetchNotifications('case');
-                    this.doNotification(notification.id,'Hey! a new notification for you',notification.data.message,notification.data.action_url);
+                    this.countNotifications('case');
+                    this.fetchNotifications('case');
+                    this.doNotification(notification.id,'Hey! a new case notification for you',notification.data.message,notification.data.action_url);
                     //console.log(window.location.pathname + window.location.search);
                  
                     if(current_url == "/cases/case_id/"+notification.data.case_id){
@@ -160,17 +164,24 @@ window.app = new Vue({
         });
     },
     methods: {
-      doNotification (id,title,body,url) {
+      doNotification (id,title,body,url,tag = 'case',icon = null) {
+        if(icon == null)
+          icon = Laravel.baseUrl + "/assets/images/curacall_logo.jpg";
 
         var self = this;
             Push.create(title, {
               body: body,
-              icon: Laravel.baseUrl + "/assets/images/curacall_logo.jpg",
+              icon: icon,
               timeout: 60000,        
                 onClick: function () {
                   //NotificationMarkAsRead(id);
                   var notification = { id : id, data : { message: body, action_url : url },is_read: 0};
-                  self.$refs.notification.MarkAsRead(notification);
+                  if(tag == 'case')
+                    self.$refs.notification.MarkAsRead(notification);
+                  else if(tag == 'reminder')
+                     self.$refs.remindernotification.MarkAsRead(notification);
+                  else if(tag == 'chat')
+                     self.$refs.chatnotification.MarkAsRead(notification);
                   //$.pjax.reload('#content',{ url: url });
             },
               vibrate: [100, 100, 100],   
@@ -217,6 +228,7 @@ window.app = new Vue({
       },
        fetchDesktopNotifications(type) {  
         var self = this;
+ 
         axios.post(Laravel.baseUrl +'/notification/get',{ type: type}).then(response => {
           var desktop_alert = [];
           $.each(response.data, function(key, value) {
@@ -225,23 +237,32 @@ window.app = new Vue({
                 desktop_alert.push(value);
               }
          });
+           
+           if(type == 'case'){
+               this.notifications = response.data;
+           }
+           
+          
+           if(type == 'chat'){
+              this.chatnotifications = response.data;
+           }
+          
+           if (type == 'reminder'){
+              this.remindernotifications = response.data;
+           }
+
             var time = 500;
             $.each(desktop_alert, function(key, value) {
                   console.log(value.id);
       
                  setTimeout(function() {
-                     self.doNotification(value.id,'Hey! a new notification for you',value.data.message,value.data.action_url);
+                    if(type != 'chat')
+                     self.doNotification(value.id,'Hey! a new '+ type +' notification for you',value.data.message,value.data.action_url,type);
+                   else
+                     self.doNotification(value.id,'Hey! a new '+ type +' notification for you',value.data.from_name + ": " +value.data.message,value.data.action_url,type,value.prof_img);
                 }, time);
                  time += 500;
             });
-           if(type == 'case')
-            this.notifications = response.data;
-          
-           if(type == 'chat')
-              this.chatnotifications = response.data;
-          
-           if (type == 'reminder')
-              this.remindernotifications = response.data;
 
         });
       },
