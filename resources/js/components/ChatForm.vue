@@ -5,13 +5,13 @@
         <div class="row">
           <div class="col-xs-6">
             <ul class="icons-list icons-list-extended mt-10">
-              <li><a href="#" data-popup="tooltip" title="Send photo" data-container="body"><i class="icon-file-picture"></i></a></li>
-              <li><a href="#" data-popup="tooltip" title="Send video" data-container="body"><i class="icon-file-video"></i></a></li>
-              <li><a href="#" data-popup="tooltip" title="Send file" data-container="body"><i class="icon-file-plus"></i></a></li>
-              <li><a href="#" data-popup="tooltip" title="Mark as urgent" data-container="body"><i class="icon-bubble-notification"></i></a></li>
+              <li><a v-on:click="selectFile()" data-popup="tooltip" title="Send photo" data-container="body"><i class="icon-file-picture"></i></a></li>
+              <li><a v-on:click="selectFile()" data-popup="tooltip" title="Send video" data-container="body"><i class="icon-file-video"></i></a></li>
+              <li><a v-on:click="selectFile()" data-popup="tooltip" title="Send file" data-container="body"><i class="icon-file-plus"></i></a></li>
+              <li><a v-on:click="selectFile()" data-popup="tooltip" title="Mark as urgent" data-container="body"><i class="icon-bubble-notification"></i></a></li>
             </ul>
           </div>
-
+          <input type="file" id="files" ref="files" multiple class="hidden"/>
           <div class="col-xs-6 text-right">
             <button class="btn bg-teal-400 btn-labeled btn-labeled-right" id="btn-chat" @click="sendMessage"><b><i class="icon-circle-right2"></i></b> Send</button>
           </div>
@@ -53,6 +53,10 @@
               });
             }, 300);
           },
+          selectFile()
+          {
+            $('#files').click();
+          }
         }    
     }
 </script>

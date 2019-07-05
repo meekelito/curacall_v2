@@ -18,7 +18,8 @@
 	<link href="{{ asset('assets/css/core.css') }}" rel="stylesheet" type="text/css">
 	<link href="{{ asset('assets/css/components.css') }}" rel="stylesheet" type="text/css">
 	<link href="{{ asset('assets/css/colors.css') }}" rel="stylesheet" type="text/css">
-    <script type="text/javascript" src="{{ asset('assets/js/plugins/notifications/notify.js') }}" ></script> 
+
+  <script type="text/javascript" src="{{ asset('assets/js/plugins/notifications/push.min.js') }}" ></script> 
 
 	<!-- /global stylesheets -->
 
@@ -85,8 +86,9 @@
     }
 
     body.wait-pointer * {cursor: wait !important;}
+
     .page-container{
-      margin-top: 47px;
+      /*margin-top: 47px;*/
     }
     
     .badge-notif{
@@ -107,8 +109,9 @@
 
 <body class="sidebar-xs">
 	<!-- Main navbar -->
-	<div class="navbar navbar-inverse" style="position: fixed;
-      top: 0;width: 100%;z-index: 999;">
+	<!-- <div class="navbar navbar-inverse" style="position: fixed;
+      top: 0;width: 100%;z-index: 999;"> -->
+  <div class="navbar navbar-inverse">
 		<div class="navbar-header">
 			<!-- <a class="navbar-brand" href="#" style="font-size: 26px;">CuraCall
       </a> --> 
@@ -140,9 +143,9 @@
 		<div class="navbar-collapse collapse" id="navbar-mobile"> 
 			<ul class="nav navbar-nav">
         <li><a class="sidebar-control sidebar-main-toggle hidden-xs"><i class="icon-transmission"></i></a></li>
-         <chatnotification v-bind:chatnotifications="chatnotifications"></chatnotification>
-         <notification v-bind:notifications="notifications"></notification>
-         <remindernotification v-bind:remindernotifications="remindernotifications"></remindernotification>
+         <chatnotification ref="chatnotification" v-bind:chatnotifications="chatnotifications"></chatnotification>
+         <notification ref="notification" v-bind:notifications="notifications"></notification>
+         <remindernotification ref="remindernotification" v-bind:remindernotifications="remindernotifications"></remindernotification>
 			</ul>
 			<p class="navbar-text">
 				<span class="label bg-success">Online</span>
@@ -245,7 +248,9 @@
                     'view-oncall-reports']))
                     <li  class="menu-dashboard"><a href="{{ url('/dashboard') }}"><i class="icon-home4"></i> <span>Dashboard</span></a></li>
                 @endif
-         
+                
+                <li class="menu-messageboard"><a href="{{ url('/all-cases') }}"><i class="icon-clipboard3"></i> <span>Message Board</span></a></li>
+
                  
                   @if(auth()->user()->hasAnyPermission([    
                     'view-all-cases',                  
@@ -309,10 +314,10 @@
                         <li class="menu-reports-billing"><a href="{{ url('/admin-console/reports-billing') }}">Billing</a></li>
                         <li class="menu-reports-all-messages"><a href="{{ url('/admin-console/reports-all-messages') }}">All messages</a></li>
                         <li class="menu-reports-escalated-tickets"><a href="{{ url('/admin-console/reports-escalated-tickets') }}">Escalated Tickets</a></li>
-                        <li><a href="#">Cancelled Shifts</a></li>
-                        <li><a href="#">No Show</a></li>
-                        <li><a href="#">Repeat Callers</a></li>
-                        <li><a href="#">Call Type</a></li>
+                        <li class="menu-reports-cancelled-shifts"><a href="{{ url('/admin-console/reports-cancelled-shifts') }}">Cancelled Shifts</a></li>
+                        <li class="menu-reports-no-show"><a href="{{ url('/admin-console/reports-no-show') }}">No Show</a></li>
+                        <li class="menu-reports-repeat-callers"><a href="{{ url('/admin-console/reports-repeat-callers') }}">Repeat Callers</a></li>
+                        <li class="menu-reports-call-type"><a href="{{ url('/admin-console/reports-call-type') }}">Call Type</a></li>
                       </ul>
                     </li>
                   @endif
@@ -514,46 +519,6 @@
          });
 
       }, 8000);
-
-        function onShowNotification () {
-            console.log('notification is shown!');
-        }
-        function onCloseNotification () {
-            console.log('notification is closed!');
-        }
-        function onClickNotification () {
-            console.log('notification was clicked!');
-        }
-        function onErrorNotification () {
-            console.error('Error showing notification. You may need to request permission.');
-        }
-        function onPermissionGranted () {
-            console.log('Permission has been granted by the user');
-            doNotification();
-        }
-        function onPermissionDenied () {
-            console.warn('Permission has been denied by the user');
-        }
-        function doNotification (title,body) {
-            var myNotification = new Notify(title, {
-                body: body,
-                tag: 'My unique id',
-                notifyShow: onShowNotification,
-                notifyClose: onCloseNotification,
-                notifyClick: onClickNotification,
-                notifyError: onErrorNotification,
-                timeout: 4
-            });
-            console.log('notify');
-            myNotification.show();
-
-        }
-        if (!Notify.needsPermission) {
-            doNotification();
-        } else if (Notify.isSupported()) {
-            Notify.requestPermission(onPermissionGranted, onPermissionDenied);
-        }
-
   </script>
 </html>
 

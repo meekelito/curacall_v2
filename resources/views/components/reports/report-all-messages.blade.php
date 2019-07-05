@@ -1,6 +1,9 @@
 <table class="table scrollable ">
   <tr class="bg-primary">
-    <td>CRM Link</td>
+    @if(isset($repeat))
+        <td>Full Name</td> 
+    @endif
+    <td>Case Link</td>
     <td>Call Received On</td>
     <td>Date Time Delivered</td>
     <td>Message Read By</td>
@@ -41,9 +44,12 @@
   </tr>
   @forelse($cases as $case)
   <tr>
+    @if(isset($repeat))
+        <td>Full Name</td> 
+    @endif
     <td>CRM Link</td>
-    <td>Call Received On</td>
-    <td>Date Time Delivered</td>
+    <td>{{ $case->created_on }}</td>
+    <td>{{ $case->created_at }}</td>
     <td>{{ $case->read_by }}</td>
     <td>{{ $case->call_language }}</td>
     <td>{{ $case->time_of_call }}</td>
@@ -58,7 +64,7 @@
     <td>{{ $case->name_of_the_hospital }}</td>
     <td>{{ $case->medical_emergency }}</td>
     <td>{{ $case->call_typology }}</td> 
-    <td>Actions Taken</td> 
+    <td>{{ $case->actions_taken }}</td> 
     <td>{{ $case->caller_type }}</td>
     <td>{{ $case->caregiver_type }}</td>
     <td>{{ $case->relation_to_patient }}</td>

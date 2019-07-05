@@ -46,7 +46,20 @@ class ChatsController extends Controller
     $document->is_read = 1; 
     $document->save();
 
-	  return view('chat',['room_id' => $room,'participants' => $participants ]);
+      if( Auth::user()->is_curacall ){
+      $users = User::where('id','!=',Auth::user()->id)
+                ->where('status','active')
+                ->orderBy('fname')
+                ->get();
+    }else{
+      $users = User::where('id','!=',Auth::user()->id)
+                ->where('status','active')
+                ->where('account_id',Auth::user()->account_id)
+                ->orderBy('fname')
+                ->get();
+    }
+
+	  return view('chat',['room_id' => $room,'participants' => $participants, 'users' => $users ]);
 
 	  
 	}

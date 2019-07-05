@@ -95,6 +95,42 @@
         </table>  
       </div>
     </div>
+
+       <div class="col-lg-4">
+      <div class="panel panel-flat">
+        <div class="panel-toolbar panel-toolbar-inbox">
+          <div class="navbar navbar-default">
+            <div class="navbar-collapse collapse">
+              <div class="pull-left-lg">
+                <p class="navbar-text text-size-large text-semibold">
+                  Activity Logs
+                </p>
+              </div>
+
+            </div>
+          </div>
+        </div>
+         <div class="panel-body">
+            <ul class="list-feed">
+              <li class="border-warning-400">
+                <div class="text-muted text-size-small mb-5">12 minutes ago</div>
+                <a href="#">David Linner</a> send the case to you. 
+              </li>
+
+              <li class="border-warning-400">
+                <div class="text-muted text-size-small mb-5">12 minutes ago</div>
+                User <a href="#">Christopher Wallace</a> is awaiting for staff reply
+              </li>
+
+              <li class="border-warning-400">
+                <div class="text-muted text-size-small mb-5">12 minutes ago</div>
+                Ticket <strong>#43683</strong> has been closed by <a href="#">Victoria Wilson</a>
+              </li>
+
+            </ul>
+          </div>
+      </div>
+    </div>
   </div>
 </div>
 

@@ -695,6 +695,80 @@ class ReportsController extends Controller
     return view( 'admin-console-reports-escalated-tickets',['accounts'=>$accounts]);
   }
 
+  public function reportsCancelledShifts(Request $request)
+  {
+    $accounts = Account::all();
+    return view( 'admin-console-reports-cancelled-shifts',['accounts'=>$accounts]);
+  }
+
+  public function reportsCancelledShiftsTable(Request $request)
+  {
+    $from = date_create($request->month_from);
+    $to = date_create($request->month_to);
+    $from = date_format($from,"Y-m-d H:i:s");
+    $to = date_format($to,"Y-m-d H:i:s");
+
+    $cases = Cases::where('account_id',$request->account_id)
+                  ->whereBetween('cases.created_at', array($from, $to))
+                  ->whereNotNull('employee_first_name')
+                  ->whereNotNull('employee_last_name')
+                  ->select('employee_first_name','employee_last_name',DB::raw('count(cases.id) as total'))
+                  ->groupBy('employee_first_name','employee_last_name')
+                  ->get();
+    return view('components.reports.report-counts',['cases' => $cases]);
+  }
+
+  public function reportsNoShow(Request $request)
+  {
+    $accounts = Account::all();
+    return view( 'admin-console-reports-no-show',['accounts'=>$accounts]);
+  }
+
+  public function reportsRepeatCallers(Request $request)
+  {
+    $accounts = Account::all();
+    return view( 'admin-console-reports-repeat-callers',['accounts'=>$accounts]);
+  }
+
+  public function reportsRepeatCallersTable(Request $request)
+  {  
+    $from = date_create($request->month_from);
+    $to = date_create($request->month_to);
+    $from = date_format($from,"Y-m-d H:i:s");
+    $to = date_format($to,"Y-m-d H:i:s");
+
+    $cases = Cases::where('account_id',$request->account_id)
+                  ->whereBetween('cases.created_at', array($from, $to))
+                  ->whereNotNull('employee_first_name')
+                  ->whereNotNull('employee_last_name')
+                  ->orderBy('caller_first_name','caller_last_name')
+                  ->get();
+    return view('components.reports.report-all-messages',['cases' => $cases,'repeat'=>true]);
+  }
+
+  public function reportsCallType(Request $request)
+  {
+    $accounts = Account::all();
+    $call_types = Cases::select('call_type')->groupBy('call_type')->get();
+    return view( 'admin-console-reports-call-type',['accounts'=>$accounts,'call_types'=>$call_types]);
+  }
+
+  public function reportsCallTypeTable(Request $request)
+  {  
+    $from = date_create($request->month_from);
+    $to = date_create($request->month_to);
+    $from = date_format($from,"Y-m-d H:i:s");
+    $to = date_format($to,"Y-m-d H:i:s");
+
+    $cases = Cases::where('account_id',$request->account_id)
+                  ->where('call_type',$request->call_type)
+                  ->whereBetween('cases.created_at', array($from, $to))
+                  ->get();
+    return view('components.reports.report-all-messages',['cases' => $cases]);
+  }
+
+  
+
 
 
 }

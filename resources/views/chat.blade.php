@@ -4,6 +4,9 @@
   .show{
     display: block;
   }
+     .select2-results__option[aria-selected=true] {
+      display: none;
+    }
 </style>
 @endsection
 @section('content')
@@ -78,8 +81,38 @@
         </li>
         @endforeach
       </ul>
+
+      <a id="btnAddParticipant" href="javascript:showAddParticipant()" class="btn btn-xs btn-default" style="margin:15px"><i class="icon-user-plus"></i> Add Participant/s</a>
+
+       <div id="divNewParticipant" style="display:none" class="panel-body">
+        <div class="row col-sm-12">
+            <form class="form-horizontal" id="form-message"  method="POST" action="{{ route('add-chat-participant') }}">
+             {{ csrf_field() }}
+             <input type="hidden" name="room_id" value="{{ $room_id }}" />
+            <div class="form-group">
+              <div class="col-sm-12">
+                <select name="recipients[]"  multiple="multiple" class="select2" style="width:100%">
+                  @foreach($users as $row)
+                    <option value="{{ $row->id }}">{{ $row->fname.' '.$row->lname }}</option>
+                  @endforeach
+                </select>
+              </div>
+             
+            </div>
+            
+            <div class="form-group">
+             <div class="col-sm-12">
+                <button type="submit" class="btn bg-teal-400 btn-labeled btn-labeled-right btn-new-message"><b><i class="icon-user-plus"></i></b> Add</button>
+                <button onclick="cancelAddParticipant()" type="button" class="btn btn-danger">Cancel</button>
+              </div>
+            </div>
+          </form>
+        </div>
+        </div>
     </div>
     <!-- /collapsible list -->
+
+
   </div>
   </div>
 </div>
@@ -91,14 +124,27 @@
   $(".submenu-curacall li").removeClass("active");
 
   $.getScripts({
-  urls: ["{{ asset('js/app.js') }}"],
-  cache: true,  // Default
-  async: false, // Default
-  success: function(response) {
-      
+    urls: ["{{ asset('js/app.js') }}"],
+    cache: true,  // Default
+    async: false, // Default
+    success: function(response) {
+            $('.select2').select2();
 
+    }
+  });
+
+  function showAddParticipant()
+  {
+     $("#divNewParticipant").show();
+     $('#btnAddParticipant').hide();
+     $('.select2').focus();
   }
-});
+
+  function cancelAddParticipant()
+  {
+     $("#divNewParticipant").hide();
+     $('#btnAddParticipant').show();
+  }
 </script>
 
 
