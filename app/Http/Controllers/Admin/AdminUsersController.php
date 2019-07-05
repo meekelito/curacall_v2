@@ -14,6 +14,7 @@ use DB;
 use Cache;
 use Auth;
 use Hash;
+use Carbon\Carbon;
 
 
 class AdminUsersController extends Controller
@@ -410,7 +411,17 @@ class AdminUsersController extends Controller
       ));
     } 
 
-    $res = User::find( $id )->update($request->all()+['updated_by' => Auth::user()->id ]);
+    if( $request->status == 'active' ){
+      $res = User::find( $id )->update($request->all()+['updated_by' => Auth::user()->id,
+        'date_activated' => Carbon::now(),
+        'date_deactivated' => Carbon::now()->addYear(10)]);
+    }else if( $request->status == 'deactivated' ){
+      $res = User::find( $id )->update($request->all()+['updated_by' => Auth::user()->id,'date_deactivated' => Carbon::now()]);
+    }else{
+      $res = User::find( $id )->update($request->all()+['updated_by' => Auth::user()->id]);
+    }
+
+    
     if($res){ 
       return json_encode(array(
         "status"=>1,

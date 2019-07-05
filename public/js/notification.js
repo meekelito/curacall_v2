@@ -12389,7 +12389,11 @@ window.app = new Vue({
 
         document.getElementById('chatNotificationAudio').play();
       } else if (notification.type == NOTIFICATION_TYPES.reminders) {
+
+        var playPromise = document.getElementById('reminderNotificationAudio').play();
+
         // var playPromise = document.getElementById('reminderNotificationAudio').play();
+
         _this.countNotifications('reminder');
         _this.fetchNotifications('reminder');
         window.doNotification('Hey! a new notification for you', notification.data.message);
@@ -43058,6 +43062,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         }
     },
     mounted: function mounted() {
+
         $('#case-dropdown').click(function () {
             if (!$(this).hasClass('open')) {
                 window.app.fetchNotifications('case');
@@ -43326,6 +43331,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         }
     },
     mounted: function mounted() {
+
         $('#chat-dropdown').click(function () {
             if (!$(this).hasClass('open')) {
                 window.app.fetchNotifications('chat');
@@ -43589,6 +43595,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         }
     },
     mounted: function mounted() {
+
         $('#reminder-dropdown').click(function () {
             if (!$(this).hasClass('open')) {
                 window.app.fetchNotifications('reminder');
