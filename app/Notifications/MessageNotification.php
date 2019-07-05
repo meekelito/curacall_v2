@@ -58,6 +58,7 @@ class MessageNotification extends Notification
     public function toBroadcast($notifiable)
     {
         return [
+            'prof_img'  => asset('storage/uploads/users').'/'. $this->message->user['prof_img'],
             'data' => [
                 'from_id'   => $this->message->user['id'],
                 'from_name'   => $this->message->user['fname'] . ' ' . $this->message->user['lname'],
