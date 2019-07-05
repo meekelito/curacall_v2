@@ -249,7 +249,7 @@
                     <li  class="menu-dashboard"><a href="{{ url('/dashboard') }}"><i class="icon-home4"></i> <span>Dashboard</span></a></li>
                 @endif
                 
-                <li class="menu-messageboard"><a href="{{ url('/all-cases') }}"><i class="icon-clipboard3"></i> <span>Message Board</span></a></li>
+                <li class="menu-messageboard"><a href="{{ route('message-board.index') }}"><i class="icon-clipboard3"></i> <span>Message Board</span></a></li>
 
                  
                   @if(auth()->user()->hasAnyPermission([    
