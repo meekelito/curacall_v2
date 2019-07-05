@@ -38,11 +38,17 @@ window.app = new Vue({
         favicon: ''
     },
     created() {
+
+            Push.Permission.request();
+    
+       
+
         this.countNotifications('case');
         this.countNotifications('chat');
         // this.fetchChatNotifications();
         // this.fetchNotifications();
         //this.fetchReminderNotifications();
+         this.fetchDesktopNotifications('case');
         this.countNotifications('reminder');
        
         // var notification_count = 0;
@@ -72,14 +78,14 @@ window.app = new Vue({
                     // var playPromise = document.getElementById('reminderNotificationAudio').play();
                       this.countNotifications('reminder');
                       this.fetchNotifications('reminder');
-                      window.doNotification('Hey! a new notification for you',notification.data.message);
+                      
                 }else if(notification.type == NOTIFICATION_TYPES.case){
                   //case notifications below
-
+                    var self = this;
                     //this.notifications.unshift(notification);
                      this.countNotifications('case');
                      this.fetchNotifications('case');
-                     window.doNotification('Hey! a new notification for you',notification.data.message);
+                    this.doNotification(notification.id,'Hey! a new notification for you',notification.data.message,notification.data.action_url);
                     //console.log(window.location.pathname + window.location.search);
                  
                     if(current_url == "/cases/case_id/"+notification.data.case_id){
@@ -154,6 +160,23 @@ window.app = new Vue({
         });
     },
     methods: {
+      doNotification (id,title,body,url) {
+
+        var self = this;
+            Push.create(title, {
+              body: body,
+              icon: Laravel.baseUrl + "/assets/images/curacall_logo.jpg",
+              timeout: 60000,        
+                onClick: function () {
+                  //NotificationMarkAsRead(id);
+                  var notification = { id : id, data : { message: body, action_url : url },is_read: 0};
+                  self.$refs.notification.MarkAsRead(notification);
+                  //$.pjax.reload('#content',{ url: url });
+            },
+              vibrate: [100, 100, 100],   
+          });
+
+        },
       countNotifications(type)
       {
          axios.post(Laravel.baseUrl +'/notification/count',{ type: type}).then(response => {
@@ -181,7 +204,36 @@ window.app = new Vue({
       },
       fetchNotifications(type) {  
         axios.post(Laravel.baseUrl +'/notification/get',{ type: type}).then(response => {
+           if(type == 'case')
+            this.notifications = response.data;
+          
+           if(type == 'chat')
+              this.chatnotifications = response.data;
+          
+           if (type == 'reminder')
+              this.remindernotifications = response.data;
 
+        });
+      },
+       fetchDesktopNotifications(type) {  
+        var self = this;
+        axios.post(Laravel.baseUrl +'/notification/get',{ type: type}).then(response => {
+          var desktop_alert = [];
+          $.each(response.data, function(key, value) {
+              
+              if(value.is_read != 1){
+                desktop_alert.push(value);
+              }
+         });
+            var time = 500;
+            $.each(desktop_alert, function(key, value) {
+                  console.log(value.id);
+      
+                 setTimeout(function() {
+                     self.doNotification(value.id,'Hey! a new notification for you',value.data.message,value.data.action_url);
+                }, time);
+                 time += 500;
+            });
            if(type == 'case')
             this.notifications = response.data;
           

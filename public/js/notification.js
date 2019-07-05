@@ -12363,11 +12363,14 @@ window.app = new Vue({
   created: function created() {
     var _this = this;
 
+    Push.Permission.request();
+
     this.countNotifications('case');
     this.countNotifications('chat');
     // this.fetchChatNotifications();
     // this.fetchNotifications();
     //this.fetchReminderNotifications();
+    this.fetchDesktopNotifications('case');
     this.countNotifications('reminder');
 
     // var notification_count = 0;
@@ -12392,14 +12395,13 @@ window.app = new Vue({
         // var playPromise = document.getElementById('reminderNotificationAudio').play();
         _this.countNotifications('reminder');
         _this.fetchNotifications('reminder');
-        window.doNotification('Hey! a new notification for you', notification.data.message);
       } else if (notification.type == NOTIFICATION_TYPES.case) {
         //case notifications below
-
+        var self = _this;
         //this.notifications.unshift(notification);
         _this.countNotifications('case');
         _this.fetchNotifications('case');
-        window.doNotification('Hey! a new notification for you', notification.data.message);
+        _this.doNotification(notification.id, 'Hey! a new notification for you', notification.data.message, notification.data.action_url);
         //console.log(window.location.pathname + window.location.search);
 
         if (current_url == "/cases/case_id/" + notification.data.case_id) {
@@ -12464,6 +12466,22 @@ window.app = new Vue({
   },
 
   methods: {
+    doNotification: function doNotification(id, title, body, url) {
+
+      var self = this;
+      Push.create(title, {
+        body: body,
+        icon: Laravel.baseUrl + "/assets/images/curacall_logo.jpg",
+        timeout: 60000,
+        onClick: function onClick() {
+          //NotificationMarkAsRead(id);
+          var notification = { id: id, data: { message: body, action_url: url }, is_read: 0 };
+          self.$refs.notification.MarkAsRead(notification);
+          //$.pjax.reload('#content',{ url: url });
+        },
+        vibrate: [100, 100, 100]
+      });
+    },
     countNotifications: function countNotifications(type) {
       var _this2 = this;
 
@@ -12489,7 +12507,6 @@ window.app = new Vue({
       var _this3 = this;
 
       axios.post(Laravel.baseUrl + '/notification/get', { type: type }).then(function (response) {
-
         if (type == 'case') _this3.notifications = response.data;
 
         if (type == 'chat') _this3.chatnotifications = response.data;
@@ -12497,11 +12514,39 @@ window.app = new Vue({
         if (type == 'reminder') _this3.remindernotifications = response.data;
       });
     },
-    MarkChatAsRead: function MarkChatAsRead(id) {
+    fetchDesktopNotifications: function fetchDesktopNotifications(type) {
       var _this4 = this;
 
+      var self = this;
+      axios.post(Laravel.baseUrl + '/notification/get', { type: type }).then(function (response) {
+        var desktop_alert = [];
+        $.each(response.data, function (key, value) {
+
+          if (value.is_read != 1) {
+            desktop_alert.push(value);
+          }
+        });
+        var time = 500;
+        $.each(desktop_alert, function (key, value) {
+          console.log(value.id);
+
+          setTimeout(function () {
+            self.doNotification(value.id, 'Hey! a new notification for you', value.data.message, value.data.action_url);
+          }, time);
+          time += 500;
+        });
+        if (type == 'case') _this4.notifications = response.data;
+
+        if (type == 'chat') _this4.chatnotifications = response.data;
+
+        if (type == 'reminder') _this4.remindernotifications = response.data;
+      });
+    },
+    MarkChatAsRead: function MarkChatAsRead(id) {
+      var _this5 = this;
+
       axios.post('/notification/read', { id: id }).then(function (response) {
-        _this4.fetchNotifications('chat');
+        _this5.fetchNotifications('chat');
       });
     },
     notificationTitle: function notificationTitle() {
@@ -43036,7 +43081,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             var data = {
                 id: notification.id
             };
-            axios.post('/notification/read', data).then(function (response) {
+            axios.post(Laravel.baseUrl + '/notification/read', data).then(function (response) {
                 //window.location.href = notification.data.action_url;
                 $.pjax.reload('#content', { url: notification.data.action_url });
 
@@ -43304,7 +43349,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             var data = {
                 id: notification.id
             };
-            axios.post('/notification/read', data).then(function (response) {
+            axios.post(Laravel.baseUrl + '/notification/read', data).then(function (response) {
                 //window.location.href = notification.data.action_url;
                 $.pjax.reload('#content', { url: notification.data.action_url });
 
@@ -43567,7 +43612,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             var data = {
                 id: notification.id
             };
-            axios.post('/notification/read', data).then(function (response) {
+            axios.post(Laravel.baseUrl + '/notification/read', data).then(function (response) {
                 //window.location.href = notification.data.action_url;
                 $.pjax.reload('#content', { url: notification.data.action_url });
 
