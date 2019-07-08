@@ -33,9 +33,9 @@ class CaseController extends Controller
                 $cases = MobCase::Join('case_participants AS b','cases.id','=','b.case_id')
                 ->where('b.user_id', $user_id)
                 ->where('cases.status', $status)
-                ->select('cases.id','cases.case_id', 'cases.call_type', 'cases.subcall_type', 'cases.case_message', 'cases.sender_id', 'cases.participant_no', 'cases.account_id','cases.sender_fullname','cases.status','cases.created_at','b.ownership')
-                ->offset($offset)
-                ->limit($limit)
+                ->select('cases.*','b.ownership')
+                // ->offset($offset)
+                // ->limit($limit)
                 ->orderBy('cases.status','ASC')
                 ->orderBy('b.is_read','ASC')
                 ->orderBy('b.ownership','DESC')
@@ -48,9 +48,9 @@ class CaseController extends Controller
                     $q->where('cases.status',1)
                     ->orWhere('cases.status',2);
                 })
-                ->select('cases.id','cases.case_id', 'cases.call_type', 'cases.subcall_type', 'cases.case_message', 'cases.sender_id', 'cases.participant_no', 'cases.account_id','cases.sender_fullname','cases.status','cases.created_at','b.ownership')
-                ->offset($offset)
-                ->limit($limit)
+                ->select('cases.*','b.ownership')
+                // ->offset($offset)
+                // ->limit($limit)
                 ->orderBy('cases.status','ASC')
                 ->orderBy('b.is_read','ASC')
                 ->orderBy('b.ownership','DESC')
@@ -58,12 +58,21 @@ class CaseController extends Controller
             }
         }
         else {
+            $status_arr = array();
+            if(auth('api')->user()->can('view-active-cases'))
+                $status_arr[] = 1;
+            if(auth('api')->user()->can('view-pending-cases'))
+                $status_arr[] = 2;
+            if(auth('api')->user()->can('view-closed-cases'))
+                $status_arr[] = 3;
+
             $cases = MobCase::Join('case_participants AS b','cases.id','=','b.case_id')
             ->where('b.user_id', $user_id)
-            ->where('cases.status', '!=', 4)
-            ->select('cases.id','cases.case_id', 'cases.call_type', 'cases.subcall_type', 'cases.case_message', 'cases.sender_id', 'cases.participant_no', 'cases.account_id','cases.sender_fullname','cases.status','cases.created_at','b.ownership')
-            ->offset($offset)
-            ->limit($limit)
+            ->whereIn('cases.status', $status_arr)
+            // ->where('cases.status', '!=', 4)
+            ->select('cases.*','b.ownership')
+            // ->offset($offset)
+            // ->limit($limit)
             ->orderBy('cases.status','ASC')
             ->orderBy('b.is_read','ASC')
             ->orderBy('b.ownership','DESC')

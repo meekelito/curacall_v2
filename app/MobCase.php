@@ -24,6 +24,21 @@ class MobCase extends Model
     'accepted',
   ];
     
+  public function participant()
+  {
+    return $this->hasMany('App\Case_participant','case_id','id');
+  }
+
+  public function participants()
+	{
+	  return $this->hasMany('App\Case_participant','case_id','id')->orderBy('ownership');
+	}
+
+	public function participants_info()
+	{
+	  return $this->hasMany('App\Case_participant','case_id','id');
+  }
+  
   public function getCaseCodeAttribute()
   {
     return $this->attributes['case_id'];

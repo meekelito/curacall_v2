@@ -4,11 +4,16 @@ namespace App\Http\Controllers\API;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Room;
+use App\MobRoom;
 use App\User;
+use App\Participant;
+use App\Notifications\MessageNotification;
+use App\Events\MessageSent;
 use App\MobMessage;
 use App\Message;
 use App\RoomDeleteMessage;
+use App\RoomLastVisit;
+use Auth;
 
 class MessageController extends Controller
 {
@@ -20,7 +25,7 @@ class MessageController extends Controller
     public function index(Request $request)
     {
         $u = auth('api')->user();
-        $rooms = Room::where('name', 'like', '%'.$u->id.'%')
+        $rooms = MobRoom::where('name', 'like', '%'.$u->id.'%')
                 ->orderBy('updated_at','DESC')
                 ->get();
 
@@ -45,6 +50,21 @@ class MessageController extends Controller
             $room->last_convo = Message::find($room->last_message);
 
 
+            //get unread messages count
+            $unread = RoomLastVisit::where('user_id', $u->id)
+            ->where('room_id', $room->id)
+            ->orderBy('id','DESC')
+            ->first();
+
+            if($unread) {
+                $room->unreadCount = Message::where('room_id', $room->id)
+                ->where('created_at', '>', $unread->created_at)->count();
+            } else {
+                $room->unreadCount = Message::where('room_id', $room->id)->count();
+            }
+            $room->unreadText = $room->unreadCount ? 'primary' : '';
+
+
             $lastDelete = RoomDeleteMessage::where('room_id', $room->id)->where('user_id', $u->id)
             ->orderBy('updated_at','DESC')
             ->first();
@@ -62,7 +82,38 @@ class MessageController extends Controller
         }
         return ['rooms'=>$formatted_rooms, 'user'=>$u];
     }
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function roomUnread(Request $request)
+    {
+        $u = auth('api')->user();
+        $rooms = MobRoom::where('name', 'like', '%'.$u->id.'%')
+                ->get();
+        $totalUnread = 0;
+        $formatted_rooms = [];
+        foreach ($rooms as $room) {
 
+            //get unread messages count
+            $unread = RoomLastVisit::where('user_id', $u->id)
+            ->where('room_id', $room->id)
+            ->orderBy('id','DESC')
+            ->first();
+
+            if($unread) {
+                $room->unreadCount = Message::where('room_id', $room->id)
+                ->where('created_at', '>', $unread->created_at)->count();
+            } else {
+                $room->unreadCount = Message::where('room_id', $room->id)->count();
+            }
+            $room->unreadText = $room->unreadCount ? 'primary' : '';
+            $totalUnread = $room->unreadCount ? $totalUnread + 1 : $totalUnread;
+
+        }
+        return ['totalUnread'=>$totalUnread];
+    }
     /**
      * Store a newly created resource in storage.
      *
@@ -71,9 +122,34 @@ class MessageController extends Controller
      */
     public function store(Request $request)
     {
-        $mess = MobMessage::create($request->input());
-        Room::find($request->input('room_id'))->update(['last_message'=>$mess->id]);
-        return $mess;
+        $user = Auth::user();
+        // $message = MobMessage::create($request->input());
+
+        $message = $user->messages()->create([
+            'room_id' => $request->input('room_id'), 
+          'message' => $request->input('message')
+        ]);
+        MobRoom::find( $request->input('room_id') )->update(['last_message' => $message->id]);
+        Participant::where('room_id', '=', $request->input('room_id')  )->update(['is_read' => 0]);
+  
+        $isgroupchat = false;
+        $participants = Participant::where('room_id',$request->input('room_id'))->where('user_id','!=',Auth::user()->id)->get();
+          if($participants->count() > 1)
+              $isgroupchat = true;
+  
+        foreach($participants as $participant)
+        {
+  
+          $participant->user->notify(new MessageNotification($message,$isgroupchat));
+        }
+  
+        broadcast(new MessageSent($user, $message))->toOthers();
+  
+        return $message;
+
+        // $mess = MobMessage::create($request->input());
+        // MobRoom::find($request->input('room_id'))->update(['last_message'=>$mess->id]);
+        // return $mess;
     }
 
     /**
@@ -84,9 +160,9 @@ class MessageController extends Controller
      */
     public function create_room(Request $request)
     {
-        $room = Room::where('name', $request->input('name'))->first();
+        $room = MobRoom::where('name', $request->input('name'))->first();
         if (!$room) {
-            $room = Room::create($request->input());
+            $room = MobRoom::create($request->input());
         }
         return $room;
     }
@@ -100,7 +176,7 @@ class MessageController extends Controller
     public function recent(Request $request)
     {
         $user_id = $request->has('user_id') ? $request->input('user_id') : auth('api')->user()->id;
-        $rooms = Room::where('name', 'like', '%'.$user_id.'%')
+        $rooms = MobRoom::where('name', 'like', '%'.$user_id.'%')
                 ->orderBy('updated_at','DESC')
                 ->get();
         $contacts = [];
@@ -147,7 +223,7 @@ class MessageController extends Controller
     {
         $u = auth('api')->user();
 
-        $room = Room::find($id);
+        $room = MobRoom::find($id);
         $users = explode('-',$room->name);
         $contacts = [];
         $contact_name = '';
@@ -160,15 +236,15 @@ class MessageController extends Controller
                     $contact_name .= ', '.$userInfo->fname;
                 }
 
-                $roomCheck = Room::where('name', $user.'-'.$u->id)->first();
+                $roomCheck = MobRoom::where('name', $user.'-'.$u->id)->first();
                 if (!$roomCheck) {
-                    $roomCheck = Room::where('name', $u->id.'-'.$user)->first();
+                    $roomCheck = MobRoom::where('name', $u->id.'-'.$user)->first();
                 }
     
                 if ($roomCheck) {
                     $userInfo->room_id = $roomCheck->id;
                 } else {
-                    $newRoom = Room::create([
+                    $newRoom = MobRoom::create([
                         'name'=>$u->id.'-'.$user,
                         'user_id'=>$user,
                         'participants_no'=>2,
@@ -192,6 +268,12 @@ class MessageController extends Controller
         } else {
             $room->conversations = MobMessage::where('room_id', $room->id)->get();
         }
+
+        RoomLastVisit::create([
+            'user_id'=>$u->id,
+            'room_id'=>$room->id
+        ]);
+
         return ['room'=>$room, 'user'=>$u];
 
     }
