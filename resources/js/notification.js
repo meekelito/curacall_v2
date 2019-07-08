@@ -89,7 +89,7 @@ window.app = new Vue({
                     //this.notifications.unshift(notification);
                     this.countNotifications('case');
                     this.fetchNotifications('case');
-                    this.doNotification(notification.id,'Hey! a new case notification for you',notification.data.message,notification.data.action_url);
+                    this.doNotification(notification.id,'Hey! a new case notification for you',notification.data.message,notification.data.action_url,'case',notification.prof_img);
                     //console.log(window.location.pathname + window.location.search);
                  
                     if(current_url == "/cases/case_id/"+notification.data.case_id){
@@ -257,7 +257,7 @@ window.app = new Vue({
       
                  setTimeout(function() {
                     if(type != 'chat')
-                     self.doNotification(value.id,'Hey! a new '+ type +' notification for you',value.data.message,value.data.action_url,type);
+                     self.doNotification(value.id,'Hey! a new '+ type +' notification for you',value.data.message,value.data.action_url,type,value.prof_img);
                    else
                      self.doNotification(value.id,'Hey! a new '+ type +' notification for you',value.data.from_name + ": " +value.data.message,value.data.action_url,type,value.prof_img);
                 }, time);

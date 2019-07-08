@@ -23,7 +23,8 @@ Route::group(['middleware' => ['nocache']], function () {
 });
 
 Route::group(['middleware' => array('auth','nocache')], function () {
-
+    Route::resource('message-board','MessageBoardController');
+    
     Route::post('/notification/chat/count', 'NotificationController@chatcount');
 
     Route::post('/notification/get', 'NotificationController@get');
