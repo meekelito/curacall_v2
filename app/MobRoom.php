@@ -10,7 +10,7 @@ class MobRoom extends Model
 {
   protected $table = 'rooms';
 
-  protected $fillable = ['user_id','name','participants_no','status','last_message'];
+  protected $fillable = ['user_id','name','participants_no','status','last_message', 'rpush_id'];
 
   public function user()
 	{

@@ -152,12 +152,6 @@ class MessageController extends Controller
         // return $mess;
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function create_room(Request $request)
     {
         $room = MobRoom::where('name', $request->input('name'))->first();
@@ -165,6 +159,12 @@ class MessageController extends Controller
             $room = MobRoom::create($request->input());
         }
         return $room;
+    }
+
+    public function room_pusher(Request $request)
+    {
+        $room = MobRoom::find($request->id)->update(['rpush_id'=>$request->room_id]);
+        return $request;
     }
 
     /**

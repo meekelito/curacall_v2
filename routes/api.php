@@ -45,6 +45,7 @@ Route::group([
     Route::post('/report/average','Api\ApiController@getReportAverageTime');
     Route::get('message/recent','Api\MessageController@recent');
     Route::post('message/create/room','Api\MessageController@create_room');
+    Route::post('message/update/roompusher','Api\MessageController@room_pusher');
     Route::get('message/room/unread','Api\MessageController@roomUnread');
     Route::post('message/delete/all','Api\RoomDeleteMessageController@store');
 
