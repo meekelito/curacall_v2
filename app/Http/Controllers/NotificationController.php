@@ -48,59 +48,24 @@ class NotificationController extends Controller
             return $notification;
     }
 
-    // public function count()
-    // {
-    //          //$notification = Auth::user()->unreadNotifications;
-    //          $notification = Notification::where('notifiable_id',Auth::user()->id)
-    //          ->where('type','App\Notifications\CaseNotification')
-    //          ->whereNull('read_at')
-    //          ->take(10)
-    //          ->count();
-
-    //         return $notification;
-    // }
-
-    // public function chatcount()
-    // {
-    //          //$notification = Auth::user()->unreadNotifications;
-    //          $notification = Notification::where('notifiable_id',Auth::user()->id)
-    //          ->where('type','App\Notifications\MessageNotification')
-    //          ->whereNull('read_at')
-    //          ->take(10)
-    //          ->count();
-
-    //         return $notification;
-    // }
-
-    // public function remindercount()
-    // {
-    //            //$notification = Auth::user()->unreadNotifications;
-    //          $notification = Notification::where('notifiable_id',Auth::user()->id)
-    //          ->where('type','App\Notifications\ReminderNotification')
-    //          ->whereNull('read_at')
-    //          ->take(10)
-    //          ->count();
-
-    //         return $notification;
-    // }
-
     public function read(Request $request) {
 
-        $validator = Validator::make($request->all(),[ 
-              'id' => 'required'
-            ]);
+        // $validator = Validator::make($request->all(),[ 
+        //       'id' => 'required'
+        //     ]);
 
-        if( $validator->fails() ){
-          return response()->json([ 
-            "response"=>"Invalid parameters", 
-            "message"=>$validator->errors()
-          ],406);
-        }
+        // if( $validator->fails() ){
+        //   return response()->json([ 
+        //     "response"=>"Invalid parameters", 
+        //     "message"=>$validator->errors()
+        //   ],406);
+        // }
 
         $userUnreadNotification = auth()->user()
                             ->unreadNotifications()
                             ->where('id', $request->id)
-                            ->first();
+                            ->orWhere('case_id',$request->case_id)
+                            ->get();
 
             if($userUnreadNotification) {
                $result =  $userUnreadNotification->markAsRead();

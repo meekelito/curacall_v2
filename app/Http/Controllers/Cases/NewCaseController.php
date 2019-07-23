@@ -15,6 +15,7 @@ use Validator;
 use App\Notifications\CaseNotification;
 use App\Notification;
 use App\ApiCron;
+use Carbon\Carbon;
 
 class NewCaseController extends Controller
 {
@@ -42,10 +43,60 @@ class NewCaseController extends Controller
 
     if( !$participation->isEmpty() ){
       Case_participant::where('case_id', $case_id)->where('user_id', Auth::user()->id)->update(['is_read' => 1]); 
+      Cases::where('id', $case_id)->whereNull('read_by')->whereNull('read_at')->update(['read_by' => Auth::user()->id,'read_at' => Carbon::now()->toDateTimeString()]);
+
+      $res = Cases::where('id', $case_id)->select('case_id','account_id')->first();
+      
+      
+      // $curl = curl_init();
+      // curl_setopt_array($curl, array(
+      // CURLOPT_RETURNTRANSFER => 1,
+      // CURLOPT_URL => "http://api.valoris.ro/CuraCall/Questionnaire/".$res->account_id."/".$res->case_id,
+      // CURLOPT_POST => 1,
+      // CURLOPT_HTTPHEADER => array('Content-Type: application/json-patch+json'),
+      // CURLOPT_CUSTOMREQUEST => 'PATCH',
+      // CURLOPT_POSTFIELDS => array(
+      //     array(
+      //       "op" => "replace",
+      //       "path" => "Read",
+      //       "value" => true
+      //     ),
+      //     array(
+      //       "op" => "replace",
+      //       "path" => "Read_On",
+      //       "value" => "2019-06-18T18:30:00.000"
+      //     ),
+      //     array(
+      //       "op" => "replace",
+      //       "path" => "Read_By",
+      //       "value" => "DH555724"
+      //     )
+      //   )
+      // )); 
+      // $resp = curl_exec($curl);
+      // // Close request to clear up some resources
+      // curl_close($curl);
+
+      // $result = json_decode($resp);
+      
+      // $data = "[
+      //   {'op':'replace','path':'Read','value':true},
+      //   {'op':'replace','path':'Read_On','value':'2019-0618T18:30:00.000'},
+      //   {'op':'replace','path':'Read_By','value':'CC000005'}
+      // ]";
+      // $url = "http://api.valoris.ro/CuraCall/Questionnaire/7A915A47-4081-E911-9433-00155D020B02/08AC87BD-7787-E911-9433-00155D020B02";
+      // $header = array('Content-Type: application/json-patch+json');
+      // $curl = curl_init();
+      // curl_setopt($curl, CURLOPT_URL, $url);
+      // curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+      // curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'PATCH');
+      // curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+      // curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
+      // $res = curl_exec($curl);
+      // curl_close($curl);
     }
-
+    //is_reviewed attribute saying that the case is for reviewing 
     return view( 'cases', [ 'case_id' => $case_id,'is_reviewed' => 0 ] );
-
   }
 
   public function fetchCase(Request $request) 

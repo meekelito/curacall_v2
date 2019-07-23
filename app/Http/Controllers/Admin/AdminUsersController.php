@@ -14,7 +14,11 @@ use DB;
 use Cache;
 use Auth;
 use Hash;
-
+use Carbon\Carbon;
+use App\EmailTemplate;
+use Mail;
+use App\ApiCron;
+use App\EmailVerification;
 
 class AdminUsersController extends Controller
 {
@@ -262,6 +266,25 @@ class AdminUsersController extends Controller
 
 
     if($res){ 
+      $res->assignRole($request->role_id);
+      $activation_code = str_random(32);
+      $activation_link = route('user.activation',[$activation_code]);
+      $result = EmailVerification::updateOrCreate([
+        'user_id' => $res->id
+      ],[
+        'user_id' => $res->id,
+        'token'   => $activation_code
+      ]);
+
+      $template = EmailTemplate::where('code','user.activation')->first();
+      $api = new ApiCron;
+      $variables = array("first_name"=>$res->fname,"last_name"=>$res->lname,"activation_code"=>$activation_code,"activation_link"=>$activation_link);
+      $api->sendemail($res->email,$template->subject,$template->content,$variables);
+
+      // Mail::raw($template->content,function($m) use($res){
+      //   $m->to($res->email);
+      // });
+
       return json_encode(array(
         "status"=>1,
         "type" => $request->_type,
@@ -410,7 +433,17 @@ class AdminUsersController extends Controller
       ));
     } 
 
-    $res = User::find( $id )->update($request->all()+['updated_by' => Auth::user()->id ]);
+    if( $request->status == 'active' ){
+      $res = User::find( $id )->update($request->all()+['updated_by' => Auth::user()->id,
+        'date_activated' => Carbon::now(),
+        'date_deactivated' => Carbon::now()->addYear(10)]);
+    }else if( $request->status == 'deactivated' ){
+      $res = User::find( $id )->update($request->all()+['updated_by' => Auth::user()->id,'date_deactivated' => Carbon::now()]);
+    }else{
+      $res = User::find( $id )->update($request->all()+['updated_by' => Auth::user()->id]);
+    }
+
+    
     if($res){ 
       return json_encode(array(
         "status"=>1,

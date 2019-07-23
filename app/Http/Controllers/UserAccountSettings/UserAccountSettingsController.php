@@ -12,6 +12,7 @@ use Cache;
 use Auth;
 use Hash;
 use Validator;
+use App\EmailVerification;
 
 class UserAccountSettingsController extends Controller
 {
@@ -130,5 +131,47 @@ class UserAccountSettingsController extends Controller
         "message"=>"Error in connection."
       ));
     }
+  }
+
+  public function newpassword()
+  {
+    return view('user-account-activation');
+  }
+
+  public function verify(Request $request)
+  {
+    $validator = Validator::make($request->all(), [
+      'password'  => 'bail|required|min:8|confirmed|regex:/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/',
+    ],[
+      'password.different'=>'The new password and current password must be different.',
+    ]);
+
+    if ($validator->fails()) {
+      return json_encode(array(
+        "status"=>2,
+        "response"=>"error",
+        "message"=>$validator->errors()
+      ));
+    }
+
+      $user = User::find(Auth::user()->id);
+      $pass = Hash::make($request->password);
+      $user->password = $pass;
+      $user->status = "active";
+      $user->date_activated = date("Y-m-d H:i:s");
+      $user->updated_by = Auth::user()->id;
+      $user->is_verified = 1;
+      $user->verified_at = date("Y-m-d H:i:s");
+      $result = $user->save();
+
+      if($result){
+        EmailVerification::where('user_id',Auth::user()->id)->delete();
+         return json_encode(array(
+          "status"=>1,
+          "response"=>"success",
+          "message"=> "Successfully activated"
+        ));
+      }
+        
   }
 }

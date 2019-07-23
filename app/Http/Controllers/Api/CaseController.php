@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\MobCase;
+use App\MobRoom;
+use App\RoomLastVisit;
+use App\Message;
 use App\MobNote;
 use App\Case_history;
 use App\Case_participant;
@@ -157,6 +160,7 @@ class CaseController extends Controller
         }
         return $formatted;
     }
+
     public function caseCounter($user_id) {
         $silentCounter = MobCase::Join('case_participants AS b','cases.id','=','b.case_id')
         ->where('b.user_id',$user_id)
@@ -183,6 +187,35 @@ class CaseController extends Controller
         $totalActiveCounter = $activeCounter + $pendingCounter;
         $allCaseCounter = $totalActiveCounter + $closedCounter;
 
+
+        $rooms = MobRoom::where('name', 'like', '%'.$user_id.'%')
+                ->get();
+        $totalUnreadMessage = 0;
+        $formatted_rooms = [];
+        foreach ($rooms as $room) {
+
+            //get unread messages count
+            $unread = RoomLastVisit::where('user_id', $user_id)
+            ->where('room_id', $room->id)
+            ->orderBy('id','DESC')
+            ->first();
+
+            if($unread) {
+                $room->unreadCount = Message::where('room_id', $room->id)
+                ->where('created_at', '>', $unread->created_at)->count();
+            } else {
+                $room->unreadCount = Message::where('room_id', $room->id)->count();
+            }
+            $room->unreadText = $room->unreadCount ? 'primary' : '';
+            $totalUnreadMessage = $room->unreadCount ? $totalUnreadMessage + 1 : $totalUnreadMessage;
+
+        }
+
+
+        $totalUnreadNoti = Notification::where('notifiable_id', $user_id)
+        ->where('read_at', null)
+        ->count();
+
         return [
             'silentCounter' => $silentCounter,
             'activeCounter' => $activeCounter,
@@ -190,6 +223,10 @@ class CaseController extends Controller
             'pendingCounter' => $pendingCounter,
             'totalActiveCounter' => $totalActiveCounter,
             'allCaseCounter' => $allCaseCounter,
+            'unreadMessageCounter'=>$totalUnreadMessage,
+            'unreadNotiCounter'=> $totalUnreadNoti,
+            'totalUnread'=>$totalUnreadMessage,
+            'totalUnreadNoti'=> $totalUnreadNoti
         ];
     }
 

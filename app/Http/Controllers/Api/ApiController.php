@@ -524,22 +524,36 @@ class ApiController extends Controller
             ));
         }
 
-        $user = User::findOrFail($request->notifiable_id);
-        $message = str_replace("[case_id]",$request->case_id,__('notification.reminder'));
-        $arr = array(
-            'case_id' => $request->case_id,
-            'message' =>    $message,
-            'type'    => 'reminder',
-            'action_url'    => route('case',[$request->case_id])
-        );
-        $user->notify(new ReminderNotification($arr));
+        $un_read = Case_participant::where('case_id',$request->case_id)->where('is_read',0)->first();
+      
+        if($un_read)
+        {
+            $un_read->increment('reminder_attempts');
+            $user = User::findOrFail($request->notifiable_id);
+            $message = str_replace("[case_id]",$request->case_id,__('notification.reminder'));
+            $arr = array(
+                'case_id' => $request->case_id,
+                'message' =>    $message,
+                'type'    => 'reminder',
+                'action_url'    => route('case',[$request->case_id])
+            );
+            $user->notify(new ReminderNotification($arr));
 
-        if($user)
-          return response()->json([
-              "status" => 1,
-              "response" => "success", 
-              "message" => "Successfully sent."
-          ]);
+            if($user)
+              return response()->json([
+                  "status" => 1,
+                  "response" => "success", 
+                  "message" => "Successfully sent.",
+                  "is_read" => 0
+              ]);
+        }else{
+            return response()->json([
+                  "status" => 1,
+                  "response" => "success", 
+                  "message" => "Successfully sent.",
+                  "is_read" => 1
+              ]);
+        }
   }
 
 
@@ -799,7 +813,7 @@ class ApiController extends Controller
       $interval_minutes = 15;//default interval if calltype not in database
       $calltype1 = Call_type::where('name',$calltype)->first();
       if($calltype1)
-       $interval_minutes = $calltype1->calltype_notification()->first()->interval_minutes ?? $interval;
+       $interval_minutes = $calltype1->calltype_notification()->first()->interval_minutes ?? $interval_minutes;
 
       $cron->remind($case->id,$interval_minutes,$reminder_participants);
 
@@ -1134,17 +1148,30 @@ class ApiController extends Controller
 
   public function testcron()
   {
-    $cron = new ApiCron;
-    // $result = $cron->read("123");
-    //$result = $cron->remind("31",2,array(4));
-    //$result = $cron->login();
-    //return json_encode($result);
-      $interval = 15;
-      $calltype = Call_type::where('name',"Medical")->first();
-      if($calltype)
-       $interval = $calltype->calltype_notification()->first()->interval_minutes ?? $interval;
+    // $cron = new ApiCron;
+    // // $result = $cron->read("123");
+    // //$result = $cron->remind("31",2,array(4));
+    // //$result = $cron->login();
+    // //return json_encode($result);
+    //   $interval = 15;
+    //   $calltype = Call_type::where('name',"Medical")->first();
+    //   if($calltype)
+    //    $interval = $calltype->calltype_notification()->first()->interval_minutes ?? $interval;
 
-      return $interval;
+    //   return $interval;
+    echo route('case',[1]);
+  }
+
+  public function checkCaseStatus(Request $request)
+  {
+    $res = Case_participant::where('case_id', $request->questionnaire_id)->get();
+
+    return response()->json([ 
+      "status"=> 200,
+      "response"=>"success", 
+      "message"=>"weee"
+    ]);
+    
   }
 
 }

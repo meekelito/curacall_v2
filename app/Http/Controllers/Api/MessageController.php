@@ -213,6 +213,23 @@ class MessageController extends Controller
         return ['contacts'=>$contacts];
     }
 
+    public function checkIfRead(Request $request)
+    {
+        $u = auth('api')->user();
+        $lastVisit = RoomLastVisit::where('room_id', $request->id)->where('user_id', '!=', $u->id)
+                        ->orderBy('updated_at','DESC')
+                        ->first();
+
+        if ($lastVisit) {
+            $convo = MobMessage::where('room_id', $request->id)
+            ->where('created_at', '>', $lastVisit->created_at)
+            ->count();
+        } else {
+            $convo = MobMessage::where('room_id', $request->id)->count();
+        }
+        
+        return ['count'=>$convo];
+    }
     /**
      * Display the specified resource.
      *
@@ -269,12 +286,25 @@ class MessageController extends Controller
             $room->conversations = MobMessage::where('room_id', $room->id)->get();
         }
 
+        //last visit
+        $lastVisit = RoomLastVisit::where('room_id', $room->id)->where('user_id', '!=', $u->id)
+                        ->orderBy('updated_at','DESC')
+                        ->first();
+
+        if ($lastVisit) {
+            $convo = MobMessage::where('room_id', $room->id)
+            ->where('created_at', '>', $lastVisit->created_at)
+            ->count();
+        } else {
+            $convo = MobMessage::where('room_id', $room->id)->count();
+        }
+
         RoomLastVisit::create([
             'user_id'=>$u->id,
             'room_id'=>$room->id
         ]);
 
-        return ['room'=>$room, 'user'=>$u];
+        return ['room'=>$room, 'user'=>$u, 'isUnread'=>$convo];
 
     }
 

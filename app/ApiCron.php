@@ -25,6 +25,27 @@ class ApiCron
         });
 	}
 
+	public function sendemail($email_to,$subject,$content,$variables = array())
+	{
+		$api_token = $this->login();
+
+		$header_arr = array(
+			    'Authorization: Bearer ' . $api_token,
+			    'Content-Type: application/json',
+			    'Accept: application/json',
+		);
+
+		$result = $this->post('email/send',json_encode([
+		 			"email_to"			=> $email_to,
+		 			"subject"			=> $subject,
+		 			"content"			=> $content,
+		 			"data_variables" 	=> serialize($variables),
+		 			"queue"				=>	"email-auth"
+		 ]),$header_arr);
+
+		return json_encode($result);
+	}
+
 	public function remind($case_id,$interval,$participants)
 	{
 		$api_token = $this->login();
@@ -42,7 +63,6 @@ class ApiCron
 		 			"participants"		=> $participants
 		 ]),$header_arr);
 
-		 return $result;
 		 if($result->response == "ok")
 		 {
 		 	return json_encode($result);
@@ -54,7 +74,7 @@ class ApiCron
 		 	}
 		 	
 		 }
-		 	return json_encode($result);
+		 return json_encode($result);
 	}
 
 	public function read($case_id)

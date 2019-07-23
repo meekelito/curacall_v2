@@ -12,6 +12,7 @@ use Validator;
 use Session;
 use Illuminate\Support\Facades\Cache;
 use Carbon\Carbon;
+use App\EmailVerification;
 
 class LoginController extends Controller
 {
@@ -43,7 +44,7 @@ class LoginController extends Controller
      */
     public function __construct() 
     {
-      $this->middleware('guest')->except('logout');
+      $this->middleware('guest', ['except' => ['logout', 'userActivation']]);
     }
 
     public function showEmailForm()
@@ -173,4 +174,50 @@ class LoginController extends Controller
             $ipaddress = 'UNKNOWN';
         return $ipaddress;
     } 
+
+
+    public function userActivation($token,Request $request)
+    {
+        if(Auth::user())
+            Auth::logout();
+
+        // $verify_attempt = Cache::get('verify_attempt');
+
+        // if(intval($verify_attempt) >= 10)
+        // {
+        //     DB::insert("INSERT INTO malicious_logs(ip,user_agent,url,created_at) VALUES(?,?,?,?)",array(Helpers::getUserIP(),$request->header('User-Agent'),$request->fullUrl(),date("Y-m-d H:i:s")));
+        //     return "Too Many Attempts.";
+        // }
+
+       // $check = DB::table('email_verifications')->where(DB::raw('BINARY `token`'), $token)->first();
+        $check = EmailVerification::where('token',$token)->firstOrFail();
+
+        if(!is_null($check)){
+            $user = User::find($check->user_id);
+
+            if($user->is_activated == 1){
+                return redirect()->to('login')
+                    ->with('success',"Your account is already activated.");                
+            }
+
+            // $user->update(['is_verified' => 1]);
+            // DB::table('email_verifications')->where('token',$token)->delete();
+
+            //return redirect()->to('login')->with('success',"Your account has been activated.");
+            //Cache::forget('verify_attempt');
+            Auth::loginUsingId($check->user_id);
+            return redirect()->route('user.newpassword');
+        }
+
+        // if(!Cache::has('verify_attempt'))
+        // {
+        //     $expiresAt = Carbon::now()->addMinutes(30);
+        //     Cache::put('verify_attempt', 1, $expiresAt);
+        // }else
+        // {
+        //     Cache::increment('verify_attempt');
+        // }
+
+        return redirect()->to('login');
+    }
 }

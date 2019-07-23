@@ -41,7 +41,7 @@ class Kernel extends HttpKernel
 
         'api' => [
             'throttle:60,1',
-            'bindings',
+            // 'bindings',
             \Barryvdh\Cors\HandleCors::class,
         ],
     ];
@@ -71,6 +71,7 @@ class Kernel extends HttpKernel
         'role' => \Spatie\Permission\Middlewares\RoleMiddleware::class,
         'permission' => \Spatie\Permission\Middlewares\PermissionMiddleware::class,
         'role_or_permission' => \Spatie\Permission\Middlewares\RoleOrPermissionMiddleware::class,
+        'notverified' => \App\Http\Middleware\NotVerifiedMiddleware::class,
     ];
 
     /**

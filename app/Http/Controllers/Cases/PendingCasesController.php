@@ -60,8 +60,10 @@ class PendingCasesController extends Controller
         "id"=>$case->id,
         "case_id" => $case->case_id,
         "call_type" => $case->call_type,
+        "call_type" => $case->call_type,
+        "caller_name" => $case->caller_first_name.' '.$case->caller_last_name,
         "subcall_type"=> $case->subcall_type,
-        "case_message" => $case->case_message,
+        "full_message" => $case->full_message,
         "status" => $case->status,
         "created_at" => $case->created_at,
         "participants"=> $participants_arr

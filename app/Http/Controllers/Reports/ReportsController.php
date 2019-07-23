@@ -583,15 +583,17 @@ class ReportsController extends Controller
       $participants_arr = array();
       foreach($case->participants as $participant)
       {
-        array_push($participants_arr, 
-          array( 
-            'user_id'=>$participant->user_id,
-            'is_read'=>$participant->is_read,
-            'ownership'=>$participant->ownership,
-            'fname'=>$participant->user->fname,
-            'lname'=>$participant->user->lname,
-          )
-        );
+        if($participant){
+            array_push($participants_arr, 
+              array( 
+                'user_id'=>$participant->user_id,
+                'is_read'=>$participant->is_read,
+                'ownership'=>$participant->ownership,
+                'fname'=>$participant->user->fname,
+                'lname'=>$participant->user->lname,
+              )
+            );
+        }
       }
 
       $cases_arr[] = array(
@@ -653,9 +655,10 @@ class ReportsController extends Controller
                         ->on('c.role_id','users.role_id');
                 })
                 ->leftJoin('roles AS d','users.role_id','d.id')
-                ->where('users.status','active')
+                ->where('users.status','!=','pending')
                 ->where('users.is_curacall',0) 
                 ->whereDate('users.date_activated','<=',$request->billing_month."-01 24:59:59")
+                ->whereDate('users.date_deactivated','>=',$request->billing_month."-01 24:59:59") 
                 ->whereIn('users.account_id',$request->account_id)
                 ->select('users.fname','users.lname','d.role_title','users.date_activated','b.account_name','c.billing_rate')
                 ->orderBy('users.account_id')

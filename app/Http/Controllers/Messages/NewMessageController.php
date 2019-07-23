@@ -96,70 +96,70 @@ class NewMessageController extends Controller
 
   }
 
-  public function addparticipant(Request $request)
-  {
-    $validator = Validator::make($request->all(),[ 
-      'room_id' => 'required|exists:rooms,id', 
-      'recipients' => 'required'
-    ]);
+  // public function addparticipant(Request $request)
+  // {
+  //   $validator = Validator::make($request->all(),[ 
+  //     'room_id' => 'required|exists:rooms,id', 
+  //     'recipients' => 'required'
+  //   ]);
 
-    if( $validator->fails() ){
-      return response()->json([ 
-        "status"=> 400,
-        "response"=>"bad request", 
-        "message"=>$validator->errors()
-      ]);
-    }
+  //   if( $validator->fails() ){
+  //     return response()->json([ 
+  //       "status"=> 400,
+  //       "response"=>"bad request", 
+  //       "message"=>$validator->errors()
+  //     ]);
+  //   }
 
-    $recipients = $request->input("recipients");
+  //   $recipients = $request->input("recipients");
 
-    array_push($recipients,strval(Auth::user()->id));
+  //   array_push($recipients,strval(Auth::user()->id));
 
     
-    $chat_participants = Participant::select('user_id')->where('room_id',$request->room_id)->get();
-    $existing_participants = array();
+  //   $chat_participants = Participant::select('user_id')->where('room_id',$request->room_id)->get();
+  //   $existing_participants = array();
 
-    foreach($chat_participants as $row)
-    {
-        $existing_participants[] = $row->user_id;
-    }
+  //   foreach($chat_participants as $row)
+  //   {
+  //       $existing_participants[] = $row->user_id;
+  //   }
 
-    $recipients = array_unique (array_merge ($request->recipients, $existing_participants));
-    sort($recipients);
-    $room_name = implode("-",$recipients);
+  //   $recipients = array_unique (array_merge ($request->recipients, $existing_participants));
+  //   sort($recipients);
+  //   $room_name = implode("-",$recipients);
 
-    $rooms = Room::select('id')->where('name',$room_name)->first();
-    if($rooms)
-    {
-       return redirect('messages/room/'.$rooms->id);
-    }else{
-          DB::beginTransaction(); 
-          try{ 
-            Room::where('id',$request->room_id)->update(['name'=>$room_name ,'participants_no' => count($recipients)]);
+  //   $rooms = Room::select('id')->where('name',$room_name)->first();
+  //   if($rooms)
+  //   {
+  //      return redirect('messages/room/'.$rooms->id);
+  //   }else{
+  //         DB::beginTransaction(); 
+  //         try{ 
+  //           Room::where('id',$request->room_id)->update(['name'=>$room_name ,'participants_no' => count($recipients)]);
      
-            $participants = array();
+  //           $participants = array();
 
-            for( $i = 0; $i <= count($recipients)-1; $i++ ){
-              $participants[] = array('room_id' => $request->room_id, 'user_id' => $recipients[$i], 'is_read' => 0);
-            }
-            Participant::where('room_id',$request->room_id)->delete();
-            Participant::insert($participants);
+  //           for( $i = 0; $i <= count($recipients)-1; $i++ ){
+  //             $participants[] = array('room_id' => $request->room_id, 'user_id' => $recipients[$i], 'is_read' => 0);
+  //           }
+  //           Participant::where('room_id',$request->room_id)->delete();
+  //           Participant::insert($participants);
 
-            DB::commit();
+  //           DB::commit();
 
-            return redirect('messages/room/'.$request->room_id);
-          } catch (Exeption $e){
-            DB::rollback();
-            return json_encode(array(
-              "status"=>0,
-              "response"=>"failed", 
-              "message"=>"Error in connection."
-            ));
-          }
-    }
+  //           return redirect('messages/room/'.$request->room_id);
+  //         } catch (Exeption $e){
+  //           DB::rollback();
+  //           return json_encode(array(
+  //             "status"=>0,
+  //             "response"=>"failed", 
+  //             "message"=>"Error in connection."
+  //           ));
+  //         }
+  //   }
     
     
-  }
+  // }
 
   public function createMessage(Request $request)
   {
