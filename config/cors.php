@@ -11,20 +11,13 @@ return [
     | to accept any value.
     |
     */
+   
     'supportsCredentials' => false,
     'allowedOrigins' => ['*'],
     'allowedOriginsPatterns' => [],
-    'allowedHeaders' => ['Content-Type', 'X-Requested-With', 'X-Auth-Token',  'Access-Control-Allow-Origin'],
+    'allowedHeaders' => ['Content-Type', 'X-Requested-With', 'Access-Control-Allow-Origin'],
     'allowedMethods' => ['*'],
     'exposedHeaders' => [],
     'maxAge' => 0,
-    
-    // 'supportsCredentials' => true,
-    // 'allowedOrigins' => ['*'],
-    // 'allowedOriginsPatterns' => [],
-    // 'allowedHeaders' => ['*'], // Content-Type', 'X-Requested-With', 'X-Auth-Token', 'Authorization'],
-    // 'allowedMethods' => ['*'],
-    // 'exposedHeaders' => [],
-    // 'maxAge' => 0,
 
 ];
