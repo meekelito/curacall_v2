@@ -12,10 +12,10 @@ return [
     |
     */
    
-    'supportsCredentials' => false,
+    'supportsCredentials' => true,
     'allowedOrigins' => ['*'],
     'allowedOriginsPatterns' => [],
-    'allowedHeaders' => ['Content-Type', 'Authorization', 'X-Requested-With', 'Access-Control-Allow-Origin'],
+    'allowedHeaders' => ['*'], // Content-Type', 'Authorization', 'X-Requested-With', 'Access-Control-Allow-Origin'],
     'allowedMethods' => ['*'],
     'exposedHeaders' => [],
     'maxAge' => 0,
