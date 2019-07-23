@@ -27,7 +27,7 @@ Route::apiResource('support', 'Api\SupportTicketController');
 Route::get('notification', 'Api\NotificationController@index');
 
 Route::group([
-    'middleware' => ['jwt.auth, cors'],
+    'middleware' => 'jwt.auth',
 ], function ($router) {
     Route::post('logout', 'Api\AuthController@logout');
     Route::post('refresh', 'Api\AuthController@refresh');
@@ -65,7 +65,7 @@ Route::group([
 Route::get('/cases/{status?}/{user_id}', 'Api\ApiController@getCases' ); 
 
     Route::group([
-        'middleware' => ['jwt.auth, cors'],
+        'middleware' => 'jwt.auth',
     ], function ($router) {
         
         Route::post('/cases', 'Api\ApiController@getCases' ); 
