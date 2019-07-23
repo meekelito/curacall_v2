@@ -174,6 +174,7 @@ return [
         App\Providers\RouteServiceProvider::class,
         Yajra\DataTables\DataTablesServiceProvider::class,
         Barryvdh\DomPDF\ServiceProvider::class,
+        Barryvdh\Cors\ServiceProvider::class,
         Anhskohbo\NoCaptcha\NoCaptchaServiceProvider::class,
         Spatie\Permission\PermissionServiceProvider::class,
         Tymon\JWTAuth\Providers\LaravelServiceProvider::class,
