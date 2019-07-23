@@ -25,6 +25,9 @@ Route::post('check_email', 'Api\AuthController@check_email');
 Route::post('forgot/password', 'Api\Auth\ForgotPasswordController')->name('forgot.password');
 Route::apiResource('support', 'Api\SupportTicketController');
 Route::get('notification', 'Api\NotificationController@index');
+Route::get('notification/unread', 'Api\NotificationController@unreadNotificationCount');
+Route::get('notification/readcase', 'Api\NotificationController@readCase');
+Route::get('notification/send', 'Api\NotificationController@send');
 
 Route::group([
     'middleware' => 'jwt.auth',
@@ -47,8 +50,10 @@ Route::group([
     Route::post('message/create/room','Api\MessageController@create_room');
     Route::post('message/update/roompusher','Api\MessageController@room_pusher');
     Route::get('message/room/unread','Api\MessageController@roomUnread');
+    Route::get('message/room/isread','Api\MessageController@checkIfRead');
     Route::post('message/delete/all','Api\RoomDeleteMessageController@store');
-
+    
+    Route::post('notification/remind', 'Api\ApiController@reminderNotification');
     Route::apiResources([
         'case' => 'Api\CaseController',
         'messages' => 'Api\MessageController',
@@ -88,13 +93,13 @@ Route::get('/cases/{status?}/{user_id}', 'Api\ApiController@getCases' );
 
         Route::post('/integration/dynamics/add-oncall-backup', 'Api\ApiController@addOnCallBackUp' ); 
 
-        
+        Route::post('/integration/dynamics/check-case-status', 'Api\ApiController@checkCaseStatus' ); 
 
         //mobile app
         Route::post('forward-case', 'Api\ApiController@forwardCase');
     });
 
-Route::post('notification/remind', 'Api\ApiController@reminderNotification');
+
 // Route::fallback(function(){ 
 //     return response()->json([
 //         'message' => 'Page Not Found. If error persists, contact info@website.com'], 404);
